@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Page Not Found | SiteName"
+  description="The page you were looking for could not be found."
+  noindex={true}
+>
+  <main
+    class="flex flex-col items-center justify-center text-center px-4"
+    style="min-height:calc(100vh - 140px);"
+  >
+    <p
+      class="text-[120px] sm:text-[160px] font-bold leading-none select-none"
+      style="color:var(--color-brand); opacity:0.15;"
+      aria-hidden="true"
+    >
+      404
+    </p>
+    <div style="margin-top:-2rem;">
+      <h1 class="text-2xl sm:text-3xl font-bold text-[var(--color-text)] mb-3">
+        Oops — this page doesn't exist
+      </h1>
+      <p class="text-[var(--color-text-muted)] mb-8">
+        It may have moved or been deleted.
+      </p>
+      <div class="flex flex-wrap items-center justify-center gap-3">
+        <a
+          href="/"
+          class="px-6 py-3 rounded-[var(--radius-md)] text-sm font-semibold text-white transition-opacity hover:opacity-90"
+          style="background-color:var(--color-brand);"
+        >
+          Go Home
+        </a>
+        <a
+          href="/contact"
+          class="px-6 py-3 rounded-[var(--radius-md)] text-sm font-semibold transition-colors"
+          style="border:1px solid #e4e4e7; color:var(--color-text); background:white;"
+        >
+          Contact Us
+        </a>
+      </div>
+    </div>
+  </main>
+</BaseLayout>

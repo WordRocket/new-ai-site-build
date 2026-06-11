@@ -1,0 +1,193 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SchemaOrg from '../components/SchemaOrg.astro';
+import { getFAQSchema, getBreadcrumbSchema } from '../lib/schema';
+
+const siteUrl = import.meta.env.SITE ?? 'https://example.com';
+const pageUrl = `${siteUrl}/faq`;
+
+const categories = [
+  {
+    id: 'services',
+    label: 'Our Services',
+    items: [
+      {
+        question: 'What services does SiteName offer?',
+        answer: 'We offer local SEO, GEO (Generative Engine Optimisation), AI-powered website design, technical SEO audits, and content strategy — all designed to help local businesses rank higher and convert more visitors.',
+      },
+      {
+        question: 'What is GEO optimisation and how is it different from SEO?',
+        answer: "Traditional SEO focuses on ranking in Google's blue-link results. GEO (Generative Engine Optimisation) ensures your business is cited and recommended by AI-powered answer engines like ChatGPT, Gemini, and Perplexity. We optimise for both.",
+      },
+      {
+        question: 'Do you work with businesses outside of the US?',
+        answer: 'Our primary focus is US-based local businesses, but we do work with English-speaking businesses in Canada, the UK, and Australia on a case-by-case basis.',
+      },
+    ],
+  },
+  {
+    id: 'results',
+    label: 'Results & Timelines',
+    items: [
+      {
+        question: 'How long does it take to see results from SEO?',
+        answer: 'Most clients see measurable improvements in rankings and traffic within 3–6 months. Competitive markets may take longer. We provide monthly progress reports so you always know where things stand.',
+      },
+      {
+        question: 'Can you guarantee a #1 ranking on Google?',
+        answer: 'No ethical SEO agency can guarantee specific rankings — search algorithms change constantly. What we guarantee is a data-driven strategy, full transparency, and a consistent track record of moving clients up in the results.',
+      },
+    ],
+  },
+  {
+    id: 'working',
+    label: 'Working With Us',
+    items: [
+      {
+        question: 'How does the onboarding process work?',
+        answer: 'After an initial discovery call, we conduct a full audit of your website, competitors, and local market. Within two weeks you receive a prioritised roadmap. Implementation begins immediately in month one.',
+      },
+      {
+        question: 'Are there long-term contracts?',
+        answer: 'No. We operate on flexible month-to-month agreements. We earn your continued business by delivering results, not by locking you in.',
+      },
+      {
+        question: 'What information do you need to get started?',
+        answer: 'We need access to your Google Search Console, Google Analytics, and Google Business Profile. We handle the rest — no technical knowledge required on your end.',
+      },
+    ],
+  },
+];
+
+// Flatten all items for schema
+const allItems = categories.flatMap((c) => c.items);
+
+const faqSchema = getFAQSchema(allItems);
+const breadcrumbSchema = getBreadcrumbSchema([
+  { name: 'Home', url: siteUrl },
+  { name: 'FAQ', url: pageUrl },
+]);
+---
+
+<BaseLayout
+  title="Frequently Asked Questions | SiteName"
+  description="Find answers to common questions about our SEO services, GEO optimisation, timelines, contracts, and how we work."
+  canonical={pageUrl}
+>
+  <SchemaOrg schema={faqSchema} />
+  <SchemaOrg schema={breadcrumbSchema} />
+
+  <main>
+    <!-- Breadcrumb -->
+    <nav aria-label="Breadcrumb" class="border-b border-neutral-100" style="background:#fafafa;">
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-3">
+        <ol class="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
+          <li><a href="/" class="hover:text-[var(--color-brand)] transition-colors">Home</a></li>
+          <li aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </li>
+          <li><span class="text-[var(--color-text)] font-medium" aria-current="page">FAQ</span></li>
+        </ol>
+      </div>
+    </nav>
+
+    <!-- Header -->
+    <section class="py-14 sm:py-20 text-center" style="background:var(--color-neutral-50,#f9fafb);">
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-[var(--color-text)] mb-4">Frequently Asked Questions</h1>
+        <p class="text-[var(--color-text-muted)] text-lg max-w-xl mx-auto">
+          Everything you need to know about working with us. Can't find your answer? <a href="/contact" class="underline hover:text-[var(--color-brand)]">Ask us directly.</a>
+        </p>
+      </div>
+    </section>
+
+    <!-- FAQ categories -->
+    <div class="max-w-[800px] mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 flex flex-col gap-14">
+      {categories.map((cat) => (
+        <section aria-labelledby={`cat-${cat.id}`}>
+          <h2 id={`cat-${cat.id}`} class="text-xl font-bold text-[var(--color-text)] mb-6 pb-3 border-b border-neutral-100">
+            {cat.label}
+          </h2>
+          <div class="flex flex-col divide-y divide-neutral-100">
+            {cat.items.map((item, i) => {
+              const btnId = `faq-btn-${cat.id}-${i}`;
+              const answerId = `faq-answer-${cat.id}-${i}`;
+              return (
+                <div class="page-faq-item py-5">
+                  <button
+                    type="button"
+                    class="page-faq-trigger w-full flex items-start justify-between gap-4 text-left"
+                    aria-expanded="false"
+                    aria-controls={answerId}
+                    id={btnId}
+                  >
+                    <h3 class="text-base font-semibold text-[var(--color-text)] leading-snug m-0 hover:text-[var(--color-brand)] transition-colors">
+                      {item.question}
+                    </h3>
+                    <svg class="page-faq-chevron flex-shrink-0 mt-0.5 transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                  </button>
+                  <div
+                    id={answerId}
+                    role="region"
+                    aria-labelledby={btnId}
+                    class="page-faq-answer overflow-hidden max-h-0 transition-[max-height] duration-300 ease-in-out"
+                  >
+                    <p class="pt-3 pb-1 text-sm leading-relaxed text-[var(--color-text-muted)]">
+                      {item.answer}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      ))}
+
+      <!-- CTA -->
+      <div class="text-center py-10 px-6 rounded-[var(--radius-lg)]" style="background:var(--color-neutral-50,#f9fafb); border:1px solid #e4e4e7;">
+        <p class="text-base font-semibold text-[var(--color-text)] mb-1">Have another question?</p>
+        <p class="text-sm text-[var(--color-text-muted)] mb-5">Our team usually responds within one business day.</p>
+        <a
+          href="/contact"
+          class="inline-flex items-center gap-2 px-6 py-3 rounded-[var(--radius-md)] text-sm font-semibold text-white transition-opacity hover:opacity-90"
+          style="background-color:var(--color-brand);"
+        >
+          Contact Us
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+        </a>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+  const triggers = document.querySelectorAll<HTMLButtonElement>('.page-faq-trigger');
+  triggers.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      const answerId = btn.getAttribute('aria-controls')!;
+      const answer = document.getElementById(answerId)!;
+      const chevron = btn.querySelector<SVGElement>('.page-faq-chevron')!;
+
+      if (expanded) {
+        btn.setAttribute('aria-expanded', 'false');
+        answer.style.maxHeight = '0';
+        chevron.style.transform = '';
+      } else {
+        triggers.forEach((other) => {
+          if (other !== btn && other.getAttribute('aria-expanded') === 'true') {
+            other.setAttribute('aria-expanded', 'false');
+            const otherId = other.getAttribute('aria-controls')!;
+            const otherAnswer = document.getElementById(otherId)!;
+            const otherChevron = other.querySelector<SVGElement>('.page-faq-chevron')!;
+            otherAnswer.style.maxHeight = '0';
+            otherChevron.style.transform = '';
+          }
+        });
+        btn.setAttribute('aria-expanded', 'true');
+        answer.style.maxHeight = answer.scrollHeight + 'px';
+        chevron.style.transform = 'rotate(180deg)';
+      }
+    });
+  });
+</script>

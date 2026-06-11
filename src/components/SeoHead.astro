@@ -1,0 +1,74 @@
+---
+const SITE_NAME = 'YourBrand';
+
+interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImage?: string;
+  noindex?: boolean;
+  type?: 'website' | 'article';
+  datePublished?: string;
+  dateModified?: string;
+  authorName?: string;
+}
+
+export function getSeoDefaults(pageTitle: string) {
+  return {
+    title: pageTitle,
+    description: `${pageTitle} — ${SITE_NAME}`,
+    ogTitle: pageTitle,
+    ogImage: '/og-default.png',
+    noindex: false,
+    type: 'website' as const,
+  };
+}
+
+const {
+  title,
+  description,
+  canonical = Astro.url.href,
+  ogTitle = title,
+  ogDescription = description,
+  ogImage = '/og-default.png',
+  noindex = false,
+  type = 'website',
+  datePublished,
+  dateModified,
+} = Astro.props;
+
+const robotsContent = noindex
+  ? 'noindex,nofollow'
+  : 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1';
+---
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{title} | {SITE_NAME}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+<meta name="robots" content={robotsContent} />
+
+<meta property="og:title" content={ogTitle} />
+<meta property="og:description" content={ogDescription} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:type" content={type} />
+<meta property="og:url" content={canonical} />
+<meta property="og:site_name" content={SITE_NAME} />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={ogTitle} />
+<meta name="twitter:description" content={ogDescription} />
+<meta name="twitter:image" content={ogImage} />
+
+{type === 'article' && datePublished && (
+  <meta property="article:published_time" content={datePublished} />
+)}
+{type === 'article' && dateModified && (
+  <meta property="article:modified_time" content={dateModified} />
+)}
+
+<link rel="sitemap" href="/sitemap.xml" />
+<!-- GA_TAG_PLACEHOLDER -->

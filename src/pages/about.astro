@@ -1,0 +1,214 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SchemaOrg from '../components/SchemaOrg.astro';
+import { getOrganizationSchema, getBreadcrumbSchema } from '../lib/schema';
+
+const siteUrl = import.meta.env.SITE ?? 'https://example.com';
+const pageUrl = `${siteUrl}/about`;
+
+const orgSchema = getOrganizationSchema({
+  name: 'SiteName',
+  url: siteUrl,
+  logo: `${siteUrl}/favicon.svg`,
+  description: 'AI-Powered Websites That Actually Rank — helping local businesses dominate search since 2015.',
+  telephone: '+1-555-000-0000',
+  email: 'hello@example.com',
+  address: {
+    streetAddress: '123 Main Street, Suite 100',
+    addressLocality: 'Your City',
+    addressRegion: 'CA',
+    postalCode: '90001',
+    addressCountry: 'US',
+  },
+  sameAs: [
+    'https://www.linkedin.com/company/sitename',
+    'https://twitter.com/sitename',
+    'https://www.facebook.com/sitename',
+  ],
+});
+
+const breadcrumbSchema = getBreadcrumbSchema([
+  { name: 'Home', url: siteUrl },
+  { name: 'About', url: pageUrl },
+]);
+
+const team = [
+  {
+    name: 'Jane Smith',
+    title: 'Founder & CEO',
+    bio: 'Jane has 15+ years of experience in digital marketing and local SEO. Certified Google Partner and Search Marketing Expert.',
+    credentials: ['Google Analytics Certified', 'SEMrush Academy Graduate'],
+  },
+  {
+    name: 'Marcus Johnson',
+    title: 'Head of SEO Strategy',
+    bio: 'Marcus specialises in technical SEO and GEO optimisation for multi-location businesses across the US.',
+    credentials: ['Moz SEO Expert', 'Screaming Frog Certified'],
+  },
+  {
+    name: 'Priya Patel',
+    title: 'Lead Web Developer',
+    bio: 'Priya builds lightning-fast, accessible websites that are engineered to rank and convert from day one.',
+    credentials: ['Google Web Essentials Certified', 'Accessibility Specialist'],
+  },
+];
+
+const trustSignals = [
+  { value: '10+', label: 'Years in Business' },
+  { value: '500+', label: 'Clients Served' },
+  { value: '98%', label: 'Client Retention Rate' },
+  { value: '3x', label: 'Avg. Traffic Increase' },
+];
+
+const whyUs = [
+  {
+    title: 'Proven Track Record',
+    body: 'Over a decade of measurable results across hundreds of local businesses in competitive markets.',
+  },
+  {
+    title: 'E-E-A-T Expertise',
+    body: 'Our team holds recognised industry certifications and contributes to leading SEO publications.',
+  },
+  {
+    title: 'Transparent Reporting',
+    body: 'You receive clear monthly reports with rankings, traffic, and ROI — no jargon, no hidden metrics.',
+  },
+  {
+    title: 'No Long-Term Lock-ins',
+    body: 'We earn your business every month. Month-to-month agreements with no exit penalties.',
+  },
+];
+---
+
+<BaseLayout
+  title="About Us | SiteName"
+  description="Learn about SiteName — our story, our certified team, and why hundreds of local businesses trust us to grow their online presence."
+  canonical={pageUrl}
+>
+  <SchemaOrg schema={orgSchema} />
+  <SchemaOrg schema={breadcrumbSchema} />
+
+  <main>
+    <!-- Breadcrumb -->
+    <nav aria-label="Breadcrumb" class="border-b border-neutral-100" style="background:#fafafa;">
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-3">
+        <ol class="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
+          <li><a href="/" class="hover:text-[var(--color-brand)] transition-colors">Home</a></li>
+          <li aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </li>
+          <li><span class="text-[var(--color-text)] font-medium" aria-current="page">About</span></li>
+        </ol>
+      </div>
+    </nav>
+
+    <!-- Hero intro -->
+    <section class="py-16 sm:py-24 text-center" style="background:var(--color-neutral-50,#f9fafb);">
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-[var(--color-text)] mb-5">
+          About SiteName
+        </h1>
+        <p class="text-[var(--color-text-muted)] text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed">
+          We build AI-powered websites that rank, convert, and grow local businesses — backed by a decade of proven results and a team of certified experts.
+        </p>
+      </div>
+    </section>
+
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 flex flex-col gap-20">
+
+      <!-- Trust signals -->
+      <section aria-label="Trust signals">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-6">
+          {trustSignals.map((s) => (
+            <div class="flex flex-col items-center text-center gap-1 p-6 rounded-[var(--radius-md)]" style="background:white; box-shadow:var(--shadow-sm); border:1px solid #e4e4e7;">
+              <span class="text-3xl font-bold" style="color:var(--color-brand);">{s.value}</span>
+              <span class="text-sm text-[var(--color-text-muted)] font-medium">{s.label}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- Our Story -->
+      <section>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div>
+            <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--color-text)] mb-4">Our Story</h2>
+            <div class="flex flex-col gap-4 text-[var(--color-text-muted)] leading-relaxed">
+              <p>
+                SiteName was founded in 2015 with a single conviction: local businesses deserve websites that actually work. Back then, most agencies sold beautiful sites that sat invisible in search results. We built something different.
+              </p>
+              <p>
+                We combined deep technical SEO, AI-assisted content strategy, and conversion-focused design into a single, repeatable system — one that has since helped over 500 local businesses rank on page one and grow revenue.
+              </p>
+              <p>
+                Today our team includes certified SEO strategists, developers, and content specialists who are obsessed with one metric: your business growth.
+              </p>
+            </div>
+            <!-- Credentials / certifications -->
+            <div class="mt-6 flex flex-wrap gap-2">
+              {['Google Partner', 'Clutch Top Agency 2024', 'SEMrush Certified', 'ISO 9001 Compliant'].map((badge) => (
+                <span class="px-3 py-1 rounded-full text-xs font-semibold" style="background:#eff6ff; color:var(--color-brand); border:1px solid #bfdbfe;">
+                  {badge}
+                </span>
+              ))}
+            </div>
+          </div>
+          <!-- Placeholder image -->
+          <div class="rounded-[var(--radius-lg)] overflow-hidden aspect-video flex items-center justify-center" style="background:#f4f4f5; border:1px solid #e4e4e7;">
+            <div class="flex flex-col items-center gap-2 text-[var(--color-text-muted)]">
+              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#c4c4c8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+              <span class="text-xs">Team photo</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Our Team -->
+      <section>
+        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--color-text)] mb-8 text-center">Our Team</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
+          {team.map((member) => (
+            <div class="flex flex-col items-center text-center gap-4 p-6 rounded-[var(--radius-md)]" style="background:white; box-shadow:var(--shadow-sm); border:1px solid #e4e4e7;">
+              <!-- Grey avatar -->
+              <div class="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold text-white" style="background-color:var(--color-brand);">
+                {member.name.split(' ').map((n: string) => n[0]).join('')}
+              </div>
+              <div>
+                <p class="font-semibold text-[var(--color-text)]">{member.name}</p>
+                <p class="text-sm font-medium" style="color:var(--color-brand);">{member.title}</p>
+              </div>
+              <p class="text-sm text-[var(--color-text-muted)] leading-relaxed">{member.bio}</p>
+              <!-- Credentials -->
+              <div class="flex flex-wrap justify-center gap-1.5 mt-auto">
+                {member.credentials.map((c: string) => (
+                  <span class="px-2.5 py-0.5 rounded-full text-xs font-medium" style="background:#f4f4f5; color:var(--color-text-muted); border:1px solid #e4e4e7;">
+                    {c}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- Why Choose Us -->
+      <section>
+        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--color-text)] mb-8 text-center">Why Choose Us</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {whyUs.map((item) => (
+            <div class="flex items-start gap-4 p-6 rounded-[var(--radius-md)]" style="background:white; box-shadow:var(--shadow-sm); border:1px solid #e4e4e7;">
+              <div class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center" style="background:#eff6ff;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div>
+                <h3 class="text-sm font-semibold text-[var(--color-text)] mb-1">{item.title}</h3>
+                <p class="text-sm text-[var(--color-text-muted)] leading-relaxed">{item.body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+    </div>
+  </main>
+</BaseLayout>

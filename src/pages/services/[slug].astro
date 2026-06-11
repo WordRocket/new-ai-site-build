@@ -1,0 +1,204 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SchemaOrg from '../../components/SchemaOrg.astro';
+import {
+  getServiceSchema,
+  getFAQSchema,
+  getBreadcrumbSchema,
+  getOrganizationSchema,
+} from '../../lib/schema';
+
+export async function getStaticPaths() {
+  const services = await getCollection('services');
+  return services.map((service) => ({ params: { slug: service.slug }, props: { service } }));
+}
+
+const { service } = Astro.props;
+const { Content } = await service.render();
+const d = service.data;
+
+const siteUrl = import.meta.env.SITE ?? 'https://example.com';
+const pageUrl = `${siteUrl}/services/${service.slug}`;
+
+const serviceSchema = getServiceSchema({
+  name: d.title,
+  description: d.description,
+  providerName: 'SiteName',
+  areaServed: d.areaServed.join(', '),
+});
+
+const breadcrumbSchema = getBreadcrumbSchema([
+  { name: 'Home', url: siteUrl },
+  { name: 'Services', url: `${siteUrl}/services` },
+  { name: d.title, url: pageUrl },
+]);
+
+const orgSchema = getOrganizationSchema({
+  name: 'SiteName',
+  url: siteUrl,
+  logo: `${siteUrl}/favicon.svg`,
+  description: 'AI-Powered Websites That Actually Rank',
+});
+
+const hasFaq = d.faq && d.faq.length > 0;
+const faqSchema = hasFaq ? getFAQSchema(d.faq) : null;
+---
+
+<BaseLayout
+  title={`${d.title} | SiteName`}
+  description={d.description}
+  canonical={pageUrl}
+>
+  <SchemaOrg schema={serviceSchema} />
+  <SchemaOrg schema={breadcrumbSchema} />
+  <SchemaOrg schema={orgSchema} />
+  {faqSchema && <SchemaOrg schema={faqSchema} />}
+
+  <main>
+    <!-- Breadcrumb -->
+    <nav aria-label="Breadcrumb" class="border-b border-neutral-100" style="background:#fafafa;">
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-3">
+        <ol class="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
+          <li><a href="/" class="hover:text-[var(--color-brand)] transition-colors">Home</a></li>
+          <li aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </li>
+          <li><a href="/services" class="hover:text-[var(--color-brand)] transition-colors">Services</a></li>
+          <li aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </li>
+          <li><span class="text-[var(--color-text)] font-medium" aria-current="page">{d.title}</span></li>
+        </ol>
+      </div>
+    </nav>
+
+    <article class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+      <div class="max-w-[740px] mx-auto">
+
+        <!-- Featured image -->
+        {d.featuredImage && (
+          <div class="mb-8 rounded-[var(--radius-lg)] overflow-hidden aspect-video" style="box-shadow:var(--shadow-md);">
+            <img
+              src={d.featuredImage}
+              alt={d.featuredImageAlt ?? d.title}
+              class="w-full h-full object-cover"
+              loading="eager"
+              decoding="async"
+            />
+          </div>
+        )}
+
+        <!-- H1 -->
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[var(--color-text)] leading-[1.15] mb-6">
+          {d.title}
+        </h1>
+
+        <!-- Body -->
+        <div class="prose prose-neutral prose-lg max-w-none">
+          <Content />
+        </div>
+
+        <!-- Areas We Serve -->
+        {d.areaServed && d.areaServed.length > 0 && (
+          <section class="mt-12 pt-10 border-t border-neutral-100">
+            <h2 class="text-xl font-bold text-[var(--color-text)] mb-4">Areas We Serve</h2>
+            <div class="flex flex-wrap gap-2">
+              {d.areaServed.map((city: string) => {
+                const citySlug = city.toLowerCase().replace(/\s+/g, '-');
+                const locationSlug = `${service.slug}-in-${citySlug}`;
+                return (
+                  <a
+                    href={`/locations/${locationSlug}`}
+                    class="px-4 py-1.5 rounded-full text-sm font-medium border transition-colors hover:border-[var(--color-brand)] hover:text-[var(--color-brand)]"
+                    style="border-color:#e4e4e7; color:var(--color-text-muted);"
+                  >
+                    {city}
+                  </a>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        <!-- FAQ -->
+        {hasFaq && (
+          <section id="faq" class="mt-14 pt-10 border-t border-neutral-100">
+            <h2 class="text-2xl font-bold tracking-tight text-[var(--color-text)] mb-8">Frequently Asked Questions</h2>
+            <div class="flex flex-col divide-y divide-neutral-100" id="service-faq-list">
+              {d.faq.map((item: { question: string; answer: string }, i: number) => (
+                <div class="svc-faq-item py-5">
+                  <button
+                    type="button"
+                    class="svc-faq-trigger w-full flex items-center justify-between gap-4 text-left font-semibold text-[var(--color-text)] hover:text-[var(--color-brand)] transition-colors"
+                    aria-expanded="false"
+                    aria-controls={`svc-faq-answer-${i}`}
+                    id={`svc-faq-btn-${i}`}
+                  >
+                    <h3 class="text-base m-0">{item.question}</h3>
+                    <svg class="svc-faq-chevron flex-shrink-0 transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                  </button>
+                  <div
+                    id={`svc-faq-answer-${i}`}
+                    role="region"
+                    aria-labelledby={`svc-faq-btn-${i}`}
+                    class="svc-faq-answer overflow-hidden max-h-0 transition-[max-height] duration-300 ease-in-out"
+                  >
+                    <p class="pt-3 pb-1 text-sm leading-relaxed text-[var(--color-text-muted)]">{item.answer}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <!-- CTA -->
+        <div class="mt-14 p-8 rounded-[var(--radius-lg)] text-center" style="background:var(--color-neutral-50,#f9fafb); border:1px solid #e4e4e7;">
+          <h2 class="text-xl font-bold text-[var(--color-text)] mb-2">Ready to get started?</h2>
+          <p class="text-[var(--color-text-muted)] mb-5">Contact us today and let's talk about how we can help your business grow.</p>
+          <a
+            href="/contact"
+            class="inline-flex items-center gap-2 px-6 py-3 rounded-[var(--radius-md)] text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            style="background-color:var(--color-brand);"
+          >
+            Contact Us Today
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+          </a>
+        </div>
+
+      </div>
+    </article>
+  </main>
+</BaseLayout>
+
+<script>
+  const triggers = document.querySelectorAll<HTMLButtonElement>('.svc-faq-trigger');
+  triggers.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      const answerId = btn.getAttribute('aria-controls')!;
+      const answer = document.getElementById(answerId)!;
+      const chevron = btn.querySelector<SVGElement>('.svc-faq-chevron')!;
+
+      if (expanded) {
+        btn.setAttribute('aria-expanded', 'false');
+        answer.style.maxHeight = '0';
+        chevron.style.transform = '';
+      } else {
+        triggers.forEach((other) => {
+          if (other !== btn && other.getAttribute('aria-expanded') === 'true') {
+            other.setAttribute('aria-expanded', 'false');
+            const otherId = other.getAttribute('aria-controls')!;
+            const otherAnswer = document.getElementById(otherId)!;
+            const otherChevron = other.querySelector<SVGElement>('.svc-faq-chevron')!;
+            otherAnswer.style.maxHeight = '0';
+            otherChevron.style.transform = '';
+          }
+        });
+        btn.setAttribute('aria-expanded', 'true');
+        answer.style.maxHeight = answer.scrollHeight + 'px';
+        chevron.style.transform = 'rotate(180deg)';
+      }
+    });
+  });
+</script>

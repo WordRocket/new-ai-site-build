@@ -1,0 +1,252 @@
+---
+import { getCollection } from 'astro:content';
+import PostLayout from '../../layouts/PostLayout.astro';
+import SchemaOrg from '../../components/SchemaOrg.astro';
+import {
+  getBlogPostSchema,
+  getFAQSchema,
+  getBreadcrumbSchema,
+  getOrganizationSchema,
+} from '../../lib/schema';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((post) => ({ params: { slug: post.slug }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+const d = post.data;
+
+// Reading time: ~200 wpm average
+const wordCount = (post.body ?? '').split(/\s+/).filter(Boolean).length;
+const readingTime = Math.max(1, Math.round(wordCount / 200));
+
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+
+const siteUrl = import.meta.env.SITE ?? 'https://example.com';
+const postUrl = `${siteUrl}/blog/${post.slug}`;
+
+// Schema data
+const blogPostSchema = getBlogPostSchema({
+  title: d.title,
+  description: d.description,
+  author: d.author,
+  datePublished: d.datePublished,
+  dateModified: d.dateModified,
+  image: d.featuredImage ?? `${siteUrl}/favicon.svg`,
+  url: postUrl,
+});
+
+const breadcrumbSchema = getBreadcrumbSchema([
+  { name: 'Home', url: siteUrl },
+  { name: 'Blog', url: `${siteUrl}/blog` },
+  { name: d.title, url: postUrl },
+]);
+
+const orgSchema = getOrganizationSchema({
+  name: 'SiteName',
+  url: siteUrl,
+  logo: `${siteUrl}/favicon.svg`,
+  description: 'AI-Powered Websites That Actually Rank',
+});
+
+const hasFaq = d.faq && d.faq.length > 0;
+const faqSchema = hasFaq ? getFAQSchema(d.faq) : null;
+---
+
+<PostLayout
+  title={`${d.title} | Blog`}
+  description={d.description}
+  ogImage={d.ogImage ?? d.featuredImage}
+  canonical={d.canonical ?? postUrl}
+  noindex={d.noindex}
+  author={d.author}
+  authorBio={d.authorBio}
+  datePublished={d.datePublished}
+  dateModified={d.dateModified}
+  category={d.category}
+  tags={d.tags}
+  faq={d.faq}
+>
+  <!-- Schema injection -->
+  <SchemaOrg schema={blogPostSchema} />
+  <SchemaOrg schema={breadcrumbSchema} />
+  <SchemaOrg schema={orgSchema} />
+  {faqSchema && <SchemaOrg schema={faqSchema} />}
+
+  <main>
+    <!-- Breadcrumb -->
+    <nav aria-label="Breadcrumb" class="border-b border-neutral-100" style="background:#fafafa;">
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-3">
+        <ol class="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
+          <li><a href="/" class="hover:text-[var(--color-brand)] transition-colors">Home</a></li>
+          <li aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </li>
+          <li><a href="/blog" class="hover:text-[var(--color-brand)] transition-colors">Blog</a></li>
+          <li aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </li>
+          <li>
+            <span class="text-[var(--color-text)] font-medium truncate max-w-[200px] sm:max-w-none block" aria-current="page">{d.title}</span>
+          </li>
+        </ol>
+      </div>
+    </nav>
+
+    <article class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+      <div class="max-w-[740px] mx-auto">
+
+        <!-- Featured image -->
+        {d.featuredImage && (
+          <div class="mb-8 rounded-[var(--radius-lg)] overflow-hidden aspect-video" style="box-shadow:var(--shadow-md);">
+            <img
+              src={d.featuredImage}
+              alt={d.featuredImageAlt ?? d.title}
+              class="w-full h-full object-cover"
+              loading="eager"
+              decoding="async"
+            />
+          </div>
+        )}
+
+        <!-- Category badge + reading time -->
+        <div class="flex items-center gap-3 mb-4">
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold" style="background:#eff6ff; color:var(--color-brand);">
+            {d.category}
+          </span>
+          <span class="text-sm text-[var(--color-text-muted)]">{readingTime} min read</span>
+        </div>
+
+        <!-- H1 title -->
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[var(--color-text)] leading-[1.15] mb-6">
+          {d.title}
+        </h1>
+
+        <!-- Author block -->
+        <div class="flex items-start gap-4 p-5 rounded-[var(--radius-md)] mb-10" style="background:var(--color-neutral-50, #f9fafb); border:1px solid #e4e4e7;">
+          <div class="flex-shrink-0 w-11 h-11 rounded-full flex items-center justify-center text-white text-sm font-bold" style="background-color:var(--color-brand);">
+            {d.author.charAt(0).toUpperCase()}
+          </div>
+          <div class="flex flex-col gap-1 min-w-0">
+            <span class="text-sm font-semibold text-[var(--color-text)]">{d.author}</span>
+            {d.authorBio && <p class="text-sm text-[var(--color-text-muted)] leading-relaxed">{d.authorBio}</p>}
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-xs text-[var(--color-text-muted)]">
+              <span>
+                Published:
+                <time datetime={d.datePublished} class="font-medium text-[var(--color-text)]">{formatDate(d.datePublished)}</time>
+              </span>
+              <span>
+                Updated:
+                <time datetime={d.dateModified} class="font-medium text-[var(--color-text)]">{formatDate(d.dateModified)}</time>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Article body -->
+        <div class="prose prose-neutral prose-lg max-w-none">
+          <Content />
+        </div>
+
+        <!-- Tags -->
+        {d.tags && d.tags.length > 0 && (
+          <div class="flex flex-wrap items-center gap-2 mt-10 pt-8 border-t border-neutral-100">
+            <span class="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)] mr-1">Tags:</span>
+            {d.tags.map((tag) => (
+              <span class="px-3 py-1 rounded-full text-xs font-medium text-[var(--color-text-muted)]" style="background:#f4f4f5; border:1px solid #e4e4e7;">
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+
+        <!-- FAQ section -->
+        {hasFaq && (
+          <section id="faq" class="mt-14 pt-10 border-t border-neutral-100">
+            <h2 class="text-2xl font-bold tracking-tight text-[var(--color-text)] mb-8">Frequently Asked Questions</h2>
+            <div class="flex flex-col divide-y divide-neutral-100" id="post-faq-list">
+              {d.faq.map((item: { question: string; answer: string }, i: number) => (
+                <div class="post-faq-item py-5">
+                  <button
+                    type="button"
+                    class="post-faq-trigger w-full flex items-center justify-between gap-4 text-left font-semibold text-[var(--color-text)] hover:text-[var(--color-brand)] transition-colors"
+                    aria-expanded="false"
+                    aria-controls={`post-faq-answer-${i}`}
+                    id={`post-faq-btn-${i}`}
+                  >
+                    <h3 class="text-base m-0">{item.question}</h3>
+                    <svg class="post-faq-chevron flex-shrink-0 transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                  </button>
+                  <div
+                    id={`post-faq-answer-${i}`}
+                    role="region"
+                    aria-labelledby={`post-faq-btn-${i}`}
+                    class="post-faq-answer overflow-hidden max-h-0 transition-[max-height] duration-300 ease-in-out"
+                  >
+                    <p class="pt-3 pb-1 text-sm leading-relaxed text-[var(--color-text-muted)]">{item.answer}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <!-- Author bio card -->
+        <div class="mt-14 p-6 rounded-[var(--radius-lg)] flex items-start gap-5" style="background:var(--color-neutral-50, #f9fafb); border:1px solid #e4e4e7;">
+          <div class="flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center text-white text-xl font-bold" style="background-color:var(--color-brand);">
+            {d.author.charAt(0).toUpperCase()}
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Written by</span>
+            <span class="text-base font-semibold text-[var(--color-text)]">{d.author}</span>
+            {d.authorBio
+              ? <p class="text-sm text-[var(--color-text-muted)] leading-relaxed mt-1">{d.authorBio}</p>
+              : <p class="text-sm text-[var(--color-text-muted)] leading-relaxed mt-1">Contributing writer at SiteName.</p>
+            }
+          </div>
+        </div>
+
+      </div>
+    </article>
+  </main>
+</PostLayout>
+
+<script>
+  const triggers = document.querySelectorAll<HTMLButtonElement>('.post-faq-trigger');
+  triggers.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      const answerId = btn.getAttribute('aria-controls')!;
+      const answer = document.getElementById(answerId)!;
+      const chevron = btn.querySelector<SVGElement>('.post-faq-chevron')!;
+
+      if (expanded) {
+        btn.setAttribute('aria-expanded', 'false');
+        answer.style.maxHeight = '0';
+        chevron.style.transform = '';
+      } else {
+        triggers.forEach((other) => {
+          if (other !== btn && other.getAttribute('aria-expanded') === 'true') {
+            other.setAttribute('aria-expanded', 'false');
+            const otherId = other.getAttribute('aria-controls')!;
+            const otherAnswer = document.getElementById(otherId)!;
+            const otherChevron = other.querySelector<SVGElement>('.post-faq-chevron')!;
+            otherAnswer.style.maxHeight = '0';
+            otherChevron.style.transform = '';
+          }
+        });
+        btn.setAttribute('aria-expanded', 'true');
+        answer.style.maxHeight = answer.scrollHeight + 'px';
+        chevron.style.transform = 'rotate(180deg)';
+      }
+    });
+  });
+</script>

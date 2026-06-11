@@ -1,0 +1,41 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+interface Props {
+  title: string;
+  description?: string;
+  ogImage?: string;
+  canonical?: string;
+  noindex?: boolean;
+  author?: string;
+  authorBio?: string;
+  datePublished?: string;
+  dateModified?: string;
+  category?: string;
+  tags?: string[];
+  faq?: FaqItem[];
+}
+
+const {
+  title,
+  description,
+  ogImage,
+  canonical,
+  noindex,
+} = Astro.props;
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  ogImage={ogImage}
+  canonical={canonical}
+  noindex={noindex}
+>
+  <slot />
+</BaseLayout>

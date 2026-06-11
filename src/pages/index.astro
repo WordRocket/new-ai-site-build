@@ -1,0 +1,371 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const services = [
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>`,
+    title: 'GEO-Optimized Content',
+    description: 'Every page is built to rank in both traditional search and AI-powered answer engines like ChatGPT and Perplexity.',
+  },
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>`,
+    title: '100 PageSpeed Score',
+    description: 'Pure static HTML output with zero render-blocking resources. Blazing fast on every device, every time.',
+  },
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"/><path d="M7 7h.01"/></svg>`,
+    title: 'Auto Schema Injection',
+    description: 'LocalBusiness, FAQPage, BreadcrumbList and more — structured data injected automatically on every page.',
+  },
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18M9 21V9"/></svg>`,
+    title: 'Location Pages at Scale',
+    description: 'Automatically generate city and service-area pages that rank locally without duplicating content.',
+  },
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>`,
+    title: 'AI Content Generator',
+    description: 'Generate SEO-ready service descriptions, blog posts, and FAQs — all tailored to your brand and location.',
+  },
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+    title: 'No Vendor Lock-in',
+    description: 'Your site is plain HTML/CSS. Export it, host it anywhere, and own it forever. No platform dependencies.',
+  },
+];
+
+const steps = [
+  {
+    number: '01',
+    title: 'Tell us about your business',
+    description: 'Enter your business name, services, and service areas. Our AI learns your voice and brand in seconds.',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
+  },
+  {
+    number: '02',
+    title: 'AI builds your GEO-ready site',
+    description: 'We generate every page, schema, and location layer automatically — optimized for Google and AI search.',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>`,
+  },
+  {
+    number: '03',
+    title: 'Publish and start ranking',
+    description: 'Deploy to any host with one click. Your site goes live fully optimized and indexed from day one.',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,
+  },
+];
+
+const features = [
+  { title: 'Pure Static HTML', description: 'Zero JavaScript overhead. Your pages load instantly on any connection.' },
+  { title: 'Auto GEO Layer', description: 'City and service-area pages generated and cross-linked automatically.' },
+  { title: 'Schema Auto-Injected', description: 'LocalBusiness, FAQ, Breadcrumb — added to every page without config.' },
+  { title: 'AI Content Generator', description: 'On-brand copy written by AI, reviewed by you, published in minutes.' },
+  { title: '100 PageSpeed Score', description: 'Consistently perfect Core Web Vitals out of the box, every build.' },
+  { title: 'No Vendor Lock-in', description: 'Plain HTML files. Host anywhere. Move any time. You own your site.' },
+];
+
+const faqs = [
+  {
+    question: 'What is GEO and why does it matter for my business?',
+    answer: 'Generative Engine Optimization (GEO) is the practice of structuring your content so AI-powered search engines like ChatGPT, Perplexity, and Google AI Overviews cite your business. As more searches happen through AI assistants, GEO is becoming as important as traditional SEO.',
+  },
+  {
+    question: 'How long does it take to launch a site?',
+    answer: 'Most sites go live within minutes. After you enter your business details, our AI generates all pages, schema markup, and location content automatically. You review, tweak if needed, and publish — usually in under 30 minutes.',
+  },
+  {
+    question: 'Do I need to know how to code?',
+    answer: 'Not at all. The entire process is no-code. You fill in a simple form about your business, and we handle everything from content generation to technical SEO. If you want to customize the HTML/CSS, you can — but you never have to.',
+  },
+  {
+    question: 'Can I add my own content after launch?',
+    answer: 'Yes. You can write or edit any page directly, add blog posts through our content editor, or use the AI generator to draft new pages. Your site is yours to update whenever you like.',
+  },
+  {
+    question: 'Where is my site hosted?',
+    answer: 'We deploy to a global CDN by default for maximum speed, but because your site is pure static HTML you can also export it and host it on any platform — Netlify, Vercel, Cloudflare Pages, or your own server. No lock-in.',
+  },
+];
+
+const trustItems = [
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+    stat: '500+ Sites Built',
+  },
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>`,
+    stat: '98 Avg GEO Score',
+  },
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>`,
+    stat: 'Pure Static HTML',
+  },
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>`,
+    stat: 'Live in Minutes',
+  },
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+    stat: 'AI-Ready by Default',
+  },
+];
+---
+
+<BaseLayout
+  title="AI-Powered Websites That Actually Rank | SiteName"
+  description="Built for local businesses. Optimized for Google and AI search from day one. Launch your GEO-ready site in minutes."
+>
+  <body class="homepage">
+
+  <!-- ─── HERO ─────────────────────────────────────────────────────────── -->
+  <section class="hero-section relative overflow-hidden bg-white">
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 text-center relative z-10">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold mb-6 tracking-wide uppercase" style="background:#eff6ff; color:var(--color-brand);">
+        Now with AI Search Optimization
+      </div>
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1] text-[var(--color-text)] mb-6">
+        AI-Powered Websites<br class="hidden sm:block" />
+        <span style="color:var(--color-brand);">That Actually Rank</span>
+      </h1>
+      <p class="text-lg sm:text-xl text-[var(--color-text-muted)] max-w-2xl mx-auto mb-10 leading-relaxed">
+        Built for local businesses. Optimized for Google and AI search from day one.
+      </p>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a
+          href="/contact"
+          class="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 rounded-lg text-base font-semibold text-white transition-opacity hover:opacity-90"
+          style="background-color:var(--color-brand);"
+        >
+          Get Started Free
+        </a>
+        <a
+          href="#how-it-works"
+          class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-lg text-base font-semibold text-[var(--color-text)] border border-neutral-200 bg-white hover:bg-neutral-50 transition-colors"
+        >
+          See How It Works
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── TRUST BAR ─────────────────────────────────────────────────────── -->
+  <section style="background:#f4f4f5; border-top:1px solid #e4e4e7; border-bottom:1px solid #e4e4e7;">
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-5">
+      <ul class="flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
+        {trustItems.map(({ icon, stat }) => (
+          <li class="flex items-center gap-2 text-sm font-medium text-[var(--color-text-muted)]">
+            <span class="text-[var(--color-brand)]" aria-hidden="true">
+              <Fragment set:html={icon} />
+            </span>
+            {stat}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- ─── SERVICES GRID ─────────────────────────────────────────────────── -->
+  <section class="py-20 sm:py-[80px] bg-[var(--color-neutral-50)]">
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-14">
+        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--color-text)] mb-4">
+          Everything Your Business Needs to Rank
+        </h2>
+        <p class="text-[var(--color-text-muted)] text-lg max-w-2xl mx-auto">
+          A complete system — not just a website builder.
+        </p>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {services.map(({ icon, title, description }) => (
+          <div
+            class="bg-white p-7 rounded-[var(--radius-md)] transition-shadow duration-200 hover:shadow-[var(--shadow-md)] flex flex-col gap-4"
+            style="box-shadow:var(--shadow-sm);"
+          >
+            <span class="inline-flex items-center justify-center w-11 h-11 rounded-lg text-[var(--color-brand)]" style="background:#eff6ff;">
+              <Fragment set:html={icon} />
+            </span>
+            <h3 class="text-base font-semibold text-[var(--color-text)]">{title}</h3>
+            <p class="text-sm leading-relaxed text-[var(--color-text-muted)]">{description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── HOW IT WORKS ──────────────────────────────────────────────────── -->
+  <section id="how-it-works" class="py-20 sm:py-[80px] bg-white">
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-14">
+        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--color-text)] mb-4">
+          From Setup to Ranked in Minutes
+        </h2>
+        <p class="text-[var(--color-text-muted)] text-lg max-w-2xl mx-auto">
+          Three steps. No tech skills required.
+        </p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+        <!-- connector line desktop only -->
+        <div class="hidden md:block absolute top-10 left-[calc(16.67%+1.5rem)] right-[calc(16.67%+1.5rem)] h-px" style="background: linear-gradient(90deg, transparent, #e4e4e7 20%, #e4e4e7 80%, transparent);"></div>
+        {steps.map(({ number, title, description, icon }) => (
+          <div class="flex flex-col items-center text-center gap-4 relative">
+            <div class="relative z-10 flex items-center justify-center w-20 h-20 rounded-full bg-white border-2 border-[var(--color-brand)] text-[var(--color-brand)]" style="box-shadow:var(--shadow-sm);">
+              <Fragment set:html={icon} />
+            </div>
+            <span class="text-xs font-bold tracking-widest uppercase text-[var(--color-brand)] opacity-60">{number}</span>
+            <h3 class="text-lg font-semibold text-[var(--color-text)]">{title}</h3>
+            <p class="text-sm leading-relaxed text-[var(--color-text-muted)] max-w-xs">{description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FEATURES HIGHLIGHT ───────────────────────────────────────────── -->
+  <section class="py-20 sm:py-[80px] bg-[var(--color-neutral-50)]">
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-14">
+        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--color-text)] mb-4">
+          Built Different
+        </h2>
+        <p class="text-[var(--color-text-muted)] text-lg max-w-2xl mx-auto">
+          Every technical decision was made to maximize your rankings.
+        </p>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <!-- Feature list -->
+        <ul class="flex flex-col gap-5">
+          {features.map(({ title, description }) => (
+            <li class="flex items-start gap-4">
+              <span class="mt-0.5 flex-shrink-0 inline-flex items-center justify-center w-6 h-6 rounded-full text-white text-xs" style="background-color:var(--color-brand);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              <div>
+                <span class="text-sm font-semibold text-[var(--color-text)]">{title}</span>
+                <span class="text-sm text-[var(--color-text-muted)]"> — {description}</span>
+              </div>
+            </li>
+          ))}
+        </ul>
+        <!-- Mockup placeholder -->
+        <div class="rounded-[var(--radius-lg)] overflow-hidden" style="box-shadow:var(--shadow-md);">
+          <div class="flex items-center gap-1.5 px-4 py-3 border-b border-neutral-100" style="background:#f9fafb;">
+            <span class="w-3 h-3 rounded-full bg-red-300"></span>
+            <span class="w-3 h-3 rounded-full bg-yellow-300"></span>
+            <span class="w-3 h-3 rounded-full bg-green-300"></span>
+            <span class="flex-1 mx-4 h-5 rounded-full bg-neutral-200 text-center text-[10px] leading-5 text-neutral-400 font-mono overflow-hidden">sitename.com</span>
+          </div>
+          <div class="bg-neutral-100 flex flex-col items-center justify-center gap-3 aspect-[4/3]">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#c4c4c8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            <span class="text-sm font-medium text-neutral-400">Site Preview</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FAQ ──────────────────────────────────────────────────────────── -->
+  <section id="faq" class="py-20 sm:py-[80px] bg-white">
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-14">
+        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--color-text)] mb-4">
+          Frequently Asked Questions
+        </h2>
+        <p class="text-[var(--color-text-muted)] text-lg max-w-2xl mx-auto">
+          Everything you need to know before getting started.
+        </p>
+      </div>
+      <div class="max-w-3xl mx-auto flex flex-col divide-y divide-neutral-100" id="faq-list">
+        {faqs.map(({ question, answer }, i) => (
+          <div class="faq-item py-5">
+            <button
+              type="button"
+              class="faq-trigger w-full flex items-center justify-between gap-4 text-left text-base font-semibold text-[var(--color-text)] hover:text-[var(--color-brand)] transition-colors"
+              aria-expanded="false"
+              aria-controls={`faq-answer-${i}`}
+              id={`faq-btn-${i}`}
+            >
+              <span>{question}</span>
+              <svg class="faq-chevron flex-shrink-0 transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div
+              id={`faq-answer-${i}`}
+              role="region"
+              aria-labelledby={`faq-btn-${i}`}
+              class="faq-answer overflow-hidden max-h-0 transition-[max-height] duration-300 ease-in-out"
+            >
+              <p class="pt-3 pb-1 text-sm leading-relaxed text-[var(--color-text-muted)]">{answer}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── CTA BANNER ───────────────────────────────────────────────────── -->
+  <section style="background-color:var(--color-brand);" class="py-20 sm:py-[80px]">
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-4">
+        Ready to Rank Where It Matters?
+      </h2>
+      <p class="text-blue-100 text-lg max-w-xl mx-auto mb-10">
+        Join hundreds of local businesses already winning in AI search. Launch your site today — no credit card required.
+      </p>
+      <a
+        href="/contact"
+        class="inline-flex items-center justify-center px-8 py-4 rounded-lg text-base font-semibold text-[var(--color-brand)] bg-white transition-opacity hover:opacity-90"
+      >
+        Get Started Free
+      </a>
+    </div>
+  </section>
+
+  </body>
+</BaseLayout>
+
+<style>
+  .hero-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    pointer-events: none;
+  }
+</style>
+
+<script>
+  const triggers = document.querySelectorAll<HTMLButtonElement>('.faq-trigger');
+
+  triggers.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      const answerId = btn.getAttribute('aria-controls')!;
+      const answer = document.getElementById(answerId)!;
+      const chevron = btn.querySelector<SVGElement>('.faq-chevron')!;
+
+      if (expanded) {
+        btn.setAttribute('aria-expanded', 'false');
+        answer.style.maxHeight = '0';
+        chevron.style.transform = '';
+      } else {
+        // Close any open item first
+        triggers.forEach((other) => {
+          if (other !== btn && other.getAttribute('aria-expanded') === 'true') {
+            other.setAttribute('aria-expanded', 'false');
+            const otherId = other.getAttribute('aria-controls')!;
+            const otherAnswer = document.getElementById(otherId)!;
+            const otherChevron = other.querySelector<SVGElement>('.faq-chevron')!;
+            otherAnswer.style.maxHeight = '0';
+            otherChevron.style.transform = '';
+          }
+        });
+
+        btn.setAttribute('aria-expanded', 'true');
+        answer.style.maxHeight = answer.scrollHeight + 'px';
+        chevron.style.transform = 'rotate(180deg)';
+      }
+    });
+  });
+</script>

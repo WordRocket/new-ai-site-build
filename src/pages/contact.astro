@@ -1,0 +1,242 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SchemaOrg from '../components/SchemaOrg.astro';
+import { getBreadcrumbSchema } from '../lib/schema';
+
+const siteUrl = import.meta.env.SITE ?? 'https://example.com';
+const pageUrl = `${siteUrl}/contact`;
+
+const contactPageSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ContactPage',
+  name: 'Contact SiteName',
+  url: pageUrl,
+  description: 'Get in touch with SiteName. We respond to all inquiries within one business day.',
+  mainEntity: {
+    '@type': 'Organization',
+    name: 'SiteName',
+    url: siteUrl,
+    telephone: '+1-555-000-0000',
+    email: 'hello@example.com',
+    sameAs: [
+      'https://www.linkedin.com/company/sitename',
+      'https://twitter.com/sitename',
+      'https://www.facebook.com/sitename',
+    ],
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: '123 Main Street, Suite 100',
+      addressLocality: 'Your City',
+      addressRegion: 'CA',
+      postalCode: '90001',
+      addressCountry: 'US',
+    },
+  },
+};
+
+const breadcrumbSchema = getBreadcrumbSchema([
+  { name: 'Home', url: siteUrl },
+  { name: 'Contact', url: pageUrl },
+]);
+
+const openingHours = [
+  { days: 'Monday – Friday', hours: '9:00 AM – 6:00 PM PST' },
+  { days: 'Saturday', hours: '10:00 AM – 2:00 PM PST' },
+  { days: 'Sunday', hours: 'Closed' },
+];
+---
+
+<BaseLayout
+  title="Contact Us | SiteName"
+  description="Get in touch with SiteName. We're ready to help your business rank higher and grow faster."
+  canonical={pageUrl}
+>
+  <SchemaOrg schema={contactPageSchema} />
+  <SchemaOrg schema={breadcrumbSchema} />
+
+  <main>
+    <!-- Breadcrumb -->
+    <nav aria-label="Breadcrumb" class="border-b border-neutral-100" style="background:#fafafa;">
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-3">
+        <ol class="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
+          <li><a href="/" class="hover:text-[var(--color-brand)] transition-colors">Home</a></li>
+          <li aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </li>
+          <li><span class="text-[var(--color-text)] font-medium" aria-current="page">Contact</span></li>
+        </ol>
+      </div>
+    </nav>
+
+    <!-- Header -->
+    <section class="py-14 sm:py-20 text-center" style="background:var(--color-neutral-50,#f9fafb);">
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-[var(--color-text)] mb-4">Get In Touch</h1>
+        <p class="text-[var(--color-text-muted)] text-lg max-w-xl mx-auto">
+          We respond to all inquiries within one business day. Tell us about your project and let's talk.
+        </p>
+      </div>
+    </section>
+
+    <!-- Two-column layout -->
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+      <div class="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-12">
+
+        <!-- Left: Contact form -->
+        <div>
+          <h2 class="text-xl font-bold text-[var(--color-text)] mb-6">Send Us a Message</h2>
+          <form
+            action="#"
+            method="POST"
+            class="flex flex-col gap-5"
+            novalidate
+          >
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div class="flex flex-col gap-1.5">
+                <label for="name" class="text-sm font-medium text-[var(--color-text)]">
+                  Full Name <span class="text-red-500" aria-hidden="true">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  required
+                  autocomplete="name"
+                  placeholder="Jane Smith"
+                  class="w-full px-4 py-2.5 rounded-[var(--radius-md)] text-sm text-[var(--color-text)] transition-colors outline-none focus:ring-2"
+                  style="border:1px solid #e4e4e7; background:white; focus-ring-color:var(--color-brand);"
+                />
+              </div>
+              <div class="flex flex-col gap-1.5">
+                <label for="email" class="text-sm font-medium text-[var(--color-text)]">
+                  Email Address <span class="text-red-500" aria-hidden="true">*</span>
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  required
+                  autocomplete="email"
+                  placeholder="jane@example.com"
+                  class="w-full px-4 py-2.5 rounded-[var(--radius-md)] text-sm text-[var(--color-text)] transition-colors outline-none focus:ring-2"
+                  style="border:1px solid #e4e4e7; background:white;"
+                />
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+              <label for="phone" class="text-sm font-medium text-[var(--color-text)]">Phone Number</label>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                autocomplete="tel"
+                placeholder="+1 (555) 000-0000"
+                class="w-full px-4 py-2.5 rounded-[var(--radius-md)] text-sm text-[var(--color-text)] transition-colors outline-none focus:ring-2"
+                style="border:1px solid #e4e4e7; background:white;"
+              />
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+              <label for="service" class="text-sm font-medium text-[var(--color-text)]">
+                Service Interested In <span class="text-red-500" aria-hidden="true">*</span>
+              </label>
+              <select
+                id="service"
+                name="service"
+                required
+                class="w-full px-4 py-2.5 rounded-[var(--radius-md)] text-sm text-[var(--color-text)] transition-colors outline-none focus:ring-2"
+                style="border:1px solid #e4e4e7; background:white; appearance:none; background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E\"); background-repeat:no-repeat; background-position:right 12px center; padding-right:40px;"
+              >
+                <option value="" disabled selected>Select a service…</option>
+                <option value="local-seo">Local SEO</option>
+                <option value="geo-optimisation">GEO Optimisation</option>
+                <option value="website-design">Website Design</option>
+                <option value="content-strategy">Content Strategy</option>
+                <option value="technical-seo">Technical SEO</option>
+                <option value="other">Other / Not Sure</option>
+              </select>
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+              <label for="message" class="text-sm font-medium text-[var(--color-text)]">
+                Message <span class="text-red-500" aria-hidden="true">*</span>
+              </label>
+              <textarea
+                id="message"
+                name="message"
+                required
+                rows="5"
+                placeholder="Tell us about your business and what you're looking to achieve…"
+                class="w-full px-4 py-2.5 rounded-[var(--radius-md)] text-sm text-[var(--color-text)] transition-colors outline-none focus:ring-2 resize-y"
+                style="border:1px solid #e4e4e7; background:white;"
+              ></textarea>
+            </div>
+
+            <button
+              type="submit"
+              class="self-start px-8 py-3 rounded-[var(--radius-md)] text-sm font-semibold text-white transition-opacity hover:opacity-90"
+              style="background-color:var(--color-brand);"
+            >
+              Send Message
+            </button>
+          </form>
+        </div>
+
+        <!-- Right: Business info -->
+        <aside class="flex flex-col gap-6">
+          <div class="p-6 rounded-[var(--radius-lg)] flex flex-col gap-5" style="background:var(--color-neutral-50,#f9fafb); border:1px solid #e4e4e7;">
+            <h2 class="text-lg font-bold text-[var(--color-text)]">Contact Information</h2>
+
+            <address class="not-italic flex flex-col gap-4 text-sm text-[var(--color-text-muted)]">
+              <!-- Address -->
+              <div class="flex items-start gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 flex-shrink-0" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                <div>
+                  <p class="font-medium text-[var(--color-text)]">Office Address</p>
+                  <p>123 Main Street, Suite 100</p>
+                  <p>Your City, CA 90001</p>
+                </div>
+              </div>
+              <!-- Phone -->
+              <div class="flex items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.5 12.72 19.79 19.79 0 0 1 1.08 4.1 2 2 0 0 1 3.05 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                <a href="tel:+15550000000" class="hover:text-[var(--color-brand)] transition-colors">+1 (555) 000-0000</a>
+              </div>
+              <!-- Email -->
+              <div class="flex items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                <a href="mailto:hello@example.com" class="hover:text-[var(--color-brand)] transition-colors">hello@example.com</a>
+              </div>
+            </address>
+
+            <!-- Opening hours -->
+            <div class="pt-4 border-t border-neutral-200">
+              <p class="text-sm font-semibold text-[var(--color-text)] mb-3">Opening Hours</p>
+              <ul class="flex flex-col gap-2">
+                {openingHours.map((row) => (
+                  <li class="flex justify-between text-sm">
+                    <span class="text-[var(--color-text-muted)]">{row.days}</span>
+                    <span class="font-medium text-[var(--color-text)]">{row.hours}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <!-- Map placeholder -->
+          <div
+            class="rounded-[var(--radius-lg)] overflow-hidden flex items-center justify-center gap-2 text-[var(--color-text-muted)]"
+            style="background:#f4f4f5; border:1px solid #e4e4e7; height:200px;"
+            aria-label="Map placeholder"
+            role="img"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
+            <span class="text-sm">Map</span>
+          </div>
+        </aside>
+
+      </div>
+    </div>
+  </main>
+</BaseLayout>

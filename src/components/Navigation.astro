@@ -1,0 +1,158 @@
+---
+const pathname = Astro.url.pathname;
+
+const navLinks = [
+  { label: 'Home', href: '/' },
+  { label: 'Services', href: '/services' },
+  { label: 'Blog', href: '/blog' },
+  { label: 'About', href: '/about' },
+  { label: 'Contact', href: '/contact' },
+];
+
+function isActive(href: string) {
+  if (href === '/') return pathname === '/';
+  return pathname.startsWith(href);
+}
+---
+
+<header
+  id="site-nav"
+  class="fixed top-0 left-0 right-0 z-50 h-16 transition-all duration-300"
+  style="background: transparent;"
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
+
+    <!-- Logo -->
+    <a href="/" class="text-xl font-bold tracking-tight text-[var(--color-text)] hover:opacity-80 transition-opacity">
+      SiteName
+    </a>
+
+    <!-- Desktop nav -->
+    <nav class="hidden md:flex items-center gap-1" aria-label="Main navigation">
+      {navLinks.map(({ label, href }) => (
+        <a
+          href={href}
+          class={[
+            'px-3 py-1.5 rounded-md text-sm font-medium transition-colors',
+            isActive(href)
+              ? 'text-[var(--color-brand)] font-semibold'
+              : 'text-[var(--color-text)] hover:text-[var(--color-brand)] hover:bg-black/5',
+          ].join(' ')}
+          aria-current={isActive(href) ? 'page' : undefined}
+        >
+          {label}
+        </a>
+      ))}
+    </nav>
+
+    <!-- CTA + hamburger -->
+    <div class="flex items-center gap-3">
+      <a
+        href="/contact"
+        class="hidden md:inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold text-white transition-opacity hover:opacity-90"
+        style="background-color: var(--color-brand);"
+      >
+        Get in Touch
+      </a>
+
+      <!-- Hamburger -->
+      <button
+        id="nav-toggle"
+        class="md:hidden flex flex-col justify-center items-center w-9 h-9 gap-1.5 rounded-md hover:bg-black/5 transition-colors"
+        aria-label="Toggle menu"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+      >
+        <span class="block w-5 h-0.5 bg-current transition-transform duration-200" id="ham-top"></span>
+        <span class="block w-5 h-0.5 bg-current transition-opacity duration-200" id="ham-mid"></span>
+        <span class="block w-5 h-0.5 bg-current transition-transform duration-200" id="ham-bot"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div
+    id="mobile-menu"
+    class="md:hidden hidden bg-white border-t border-neutral-200 shadow-md"
+    aria-hidden="true"
+  >
+    <nav class="max-w-7xl mx-auto px-4 py-3 flex flex-col gap-1" aria-label="Mobile navigation">
+      {navLinks.map(({ label, href }) => (
+        <a
+          href={href}
+          class={[
+            'px-3 py-2 rounded-md text-sm font-medium transition-colors',
+            isActive(href)
+              ? 'text-[var(--color-brand)] font-semibold bg-blue-50'
+              : 'text-[var(--color-text)] hover:text-[var(--color-brand)] hover:bg-neutral-100',
+          ].join(' ')}
+          aria-current={isActive(href) ? 'page' : undefined}
+        >
+          {label}
+        </a>
+      ))}
+      <a
+        href="/contact"
+        class="mt-2 px-4 py-2 rounded-md text-sm font-semibold text-white text-center transition-opacity hover:opacity-90"
+        style="background-color: var(--color-brand);"
+      >
+        Get in Touch
+      </a>
+    </nav>
+  </div>
+</header>
+
+<!-- Spacer so page content isn't hidden under fixed nav -->
+<div class="h-16"></div>
+
+<script>
+  const nav = document.getElementById('site-nav')!;
+  const toggle = document.getElementById('nav-toggle')!;
+  const menu = document.getElementById('mobile-menu')!;
+  const hamTop = document.getElementById('ham-top')!;
+  const hamMid = document.getElementById('ham-mid')!;
+  const hamBot = document.getElementById('ham-bot')!;
+
+  // Solid-on-scroll: apply when not on homepage OR when scrolled
+  const isHomepage = document.body.classList.contains('homepage');
+
+  function applyNavStyle() {
+    const scrolled = window.scrollY > 10;
+    if (!isHomepage || scrolled) {
+      nav.style.background = 'white';
+      nav.style.borderBottom = '1px solid #e4e4e7';
+    } else {
+      nav.style.background = 'transparent';
+      nav.style.borderBottom = 'none';
+    }
+  }
+
+  applyNavStyle();
+  window.addEventListener('scroll', applyNavStyle, { passive: true });
+
+  // Hamburger toggle
+  function openMenu(open: boolean) {
+    toggle.setAttribute('aria-expanded', String(open));
+    menu.setAttribute('aria-hidden', String(!open));
+    menu.classList.toggle('hidden', !open);
+    // Animate bars
+    hamTop.style.transform = open ? 'translateY(8px) rotate(45deg)' : '';
+    hamMid.style.opacity = open ? '0' : '1';
+    hamBot.style.transform = open ? 'translateY(-8px) rotate(-45deg)' : '';
+  }
+
+  toggle.addEventListener('click', () => {
+    const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+    openMenu(!isOpen);
+  });
+
+  // Close on outside click
+  document.addEventListener('click', (e) => {
+    if (!nav.contains(e.target as Node)) openMenu(false);
+  });
+
+  // Close on escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') openMenu(false);
+  });
+</script>
