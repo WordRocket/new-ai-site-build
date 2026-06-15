@@ -2,8 +2,9 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SchemaOrg from '../components/SchemaOrg.astro';
 import { getFAQSchema, getBreadcrumbSchema } from '../lib/schema';
+import siteConfig from '../lib/site-config';
 
-const siteUrl = import.meta.env.SITE ?? 'https://example.com';
+const siteUrl = import.meta.env.SITE ?? siteConfig.url;
 const pageUrl = `${siteUrl}/faq`;
 
 const categories = [
@@ -12,8 +13,8 @@ const categories = [
     label: 'Our Services',
     items: [
       {
-        question: 'What services does SiteName offer?',
-        answer: 'We offer local SEO, GEO (Generative Engine Optimisation), AI-powered website design, technical SEO audits, and content strategy — all designed to help local businesses rank higher and convert more visitors.',
+        question: `What services does ${siteConfig.name} offer?`,
+        answer: `We offer local SEO, GEO (Generative Engine Optimisation), AI-powered website design, technical SEO audits, and content strategy — all designed to help local businesses rank higher and convert more visitors.`,
       },
       {
         question: 'What is GEO optimisation and how is it different from SEO?',
@@ -70,7 +71,7 @@ const breadcrumbSchema = getBreadcrumbSchema([
 ---
 
 <BaseLayout
-  title="Frequently Asked Questions | SiteName"
+  title={`Frequently Asked Questions | ${siteConfig.name}`}
   description="Find answers to common questions about our SEO services, GEO optimisation, timelines, contracts, and how we work."
   canonical={pageUrl}
 >

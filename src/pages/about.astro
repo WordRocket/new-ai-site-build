@@ -2,29 +2,30 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SchemaOrg from '../components/SchemaOrg.astro';
 import { getOrganizationSchema, getBreadcrumbSchema } from '../lib/schema';
+import siteConfig from '../lib/site-config';
 
-const siteUrl = import.meta.env.SITE ?? 'https://example.com';
+const siteUrl = import.meta.env.SITE ?? siteConfig.url;
 const pageUrl = `${siteUrl}/about`;
 
 const orgSchema = getOrganizationSchema({
-  name: 'SiteName',
+  name: siteConfig.name,
   url: siteUrl,
-  logo: `${siteUrl}/favicon.svg`,
-  description: 'AI-Powered Websites That Actually Rank — helping local businesses dominate search since 2015.',
-  telephone: '+1-555-000-0000',
-  email: 'hello@example.com',
+  logo: siteConfig.logo || `${siteUrl}/favicon.svg`,
+  description: siteConfig.description,
+  telephone: siteConfig.phone,
+  email: siteConfig.email,
   address: {
-    streetAddress: '123 Main Street, Suite 100',
-    addressLocality: 'Your City',
-    addressRegion: 'CA',
-    postalCode: '90001',
-    addressCountry: 'US',
+    streetAddress: siteConfig.address,
+    addressLocality: siteConfig.city,
+    addressRegion: siteConfig.state,
+    postalCode: siteConfig.zip,
+    addressCountry: siteConfig.country,
   },
   sameAs: [
-    'https://www.linkedin.com/company/sitename',
-    'https://twitter.com/sitename',
-    'https://www.facebook.com/sitename',
-  ],
+    siteConfig.linkedinUrl,
+    siteConfig.facebookUrl,
+    siteConfig.twitterUrl,
+  ].filter(Boolean) as string[],
 });
 
 const breadcrumbSchema = getBreadcrumbSchema([
@@ -81,8 +82,8 @@ const whyUs = [
 ---
 
 <BaseLayout
-  title="About Us | SiteName"
-  description="Learn about SiteName — our story, our certified team, and why hundreds of local businesses trust us to grow their online presence."
+  title={`About Us | ${siteConfig.name}`}
+  description={`Learn about ${siteConfig.name} — our story, our team, and why local businesses trust us to grow their online presence.`}
   canonical={pageUrl}
 >
   <SchemaOrg schema={orgSchema} />
@@ -106,7 +107,7 @@ const whyUs = [
     <section class="py-16 sm:py-24 text-center" style="background:var(--color-neutral-50,#f9fafb);">
       <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-[var(--color-text)] mb-5">
-          About SiteName
+          About {siteConfig.name}
         </h1>
         <p class="text-[var(--color-text-muted)] text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed">
           We build AI-powered websites that rank, convert, and grow local businesses — backed by a decade of proven results and a team of certified experts.
@@ -135,10 +136,10 @@ const whyUs = [
             <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--color-text)] mb-4">Our Story</h2>
             <div class="flex flex-col gap-4 text-[var(--color-text-muted)] leading-relaxed">
               <p>
-                SiteName was founded in 2015 with a single conviction: local businesses deserve websites that actually work. Back then, most agencies sold beautiful sites that sat invisible in search results. We built something different.
+                {siteConfig.name} was founded with a single conviction: local businesses deserve websites that actually work. Back then, most agencies sold beautiful sites that sat invisible in search results. We built something different.
               </p>
               <p>
-                We combined deep technical SEO, AI-assisted content strategy, and conversion-focused design into a single, repeatable system — one that has since helped over 500 local businesses rank on page one and grow revenue.
+                We combined deep technical SEO, AI-assisted content strategy, and conversion-focused design into a single, repeatable system — one that has since helped hundreds of local businesses rank on page one and grow revenue.
               </p>
               <p>
                 Today our team includes certified SEO strategists, developers, and content specialists who are obsessed with one metric: your business growth.
