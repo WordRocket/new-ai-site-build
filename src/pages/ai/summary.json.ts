@@ -1,23 +1,22 @@
+import siteConfig from '../../lib/site-config';
+
 export function GET() {
   const payload = {
     version: '1.0',
     lastModified: '2026-06-11T00:00:00.000Z',
     schema: 'https://geo-checklist.dev/schemas/summary/v1',
     entity: {
-      name: 'SiteName',
+      name: siteConfig.name,
       type: 'LocalBusiness',
-      url: 'https://placeholder.com',
-      description:
-        'SiteName builds AI-powered websites and local SEO strategies that help US-based local businesses rank higher, attract more customers, and grow revenue.',
-      foundingYear: '2015',
-      areaServed: ['Los Angeles', 'San Francisco', 'New York', 'Chicago', 'Houston'],
+      url: siteConfig.url,
+      description: siteConfig.description,
+      areaServed: [`${siteConfig.city}, ${siteConfig.state}`],
       sameAs: [
-        'https://www.linkedin.com/company/placeholder',
-        'https://www.google.com/maps/place/placeholder',
-      ],
+        siteConfig.linkedinUrl,
+        siteConfig.gbpUrl,
+      ].filter(Boolean),
     },
-    summary:
-      'SiteName is a digital marketing agency founded in 2015, specialising in local SEO and GEO optimisation for US-based small and medium businesses. We build fast, accessible, AI-optimised websites and content strategies that rank in both traditional search and AI answer engines. With over 500 clients served and a 98% retention rate, we deliver transparent, month-to-month growth programmes backed by Google Partner status and industry certifications.',
+    summary: `${siteConfig.name} is a local business serving ${siteConfig.city}, ${siteConfig.state} and surrounding areas. ${siteConfig.description}`,
     keyFeatures: [
       'Local SEO and Google Maps ranking',
       'GEO optimisation for AI answer engines',

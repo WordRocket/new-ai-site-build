@@ -1,29 +1,23 @@
+import siteConfig from '../../lib/site-config';
+
 export function GET() {
   const payload = {
     version: '1.0',
     lastModified: '2026-06-11T00:00:00.000Z',
     schema: 'https://geo-checklist.dev/schemas/service/v1',
     service: {
-      name: 'SiteName',
+      name: siteConfig.name,
       type: 'local-business',
-      category: 'Digital Marketing Agency',
-      description:
-        'SiteName provides local SEO, GEO optimisation, and AI-powered website design for small and medium businesses across the United States. We help clients rank in both traditional search engines and AI-powered answer engines including ChatGPT, Perplexity, and Gemini.',
-      url: 'https://placeholder.com',
+      category: siteConfig.niche || 'Local Business',
+      description: siteConfig.description,
+      url: siteConfig.url,
       areaServed: [
-        { type: 'City', name: 'Los Angeles', state: 'CA' },
-        { type: 'City', name: 'San Francisco', state: 'CA' },
-        { type: 'City', name: 'New York', state: 'NY' },
-        { type: 'City', name: 'Chicago', state: 'IL' },
-        { type: 'City', name: 'Houston', state: 'TX' },
+        { type: 'City', name: siteConfig.city, state: siteConfig.state },
       ],
       capabilities: [
-        'Local SEO and Google Maps optimisation',
-        'GEO optimisation for AI answer engines',
-        'AI-powered website design and development',
-        'Technical SEO audits and remediation',
-        'Content strategy and production',
-        'Monthly performance reporting',
+        'Local service delivery',
+        'Professional consultation',
+        'Customer support',
       ],
       endpoints: {
         home: '/',
@@ -36,16 +30,15 @@ export function GET() {
         llms: '/llms.txt',
       },
       contact: {
-        email: 'contact@placeholder.com',
-        phone: '(555) 000-0000',
-        address: '123 Main St, Your City, CA 90001',
+        email: siteConfig.email,
+        phone: siteConfig.phone,
+        address: `${siteConfig.address}, ${siteConfig.city}, ${siteConfig.state} ${siteConfig.zip}`,
       },
       trust: {
-        founded: '2015',
         license: 'N/A',
-        certifications: ['Google Partner', 'SEMrush Certified', 'Clutch Top Agency 2024'],
+        certifications: [],
       },
-      availability: '24/7',
+      availability: 'Contact for hours',
       priceRange: '$$',
     },
   };

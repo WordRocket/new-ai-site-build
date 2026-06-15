@@ -1,4 +1,5 @@
 ---
+import siteConfig from '../lib/site-config';
 const pathname = Astro.url.pathname;
 
 const navLinks = [
@@ -24,7 +25,7 @@ function isActive(href: string) {
 
     <!-- Logo -->
     <a href="/" class="text-xl font-bold tracking-tight text-[var(--color-text)] hover:opacity-80 transition-opacity">
-      SiteName
+      {siteConfig.name}
     </a>
 
     <!-- Desktop nav -->

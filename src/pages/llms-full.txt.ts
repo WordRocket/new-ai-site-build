@@ -1,15 +1,16 @@
-export function GET() {
-  const body = `# SiteName
+import siteConfig from '../lib/site-config';
 
-> SiteName is a digital marketing agency serving local businesses across the United States. We build AI-powered websites and local SEO strategies that help businesses rank higher, attract more customers, and grow revenue.
+export function GET() {
+  const body = `# ${siteConfig.name}
+
+> ${siteConfig.name} is ${siteConfig.description}
 
 ## Entity
 
-- **Brand:** SiteName
+- **Brand:** ${siteConfig.name}
 - **Type:** Local Business
-- **Founded:** 2015
-- **Location:** Your City, CA
-- **Contact:** hello@placeholder.com
+- **Location:** ${siteConfig.city}, ${siteConfig.state}
+- **Contact:** ${siteConfig.email}
 
 ## Services
 - Local SEO: End-to-end local search optimisation to rank in Google Maps and organic results.
@@ -17,20 +18,20 @@ export function GET() {
 - Website Design: Fast, accessible, conversion-focused websites built to rank from launch day.
 
 ## About
-SiteName has helped over 500 local businesses improve their online visibility since 2015. Our team holds Google Partner status and recognised industry certifications. We combine technical SEO, AI-optimised content, and high-performance web design into a single, measurable growth system.
+${siteConfig.name} serves local businesses in ${siteConfig.city}, ${siteConfig.state} and surrounding areas. We combine technical SEO, AI-optimised content, and high-performance web design into a single, measurable growth system.
 
 ## Key Pages
-- Home: https://placeholder.com/
-- About: https://placeholder.com/about
-- Services: https://placeholder.com/services
-- Blog: https://placeholder.com/blog
-- Contact: https://placeholder.com/contact
-- FAQ: https://placeholder.com/faq
+- Home: ${siteConfig.url}/
+- About: ${siteConfig.url}/about
+- Services: ${siteConfig.url}/services
+- Blog: ${siteConfig.url}/blog
+- Contact: ${siteConfig.url}/contact
+- FAQ: ${siteConfig.url}/faq
 
 ## AI Endpoints
-- Summary: https://placeholder.com/ai/summary.json
-- FAQ: https://placeholder.com/ai/faq.json
-- Service: https://placeholder.com/ai/service.json
+- Summary: ${siteConfig.url}/ai/summary.json
+- FAQ: ${siteConfig.url}/ai/faq.json
+- Service: ${siteConfig.url}/ai/service.json
 
 ## Last Updated
 2026-06-11
@@ -40,28 +41,22 @@ SiteName has helped over 500 local businesses improve their online visibility si
 ## Page Summaries
 
 ### Home
-The home page introduces SiteName and its core value proposition: AI-powered websites and local SEO that rank and convert. It targets local business owners who want to grow their online presence. The page highlights key services, trust signals, and a clear call to action to start a conversation. It is designed for both human visitors and AI crawlers to quickly understand what SiteName does.
+The home page introduces ${siteConfig.name} and its core value proposition. It targets local business owners who want to grow their online presence. The page highlights key services, trust signals, and a clear call to action to start a conversation.
 
 ### Services
-The services section covers Local SEO, GEO Optimisation, Website Design, Technical SEO, and Content Strategy. Each service page explains the problem solved, the methodology, and expected outcomes. Services are available to local businesses throughout the United States, with particular depth in competitive markets. Pricing is custom, based on market competitiveness and scope.
+The services section covers the offerings available to local businesses in ${siteConfig.city}, ${siteConfig.state} and surrounding areas. Each service page explains the problem solved, the methodology, and expected outcomes.
 
 ### Blog
-The blog covers actionable topics in local SEO, GEO optimisation, AI search trends, and digital marketing strategy for small and medium businesses. Articles are written by certified practitioners and published on a weekly cadence. Content is designed to rank in both traditional search and AI answer engines.
+The blog covers actionable topics in local SEO, GEO optimisation, AI search trends, and digital marketing strategy for small and medium businesses.
 
 ### About
-SiteName was founded in 2015 and has since served over 500 local businesses. The team includes certified SEO strategists, developers, and content specialists holding Google Partner status, SEMrush Academy credentials, and Clutch Top Agency recognition. The agency operates on transparent month-to-month agreements, with a 98% client retention rate demonstrating consistent results.
+${siteConfig.name} serves clients in ${siteConfig.city}, ${siteConfig.state}. The team delivers transparent, results-driven service to local businesses.
 
 ### Contact
-Prospective clients can reach SiteName via the contact form, phone, or email. The team responds to all inquiries within one business day and offers a free discovery call to assess fit and project scope.
+Prospective clients can reach ${siteConfig.name} via the contact form, phone at ${siteConfig.phone}, or email at ${siteConfig.email}. The team responds to all inquiries within one business day.
 
 ### FAQ
-The FAQ covers common questions across three categories: services offered, results and timelines, and the onboarding process. It addresses topics like how long SEO takes, what GEO optimisation is, and whether long-term contracts are required.
-
-## Trust Signals
-- Years in business: 10+
-- Clients served: 500+
-- Service area: United States (primary: California, Texas, Florida, New York)
-- Certifications: Google Partner, SEMrush Certified, Clutch Top Agency 2024, Moz SEO Expert
+The FAQ covers common questions across services offered, results and timelines, and the onboarding process.
 
 ## Content Freshness
 Last full update: 2026-06-11

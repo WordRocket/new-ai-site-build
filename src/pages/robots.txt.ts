@@ -1,3 +1,5 @@
+import siteConfig from '../lib/site-config';
+
 export function GET() {
   const body = `# Search engines
 User-agent: Googlebot
@@ -88,8 +90,8 @@ User-agent: SiteAuditBot
 Disallow: /
 
 # Sitemaps
-Sitemap: https://placeholder.com/sitemap.xml
-Sitemap: https://placeholder.com/sitemap-llm.xml
+Sitemap: ${siteConfig.url}/sitemap.xml
+Sitemap: ${siteConfig.url}/sitemap-llm.xml
 `;
 
   return new Response(body, {

@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import siteConfig from '../lib/site-config';
 
 const services = [
   {
@@ -112,8 +113,8 @@ const trustItems = [
 ---
 
 <BaseLayout
-  title="AI-Powered Websites That Actually Rank | SiteName"
-  description="Built for local businesses. Optimized for Google and AI search from day one. Launch your GEO-ready site in minutes."
+  title={`AI-Powered Websites That Actually Rank | ${siteConfig.name}`}
+  description={siteConfig.description}
 >
   <body class="homepage">
 

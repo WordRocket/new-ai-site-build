@@ -1,15 +1,16 @@
-export function GET() {
-  const body = `# SiteName
+import siteConfig from '../lib/site-config';
 
-> SiteName is a digital marketing agency serving local businesses across the United States. We build AI-powered websites and local SEO strategies that help businesses rank higher, attract more customers, and grow revenue.
+export function GET() {
+  const body = `# ${siteConfig.name}
+
+> ${siteConfig.name} is ${siteConfig.description}
 
 ## Entity
 
-- **Brand:** SiteName
+- **Brand:** ${siteConfig.name}
 - **Type:** Local Business
-- **Founded:** 2015
-- **Location:** Your City, CA
-- **Contact:** hello@placeholder.com
+- **Location:** ${siteConfig.city}, ${siteConfig.state}
+- **Contact:** ${siteConfig.email}
 
 ## Services
 - Local SEO: End-to-end local search optimisation to rank in Google Maps and organic results.
@@ -17,20 +18,20 @@ export function GET() {
 - Website Design: Fast, accessible, conversion-focused websites built to rank from launch day.
 
 ## About
-SiteName has helped over 500 local businesses improve their online visibility since 2015. Our team holds Google Partner status and recognised industry certifications. We combine technical SEO, AI-optimised content, and high-performance web design into a single, measurable growth system.
+${siteConfig.name} serves local businesses in ${siteConfig.city}, ${siteConfig.state} and surrounding areas. We combine technical SEO, AI-optimised content, and high-performance web design into a single, measurable growth system.
 
 ## Key Pages
-- Home: https://placeholder.com/
-- About: https://placeholder.com/about
-- Services: https://placeholder.com/services
-- Blog: https://placeholder.com/blog
-- Contact: https://placeholder.com/contact
-- FAQ: https://placeholder.com/faq
+- Home: ${siteConfig.url}/
+- About: ${siteConfig.url}/about
+- Services: ${siteConfig.url}/services
+- Blog: ${siteConfig.url}/blog
+- Contact: ${siteConfig.url}/contact
+- FAQ: ${siteConfig.url}/faq
 
 ## AI Endpoints
-- Summary: https://placeholder.com/ai/summary.json
-- FAQ: https://placeholder.com/ai/faq.json
-- Service: https://placeholder.com/ai/service.json
+- Summary: ${siteConfig.url}/ai/summary.json
+- FAQ: ${siteConfig.url}/ai/faq.json
+- Service: ${siteConfig.url}/ai/service.json
 
 ## Last Updated
 2026-06-11
