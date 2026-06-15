@@ -33,57 +33,58 @@ const breadcrumbSchema = getBreadcrumbSchema([
   { name: 'About', url: pageUrl },
 ]);
 
-const team = [
-  {
-    name: 'Jane Smith',
-    title: 'Founder & CEO',
-    bio: 'Jane has 15+ years of experience in digital marketing and local SEO. Certified Google Partner and Search Marketing Expert.',
-    credentials: ['Google Analytics Certified', 'SEMrush Academy Graduate'],
-  },
-  {
-    name: 'Marcus Johnson',
-    title: 'Head of SEO Strategy',
-    bio: 'Marcus specialises in technical SEO and GEO optimisation for multi-location businesses across the US.',
-    credentials: ['Moz SEO Expert', 'Screaming Frog Certified'],
-  },
-  {
-    name: 'Priya Patel',
-    title: 'Lead Web Developer',
-    bio: 'Priya builds lightning-fast, accessible websites that are engineered to rank and convert from day one.',
-    credentials: ['Google Web Essentials Certified', 'Accessibility Specialist'],
-  },
-];
+const nicheLabel = siteConfig.niche || 'service';
+
+const hasStats = Boolean(siteConfig.yearsInBusiness || siteConfig.clientsServed);
 
 const trustSignals = [
-  { value: '10+', label: 'Years in Business' },
-  { value: '500+', label: 'Clients Served' },
-  { value: '98%', label: 'Client Retention Rate' },
-  { value: '3x', label: 'Avg. Traffic Increase' },
+  siteConfig.yearsInBusiness && { value: siteConfig.yearsInBusiness, label: 'Years in Business' },
+  siteConfig.clientsServed && { value: siteConfig.clientsServed, label: 'Clients Served' },
+  { value: '5★', label: 'Rated' },
+  { value: '100%', label: 'Satisfaction Guarantee' },
+].filter(Boolean) as Array<{ value: string; label: string }>;
+
+const team = [
+  {
+    name: 'Team Member',
+    title: 'Owner & Operator',
+    bio: `Dedicated to providing quality ${nicheLabel} services in ${siteConfig.city} and the surrounding area.`,
+  },
+  {
+    name: 'Team Member',
+    title: 'Lead Technician',
+    bio: `Experienced professional committed to delivering excellent results and outstanding customer service.`,
+  },
+  {
+    name: 'Team Member',
+    title: 'Service Specialist',
+    bio: `Skilled and reliable — focused on getting every job done right the first time.`,
+  },
 ];
 
 const whyUs = [
   {
-    title: 'Proven Track Record',
-    body: 'Over a decade of measurable results across hundreds of local businesses in competitive markets.',
+    title: 'Locally Owned & Operated',
+    body: `${siteConfig.name} is based in ${siteConfig.city}, ${siteConfig.state} — we're your neighbors and we're invested in our community.`,
   },
   {
-    title: 'E-E-A-T Expertise',
-    body: 'Our team holds recognised industry certifications and contributes to leading SEO publications.',
+    title: 'Licensed & Insured',
+    body: 'We carry full licensing and insurance so every project is protected from start to finish.',
   },
   {
-    title: 'Transparent Reporting',
-    body: 'You receive clear monthly reports with rankings, traffic, and ROI — no jargon, no hidden metrics.',
+    title: 'Transparent Pricing',
+    body: 'We provide honest, upfront quotes with no hidden fees. You know exactly what you\'re paying before work begins.',
   },
   {
-    title: 'No Long-Term Lock-ins',
-    body: 'We earn your business every month. Month-to-month agreements with no exit penalties.',
+    title: 'Satisfaction Guaranteed',
+    body: "We stand behind our work. If you're not satisfied, we make it right — no questions asked.",
   },
 ];
 ---
 
 <BaseLayout
   title={`About Us | ${siteConfig.name}`}
-  description={`Learn about ${siteConfig.name} — our story, our team, and why local businesses trust us to grow their online presence.`}
+  description={`Learn about ${siteConfig.name} — your trusted ${nicheLabel} experts in ${siteConfig.city}, ${siteConfig.state}.`}
   canonical={pageUrl}
 >
   <SchemaOrg schema={orgSchema} />
@@ -110,24 +111,26 @@ const whyUs = [
           About {siteConfig.name}
         </h1>
         <p class="text-[var(--color-text-muted)] text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed">
-          We build AI-powered websites that rank, convert, and grow local businesses — backed by a decade of proven results and a team of certified experts.
+          Your trusted {nicheLabel} experts in {siteConfig.city}, {siteConfig.state}
         </p>
       </div>
     </section>
 
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 flex flex-col gap-20">
 
-      <!-- Trust signals -->
-      <section aria-label="Trust signals">
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-6">
-          {trustSignals.map((s) => (
-            <div class="flex flex-col items-center text-center gap-1 p-6 rounded-[var(--radius-md)]" style="background:white; box-shadow:var(--shadow-sm); border:1px solid #e4e4e7;">
-              <span class="text-3xl font-bold" style="color:var(--color-brand);">{s.value}</span>
-              <span class="text-sm text-[var(--color-text-muted)] font-medium">{s.label}</span>
-            </div>
-          ))}
-        </div>
-      </section>
+      <!-- Trust signals — only shown when stats are configured -->
+      {hasStats && (
+        <section aria-label="Trust signals">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-6">
+            {trustSignals.map((s) => (
+              <div class="flex flex-col items-center text-center gap-1 p-6 rounded-[var(--radius-md)]" style="background:white; box-shadow:var(--shadow-sm); border:1px solid #e4e4e7;">
+                <span class="text-3xl font-bold" style="color:var(--color-brand);">{s.value}</span>
+                <span class="text-sm text-[var(--color-text-muted)] font-medium">{s.label}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       <!-- Our Story -->
       <section>
@@ -136,22 +139,14 @@ const whyUs = [
             <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--color-text)] mb-4">Our Story</h2>
             <div class="flex flex-col gap-4 text-[var(--color-text-muted)] leading-relaxed">
               <p>
-                {siteConfig.name} was founded with a single conviction: local businesses deserve websites that actually work. Back then, most agencies sold beautiful sites that sat invisible in search results. We built something different.
+                {siteConfig.name} is a locally owned {nicheLabel} business serving {siteConfig.city} and the surrounding area. We are committed to providing quality service with honest pricing and professional results.
               </p>
               <p>
-                We combined deep technical SEO, AI-assisted content strategy, and conversion-focused design into a single, repeatable system — one that has since helped hundreds of local businesses rank on page one and grow revenue.
+                Our team takes pride in every job we complete — from the smallest task to the largest project. We treat every customer's home or business with the respect and care it deserves.
               </p>
               <p>
-                Today our team includes certified SEO strategists, developers, and content specialists who are obsessed with one metric: your business growth.
+                When you choose {siteConfig.name}, you're choosing a team that stands behind its work and is dedicated to your complete satisfaction.
               </p>
-            </div>
-            <!-- Credentials / certifications -->
-            <div class="mt-6 flex flex-wrap gap-2">
-              {['Google Partner', 'Clutch Top Agency 2024', 'SEMrush Certified', 'ISO 9001 Compliant'].map((badge) => (
-                <span class="px-3 py-1 rounded-full text-xs font-semibold" style="background:#eff6ff; color:var(--color-brand); border:1px solid #bfdbfe;">
-                  {badge}
-                </span>
-              ))}
             </div>
           </div>
           <!-- Placeholder image -->
@@ -170,23 +165,14 @@ const whyUs = [
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
           {team.map((member) => (
             <div class="flex flex-col items-center text-center gap-4 p-6 rounded-[var(--radius-md)]" style="background:white; box-shadow:var(--shadow-sm); border:1px solid #e4e4e7;">
-              <!-- Grey avatar -->
-              <div class="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold text-white" style="background-color:var(--color-brand);">
-                {member.name.split(' ').map((n: string) => n[0]).join('')}
+              <div class="w-20 h-20 rounded-full flex items-center justify-center text-white" style="background-color:var(--color-brand);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
               </div>
               <div>
                 <p class="font-semibold text-[var(--color-text)]">{member.name}</p>
                 <p class="text-sm font-medium" style="color:var(--color-brand);">{member.title}</p>
               </div>
               <p class="text-sm text-[var(--color-text-muted)] leading-relaxed">{member.bio}</p>
-              <!-- Credentials -->
-              <div class="flex flex-wrap justify-center gap-1.5 mt-auto">
-                {member.credentials.map((c: string) => (
-                  <span class="px-2.5 py-0.5 rounded-full text-xs font-medium" style="background:#f4f4f5; color:var(--color-text-muted); border:1px solid #e4e4e7;">
-                    {c}
-                  </span>
-                ))}
-              </div>
             </div>
           ))}
         </div>
@@ -194,7 +180,7 @@ const whyUs = [
 
       <!-- Why Choose Us -->
       <section>
-        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--color-text)] mb-8 text-center">Why Choose Us</h2>
+        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--color-text)] mb-8 text-center">Why Choose {siteConfig.name}</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {whyUs.map((item) => (
             <div class="flex items-start gap-4 p-6 rounded-[var(--radius-md)]" style="background:white; box-shadow:var(--shadow-sm); border:1px solid #e4e4e7;">

@@ -1,119 +1,121 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import siteConfig from '../lib/site-config';
+import { getCollection } from 'astro:content';
 
-const services = [
+const serviceEntries = await getCollection('services').catch(() => []);
+
+const nicheLabel = siteConfig.niche || 'professional';
+
+const placeholderServices = [
   {
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>`,
-    title: 'GEO-Optimized Content',
-    description: 'Every page is built to rank in both traditional search and AI-powered answer engines like ChatGPT and Perplexity.',
+    slug: null,
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>`,
+    title: `${nicheLabel.charAt(0).toUpperCase() + nicheLabel.slice(1)} Services`,
+    description: `Professional ${nicheLabel} services tailored to your needs in ${siteConfig.city}, ${siteConfig.state}.`,
   },
   {
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>`,
-    title: '100 PageSpeed Score',
-    description: 'Pure static HTML output with zero render-blocking resources. Blazing fast on every device, every time.',
-  },
-  {
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"/><path d="M7 7h.01"/></svg>`,
-    title: 'Auto Schema Injection',
-    description: 'LocalBusiness, FAQPage, BreadcrumbList and more — structured data injected automatically on every page.',
-  },
-  {
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18M9 21V9"/></svg>`,
-    title: 'Location Pages at Scale',
-    description: 'Automatically generate city and service-area pages that rank locally without duplicating content.',
-  },
-  {
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>`,
-    title: 'AI Content Generator',
-    description: 'Generate SEO-ready service descriptions, blog posts, and FAQs — all tailored to your brand and location.',
-  },
-  {
+    slug: null,
     icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
-    title: 'No Vendor Lock-in',
-    description: 'Your site is plain HTML/CSS. Export it, host it anywhere, and own it forever. No platform dependencies.',
+    title: 'Free Estimates',
+    description: `We provide honest, transparent quotes before any work begins. No surprises, no hidden fees.`,
+  },
+  {
+    slug: null,
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>`,
+    title: 'Fast Response',
+    description: `We respect your time. Prompt scheduling and reliable arrival — when you need us, we're there.`,
+  },
+];
+
+const displayServices = serviceEntries.length > 0
+  ? serviceEntries.map((e) => ({
+      slug: e.slug,
+      icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>`,
+      title: e.data.title,
+      description: e.data.description ?? '',
+    }))
+  : placeholderServices;
+
+const trustItems = [
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+    stat: 'Locally Owned',
+  },
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+    stat: 'Licensed & Insured',
+  },
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`,
+    stat: 'Free Estimates',
+  },
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`,
+    stat: `${siteConfig.city}, ${siteConfig.state}`,
+  },
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+    stat: '5-Star Rated',
   },
 ];
 
 const steps = [
   {
     number: '01',
-    title: 'Tell us about your business',
-    description: 'Enter your business name, services, and service areas. Our AI learns your voice and brand in seconds.',
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
+    title: 'Local Experts',
+    description: `We know ${siteConfig.city} and the surrounding area — our team lives and works here too.`,
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`,
   },
   {
     number: '02',
-    title: 'AI builds your GEO-ready site',
-    description: 'We generate every page, schema, and location layer automatically — optimized for Google and AI search.',
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>`,
+    title: 'Licensed & Insured',
+    description: 'Full coverage for your peace of mind. We stand behind every job we do.',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
   },
   {
     number: '03',
-    title: 'Publish and start ranking',
-    description: 'Deploy to any host with one click. Your site goes live fully optimized and indexed from day one.',
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,
+    title: 'Fast Response',
+    description: 'We show up when you need us — on time, prepared, and ready to get the job done right.',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>`,
   },
 ];
 
 const features = [
-  { title: 'Pure Static HTML', description: 'Zero JavaScript overhead. Your pages load instantly on any connection.' },
-  { title: 'Auto GEO Layer', description: 'City and service-area pages generated and cross-linked automatically.' },
-  { title: 'Schema Auto-Injected', description: 'LocalBusiness, FAQ, Breadcrumb — added to every page without config.' },
-  { title: 'AI Content Generator', description: 'On-brand copy written by AI, reviewed by you, published in minutes.' },
-  { title: '100 PageSpeed Score', description: 'Consistently perfect Core Web Vitals out of the box, every build.' },
-  { title: 'No Vendor Lock-in', description: 'Plain HTML files. Host anywhere. Move any time. You own your site.' },
+  { title: 'Quality Workmanship', description: 'Every job is completed to the highest standard, the first time.' },
+  { title: 'Transparent Pricing', description: 'Clear quotes before work begins — no hidden costs or surprises.' },
+  { title: 'Licensed & Certified', description: 'Fully licensed, bonded, and insured for your protection.' },
+  { title: 'Local & Trusted', description: `Serving ${siteConfig.city} and surrounding communities with pride.` },
+  { title: 'Satisfaction Guaranteed', description: "We don't consider the job done until you're happy with the results." },
+  { title: 'Emergency Services Available', description: 'Urgent situations happen — we\'re here when you need us most.' },
 ];
 
 const faqs = [
   {
-    question: 'What is GEO and why does it matter for my business?',
-    answer: 'Generative Engine Optimization (GEO) is the practice of structuring your content so AI-powered search engines like ChatGPT, Perplexity, and Google AI Overviews cite your business. As more searches happen through AI assistants, GEO is becoming as important as traditional SEO.',
+    question: `What ${nicheLabel} services do you offer?`,
+    answer: `${siteConfig.name} offers a full range of ${nicheLabel} services for residential and commercial clients in ${siteConfig.city}, ${siteConfig.state} and surrounding areas. Contact us to discuss your specific needs.`,
   },
   {
-    question: 'How long does it take to launch a site?',
-    answer: 'Most sites go live within minutes. After you enter your business details, our AI generates all pages, schema markup, and location content automatically. You review, tweak if needed, and publish — usually in under 30 minutes.',
+    question: 'How do I get a free estimate?',
+    answer: `Getting a free estimate is easy. Call us at ${siteConfig.phone} or fill out our contact form and we'll get back to you within one business day to schedule an assessment at no cost.`,
   },
   {
-    question: 'Do I need to know how to code?',
-    answer: 'Not at all. The entire process is no-code. You fill in a simple form about your business, and we handle everything from content generation to technical SEO. If you want to customize the HTML/CSS, you can — but you never have to.',
+    question: 'Are you licensed and insured?',
+    answer: `Yes. ${siteConfig.name} is fully licensed and insured. We carry comprehensive liability coverage so you're protected throughout every job.`,
   },
   {
-    question: 'Can I add my own content after launch?',
-    answer: 'Yes. You can write or edit any page directly, add blog posts through our content editor, or use the AI generator to draft new pages. Your site is yours to update whenever you like.',
+    question: 'What areas do you serve?',
+    answer: `We primarily serve ${siteConfig.city}, ${siteConfig.state} and the surrounding area. Contact us to confirm service availability in your specific location.`,
   },
   {
-    question: 'Where is my site hosted?',
-    answer: 'We deploy to a global CDN by default for maximum speed, but because your site is pure static HTML you can also export it and host it on any platform — Netlify, Vercel, Cloudflare Pages, or your own server. No lock-in.',
-  },
-];
-
-const trustItems = [
-  {
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
-    stat: '500+ Sites Built',
-  },
-  {
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>`,
-    stat: '98 Avg GEO Score',
-  },
-  {
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>`,
-    stat: 'Pure Static HTML',
-  },
-  {
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>`,
-    stat: 'Live in Minutes',
-  },
-  {
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
-    stat: 'AI-Ready by Default',
+    question: 'How quickly can you respond?',
+    answer: 'We aim to respond to all inquiries within one business day and can typically schedule an estimate within the week. For urgent situations, call us directly for faster scheduling.',
   },
 ];
 ---
 
 <BaseLayout
-  title={`AI-Powered Websites That Actually Rank | ${siteConfig.name}`}
+  title={`${siteConfig.name} | ${siteConfig.tagline}`}
   description={siteConfig.description}
 >
   <body class="homepage">
@@ -121,15 +123,11 @@ const trustItems = [
   <!-- ─── HERO ─────────────────────────────────────────────────────────── -->
   <section class="hero-section relative overflow-hidden bg-white">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 text-center relative z-10">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold mb-6 tracking-wide uppercase" style="background:#eff6ff; color:var(--color-brand);">
-        Now with AI Search Optimization
-      </div>
       <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1] text-[var(--color-text)] mb-6">
-        AI-Powered Websites<br class="hidden sm:block" />
-        <span style="color:var(--color-brand);">That Actually Rank</span>
+        {siteConfig.name}
       </h1>
       <p class="text-lg sm:text-xl text-[var(--color-text-muted)] max-w-2xl mx-auto mb-10 leading-relaxed">
-        Built for local businesses. Optimized for Google and AI search from day one.
+        {siteConfig.tagline}
       </p>
       <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
         <a
@@ -137,13 +135,13 @@ const trustItems = [
           class="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 rounded-lg text-base font-semibold text-white transition-opacity hover:opacity-90"
           style="background-color:var(--color-brand);"
         >
-          Get Started Free
+          Get a Free Quote
         </a>
         <a
-          href="#how-it-works"
+          href="/services"
           class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-lg text-base font-semibold text-[var(--color-text)] border border-neutral-200 bg-white hover:bg-neutral-50 transition-colors"
         >
-          See How It Works
+          Our Services
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
         </a>
       </div>
@@ -171,14 +169,14 @@ const trustItems = [
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-14">
         <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--color-text)] mb-4">
-          Everything Your Business Needs to Rank
+          Our Services
         </h2>
         <p class="text-[var(--color-text-muted)] text-lg max-w-2xl mx-auto">
-          A complete system — not just a website builder.
+          Professional {nicheLabel} services in {siteConfig.city}
         </p>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {services.map(({ icon, title, description }) => (
+        {displayServices.map(({ slug, icon, title, description }) => (
           <div
             class="bg-white p-7 rounded-[var(--radius-md)] transition-shadow duration-200 hover:shadow-[var(--shadow-md)] flex flex-col gap-4"
             style="box-shadow:var(--shadow-sm);"
@@ -188,25 +186,33 @@ const trustItems = [
             </span>
             <h3 class="text-base font-semibold text-[var(--color-text)]">{title}</h3>
             <p class="text-sm leading-relaxed text-[var(--color-text-muted)]">{description}</p>
+            {slug && (
+              <a
+                href={`/services/${slug}`}
+                class="mt-auto text-sm font-semibold transition-colors hover:opacity-80"
+                style="color:var(--color-brand);"
+              >
+                Learn More →
+              </a>
+            )}
           </div>
         ))}
       </div>
     </div>
   </section>
 
-  <!-- ─── HOW IT WORKS ──────────────────────────────────────────────────── -->
+  <!-- ─── WHY CHOOSE US ─────────────────────────────────────────────────── -->
   <section id="how-it-works" class="py-20 sm:py-[80px] bg-white">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-14">
         <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--color-text)] mb-4">
-          From Setup to Ranked in Minutes
+          Why Choose {siteConfig.name}
         </h2>
         <p class="text-[var(--color-text-muted)] text-lg max-w-2xl mx-auto">
-          Three steps. No tech skills required.
+          Serving {siteConfig.city} with integrity and expertise.
         </p>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-        <!-- connector line desktop only -->
         <div class="hidden md:block absolute top-10 left-[calc(16.67%+1.5rem)] right-[calc(16.67%+1.5rem)] h-px" style="background: linear-gradient(90deg, transparent, #e4e4e7 20%, #e4e4e7 80%, transparent);"></div>
         {steps.map(({ number, title, description, icon }) => (
           <div class="flex flex-col items-center text-center gap-4 relative">
@@ -222,15 +228,15 @@ const trustItems = [
     </div>
   </section>
 
-  <!-- ─── FEATURES HIGHLIGHT ───────────────────────────────────────────── -->
+  <!-- ─── OUR COMMITMENT ───────────────────────────────────────────────── -->
   <section class="py-20 sm:py-[80px] bg-[var(--color-neutral-50)]">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-14">
         <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--color-text)] mb-4">
-          Built Different
+          Our Commitment to You
         </h2>
         <p class="text-[var(--color-text-muted)] text-lg max-w-2xl mx-auto">
-          Every technical decision was made to maximize your rankings.
+          Every decision we make is guided by your satisfaction.
         </p>
       </div>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -248,17 +254,17 @@ const trustItems = [
             </li>
           ))}
         </ul>
-        <!-- Mockup placeholder -->
+        <!-- Business card placeholder -->
         <div class="rounded-[var(--radius-lg)] overflow-hidden" style="box-shadow:var(--shadow-md);">
           <div class="flex items-center gap-1.5 px-4 py-3 border-b border-neutral-100" style="background:#f9fafb;">
             <span class="w-3 h-3 rounded-full bg-red-300"></span>
             <span class="w-3 h-3 rounded-full bg-yellow-300"></span>
             <span class="w-3 h-3 rounded-full bg-green-300"></span>
-            <span class="flex-1 mx-4 h-5 rounded-full bg-neutral-200 text-center text-[10px] leading-5 text-neutral-400 font-mono overflow-hidden">sitename.com</span>
+            <span class="flex-1 mx-4 h-5 rounded-full bg-neutral-200 text-center text-[10px] leading-5 text-neutral-400 font-mono overflow-hidden">{siteConfig.name}</span>
           </div>
           <div class="bg-neutral-100 flex flex-col items-center justify-center gap-3 aspect-[4/3]">
             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#c4c4c8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-            <span class="text-sm font-medium text-neutral-400">Site Preview</span>
+            <span class="text-sm font-medium text-neutral-400">{siteConfig.name}</span>
           </div>
         </div>
       </div>
@@ -270,7 +276,7 @@ const trustItems = [
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-14">
         <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--color-text)] mb-4">
-          Frequently Asked Questions
+          Frequently Asked Questions About {nicheLabel} in {siteConfig.city}
         </h2>
         <p class="text-[var(--color-text-muted)] text-lg max-w-2xl mx-auto">
           Everything you need to know before getting started.
@@ -307,16 +313,16 @@ const trustItems = [
   <section style="background-color:var(--color-brand);" class="py-20 sm:py-[80px]">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
       <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-4">
-        Ready to Rank Where It Matters?
+        Ready to Get Started?
       </h2>
       <p class="text-blue-100 text-lg max-w-xl mx-auto mb-10">
-        Join hundreds of local businesses already winning in AI search with {siteConfig.name}. Launch your site today — no credit card required.
+        Contact {siteConfig.name} today for a free estimate.
       </p>
       <a
-        href="/contact"
+        href={`tel:${siteConfig.phone.replace(/\D/g, '')}`}
         class="inline-flex items-center justify-center px-8 py-4 rounded-lg text-base font-semibold text-[var(--color-brand)] bg-white transition-opacity hover:opacity-90"
       >
-        Get Started Free
+        Call Us Now
       </a>
     </div>
   </section>
@@ -351,7 +357,6 @@ const trustItems = [
         answer.style.maxHeight = '0';
         chevron.style.transform = '';
       } else {
-        // Close any open item first
         triggers.forEach((other) => {
           if (other !== btn && other.getAttribute('aria-expanded') === 'true') {
             other.setAttribute('aria-expanded', 'false');
