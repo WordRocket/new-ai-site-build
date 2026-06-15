@@ -118,13 +118,11 @@ function isActive(href: string) {
   const isHomepage = document.body.classList.contains('homepage');
 
   function applyNavStyle() {
-    const scrolled = window.scrollY > 10;
+    const scrolled = window.scrollY > 50;
     if (!isHomepage || scrolled) {
-      nav.style.background = 'white';
-      nav.style.borderBottom = '1px solid #e4e4e7';
+      nav.classList.add('scrolled');
     } else {
-      nav.style.background = 'transparent';
-      nav.style.borderBottom = 'none';
+      nav.classList.remove('scrolled');
     }
   }
 

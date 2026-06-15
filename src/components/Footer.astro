@@ -29,6 +29,7 @@ const socialLinks = [
 ].filter(Boolean) as Array<{ label: string; href: string; icon: string }>;
 ---
 
+<div class="footer-gradient-line"></div>
 <footer style="background-color: var(--color-neutral-900);" class="text-white mt-auto">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
@@ -48,7 +49,7 @@ const socialLinks = [
               <a
                 href={href}
                 aria-label={label}
-                class="w-9 h-9 rounded-md flex items-center justify-center transition-colors hover:bg-white/10"
+                class="social-icon-link w-9 h-9 rounded-md flex items-center justify-center"
                 style="color: var(--color-text-muted);"
               >
                 <Fragment set:html={icon} />
