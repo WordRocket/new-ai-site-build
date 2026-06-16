@@ -2,6 +2,9 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SchemaOrg from '../../components/SchemaOrg.astro';
+import NAPBlock from '../../components/NAPBlock.astro';
+import ServiceAreaMap from '../../components/ServiceAreaMap.astro';
+import ReviewBanner from '../../components/ReviewBanner.astro';
 import {
   getLocalBusinessSchema,
   getFAQSchema,
@@ -156,6 +159,16 @@ const faqSchema = hasFaq ? getFAQSchema(d.faq) : null;
             </p>
           )}
         </section>
+
+        <NAPBlock />
+        <ServiceAreaMap />
+        {hasFaq && (
+          <ReviewBanner
+            quote={d.faq[0].answer}
+            author="Local Customer"
+            location={`${d.city}, ${d.state}`}
+          />
+        )}
 
       </div>
     </article>
