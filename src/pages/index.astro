@@ -2,11 +2,15 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import siteConfig from '../lib/site-config';
 import { getCollection } from 'astro:content';
+import { getPreset, interpolate } from '../lib/business-presets';
 
 const serviceEntries = await getCollection('services').catch(() => []);
 const nicheLabel = siteConfig.niche || 'professional service';
 const phoneDigits = siteConfig.phone ? siteConfig.phone.replace(/\D/g, '') : '';
 const primaryCta = siteConfig.phone ? `tel:${phoneDigits}` : '/contact';
+
+const preset = getPreset((siteConfig as any).businessType || 'other');
+const vars = { city: siteConfig.city, niche: nicheLabel };
 
 const placeholderServices = [
   {
@@ -90,17 +94,20 @@ const statsItems = [
 
     <div class="flex flex-col sm:flex-row items-start gap-3 mb-8">
       <a href={primaryCta} class="btn-primary justify-center px-7 py-3 rounded-[var(--radius-md)] text-base font-semibold text-white">
-        Get a Free Quote
+        {preset.heroCta}
       </a>
       <a href="/services" class="btn-secondary justify-center px-7 py-3 rounded-[var(--radius-md)] text-base font-semibold">
-        Our Services →
+        {preset.heroCtaSecondary} →
       </a>
     </div>
 
     <ul class="flex flex-col sm:flex-row flex-wrap gap-x-6 gap-y-2 text-sm" style="color:var(--color-text-muted);">
-      <li class="flex items-center gap-1.5"><span class="text-[var(--color-brand)] font-bold">✓</span> Licensed &amp; Insured</li>
-      <li class="flex items-center gap-1.5"><span class="text-[var(--color-brand)] font-bold">✓</span> Free Estimates</li>
-      <li class="flex items-center gap-1.5"><span class="text-[var(--color-brand)] font-bold">✓</span> {siteConfig.city} Local Experts</li>
+      {preset.trustSignals.map((signal) => (
+        <li class="flex items-center gap-1.5">
+          <span class="text-[var(--color-brand)] font-bold" aria-hidden="true">✓</span>
+          {signal.replace(/^✓\s*/, '')}
+        </li>
+      ))}
     </ul>
   </div>
 
@@ -144,8 +151,8 @@ const statsItems = [
 <section class="section-pad bg-[var(--color-neutral-50)]" aria-labelledby="services-heading">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center mb-14">
-      <h2 id="services-heading" class="reveal text-[var(--color-text)] mb-4">Our Services</h2>
-      <p class="text-[var(--color-text-muted)] text-lg max-w-2xl mx-auto">Professional {nicheLabel} services in {siteConfig.city}</p>
+      <h2 id="services-heading" class="reveal text-[var(--color-text)] mb-4">{interpolate(preset.servicesHeading, vars)}</h2>
+      <p class="text-[var(--color-text-muted)] text-lg max-w-2xl mx-auto">{interpolate(preset.servicesSubheading, vars)}</p>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {displayServices.map(({ slug, num, icon, title, description }) => (
@@ -296,14 +303,20 @@ const statsItems = [
       <div class="p-10 sm:p-14 flex flex-col justify-center gap-6">
         <h2 id="cta-heading" class="text-white reveal">Ready to Book? Let's Talk.</h2>
         <p class="text-lg leading-relaxed" style="color:#94a3b8;">
-          Contact {siteConfig.name} today for a free estimate. We respond fast and show up on time.
+          Contact {siteConfig.name} today for a free estimate. {preset.contactSubtext}
         </p>
-        {siteConfig.phone && (
-          <a href={`tel:${phoneDigits}`} class="btn-primary justify-center sm:justify-start text-white font-bold text-lg px-8 py-4 rounded-[var(--radius-md)] w-full sm:w-auto">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.36a2 2 0 0 1 1.99-2.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.06 6.06l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            {siteConfig.phone}
-          </a>
-        )}
+        {siteConfig.phone
+          ? (
+            <a href={`tel:${phoneDigits}`} class="btn-primary justify-center sm:justify-start text-white font-bold text-lg px-8 py-4 rounded-[var(--radius-md)] w-full sm:w-auto">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.36a2 2 0 0 1 1.99-2.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.06 6.06l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              {siteConfig.phone}
+            </a>
+          ) : (
+            <a href="/contact" class="btn-primary justify-center sm:justify-start text-white font-bold text-lg px-8 py-4 rounded-[var(--radius-md)] w-full sm:w-auto">
+              {preset.contactCta}
+            </a>
+          )
+        }
         {siteConfig.email && (
           <a href={`mailto:${siteConfig.email}`} class="text-sm font-medium transition-colors hover:text-white" style="color:#94a3b8;">{siteConfig.email}</a>
         )}

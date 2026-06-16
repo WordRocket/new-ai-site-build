@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import SchemaOrg from '../components/SchemaOrg.astro';
 import { getBreadcrumbSchema } from '../lib/schema';
 import siteConfig from '../lib/site-config';
+import { getPreset } from '../lib/business-presets';
 
 const siteUrl = import.meta.env.SITE ?? siteConfig.url;
 const pageUrl = `${siteUrl}/contact`;
@@ -40,6 +41,8 @@ const breadcrumbSchema = getBreadcrumbSchema([
   { name: 'Contact', url: pageUrl },
 ]);
 
+const preset = getPreset((siteConfig as any).businessType || 'other');
+
 const openingHours = [
   { days: 'Monday – Friday', hours: '9:00 AM – 6:00 PM PST' },
   { days: 'Saturday', hours: '10:00 AM – 2:00 PM PST' },
@@ -74,7 +77,7 @@ const openingHours = [
       <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-[var(--color-text)] mb-4">Get In Touch</h1>
         <p class="text-[var(--color-text-muted)] text-lg max-w-xl mx-auto">
-          We respond to all inquiries within one business day. Tell us about your project and let's talk.
+          {preset.contactSubtext} We respond to all inquiries within one business day.
         </p>
       </div>
     </section>
@@ -179,7 +182,7 @@ const openingHours = [
               class="self-start px-8 py-3 rounded-[var(--radius-md)] text-sm font-semibold text-white transition-opacity hover:opacity-90"
               style="background-color:var(--color-brand);"
             >
-              Send Message
+              {preset.contactCta}
             </button>
           </form>
         </div>

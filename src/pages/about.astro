@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import SchemaOrg from '../components/SchemaOrg.astro';
 import { getOrganizationSchema, getBreadcrumbSchema } from '../lib/schema';
 import siteConfig from '../lib/site-config';
+import { getPreset, interpolate } from '../lib/business-presets';
 
 const siteUrl = import.meta.env.SITE ?? siteConfig.url;
 const pageUrl = `${siteUrl}/about`;
@@ -34,6 +35,8 @@ const breadcrumbSchema = getBreadcrumbSchema([
 ]);
 
 const nicheLabel = siteConfig.niche || 'service';
+const preset = getPreset((siteConfig as any).businessType || 'other');
+const vars = { city: siteConfig.city, niche: nicheLabel };
 
 const hasStats = Boolean(siteConfig.yearsInBusiness || siteConfig.clientsServed);
 

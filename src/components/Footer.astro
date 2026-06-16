@@ -1,6 +1,8 @@
 ---
 import siteConfig from '../lib/site-config';
+import { getPreset } from '../lib/business-presets';
 const currentYear = new Date().getFullYear();
+const preset = getPreset((siteConfig as any).businessType || 'other');
 
 const quickLinks = [
   { label: 'Home',     href: '/' },

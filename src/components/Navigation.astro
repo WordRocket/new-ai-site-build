@@ -1,6 +1,9 @@
 ---
 import siteConfig from '../lib/site-config';
+import { getPreset } from '../lib/business-presets';
 const pathname = Astro.url.pathname;
+
+const preset = getPreset((siteConfig as any).businessType || 'other');
 
 const navLinks = [
   { label: 'Home',     href: '/' },
@@ -18,8 +21,8 @@ function isActive(href: string) {
 const phoneDigits = siteConfig.phone ? siteConfig.phone.replace(/\D/g, '') : '';
 ---
 
-<!-- Top emergency bar (hidden if no phone) -->
-{siteConfig.phone && (
+<!-- Top emergency bar (hidden if no phone or preset disables it) -->
+{siteConfig.phone && preset.emergencyBarEnabled && (
   <div id="top-bar" class="flex items-center justify-between px-4 sm:px-6 lg:px-8 text-white text-[13px]">
     <span style="color:rgba(255,255,255,0.75);">
       <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block mr-1 mb-0.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
@@ -136,7 +139,7 @@ const phoneDigits = siteConfig.phone ? siteConfig.phone.replace(/\D/g, '') : '';
 </header>
 
 <!-- Spacer: top-bar (36px) + nav (64px) -->
-<div style={siteConfig.phone ? 'height:100px;' : 'height:64px;'}></div>
+<div style={(siteConfig.phone && preset.emergencyBarEnabled) ? 'height:100px;' : 'height:64px;'}></div>
 
 <script>
   const nav = document.getElementById('site-nav')!;
