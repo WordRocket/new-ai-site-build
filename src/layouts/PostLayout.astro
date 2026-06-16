@@ -20,6 +20,7 @@ interface Props {
   tags?: string[];
   faq?: FaqItem[];
   schemas?: object[];
+  schemaJsonld?: string;
 }
 
 const {
@@ -29,6 +30,7 @@ const {
   canonical,
   noindex,
   schemas,
+  schemaJsonld,
 } = Astro.props;
 ---
 
@@ -39,6 +41,7 @@ const {
   canonical={canonical}
   noindex={noindex}
   schemas={schemas}
+  schemaJsonld={schemaJsonld}
 >
   <slot />
 </BaseLayout>

@@ -59,11 +59,11 @@ const orgSchema = getOrganizationSchema({
 const hasFaq = d.faq && d.faq.length > 0;
 const faqSchema = hasFaq ? getFAQSchema(d.faq) : null;
 
-// If Railway wrote a pre-built schema_jsonld into frontmatter, use it directly.
-const frontmatterSchema = d.schema_jsonld ?? null;
-const schemas: object[] = frontmatterSchema
-  ? [frontmatterSchema as object]
-  : [blogPostSchema, breadcrumbSchema, orgSchema, ...(faqSchema ? [faqSchema] : [])];
+// schemaJsonld (string) takes priority — Railway writes pre-serialized JSON here.
+// schema_jsonld (unknown/object) is the older fallback.
+// If neither is present, fall back to auto-generated schemas.
+const autoSchemas: object[] = [blogPostSchema, breadcrumbSchema, orgSchema, ...(faqSchema ? [faqSchema] : [])];
+const schemas: object[] = d.schemaJsonld ? [] : (d.schema_jsonld ? [d.schema_jsonld as object] : autoSchemas);
 ---
 
 <PostLayout
@@ -80,6 +80,7 @@ const schemas: object[] = frontmatterSchema
   tags={d.tags}
   faq={d.faq}
   schemas={schemas}
+  schemaJsonld={d.schemaJsonld}
 >
   <main>
     <!-- Blog post hero -->

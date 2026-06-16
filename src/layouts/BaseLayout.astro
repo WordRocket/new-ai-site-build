@@ -12,9 +12,10 @@ interface Props {
   canonical?: string;
   noindex?: boolean;
   schemas?: object[];
+  schemaJsonld?: string;
 }
 
-const { title, description, ogImage, canonical, noindex, schemas = [] } = Astro.props;
+const { title, description, ogImage, canonical, noindex, schemas = [], schemaJsonld } = Astro.props;
 ---
 
 <!doctype html>
@@ -44,6 +45,9 @@ const { title, description, ogImage, canonical, noindex, schemas = [] } = Astro.
     {schemas.map((schema) => (
       <script type="application/ld+json" set:html={JSON.stringify(schema)} />
     ))}
+    {schemaJsonld && (
+      <script type="application/ld+json" set:html={schemaJsonld} />
+    )}
   </head>
   <body>
     <Navigation />

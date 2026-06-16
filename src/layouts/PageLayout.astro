@@ -8,9 +8,10 @@ interface Props {
   canonical?: string;
   noindex?: boolean;
   schemas?: object[];
+  schemaJsonld?: string;
 }
 
-const { title, description, ogImage, canonical, noindex, schemas } = Astro.props;
+const { title, description, ogImage, canonical, noindex, schemas, schemaJsonld } = Astro.props;
 ---
 
 <BaseLayout
@@ -20,6 +21,7 @@ const { title, description, ogImage, canonical, noindex, schemas } = Astro.props
   canonical={canonical}
   noindex={noindex}
   schemas={schemas}
+  schemaJsonld={schemaJsonld}
 >
   <main>
     <slot />
