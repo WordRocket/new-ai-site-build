@@ -17,6 +17,7 @@ const blog = defineCollection({
     canonical: z.string().optional(),
     ogImage: z.string().optional(),
     faq: z.array(z.object({ question: z.string(), answer: z.string() })).default([]),
+    schema_jsonld: z.unknown().optional(),
   }),
 });
 
@@ -27,6 +28,7 @@ const pages = defineCollection({
     noindex: z.boolean().default(false),
     canonical: z.string().optional(),
     ogImage: z.string().optional(),
+    schema_jsonld: z.unknown().optional(),
   }),
 });
 
@@ -41,6 +43,7 @@ const services = defineCollection({
     areaServed: z.array(z.string()).default([]),
     faq: z.array(z.object({ question: z.string(), answer: z.string() })).default([]),
     order: z.number().default(0),
+    schema_jsonld: z.unknown().optional(),
   }),
 });
 
@@ -54,6 +57,7 @@ const locations = defineCollection({
     latitude: z.number().optional(),
     longitude: z.number().optional(),
     faq: z.array(z.object({ question: z.string(), answer: z.string() })).default([]),
+    schema_jsonld: z.unknown().optional(),
   }),
 });
 

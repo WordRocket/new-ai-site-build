@@ -11,9 +11,10 @@ interface Props {
   ogImage?: string;
   canonical?: string;
   noindex?: boolean;
+  schemas?: object[];
 }
 
-const { title, description, ogImage, canonical, noindex } = Astro.props;
+const { title, description, ogImage, canonical, noindex, schemas = [] } = Astro.props;
 ---
 
 <!doctype html>
@@ -40,6 +41,9 @@ const { title, description, ogImage, canonical, noindex } = Astro.props;
       noindex={noindex}
     />
     <meta property="og:image" content={ogImage ?? 'https://placeholder.com/og-default.svg'} />
+    {schemas.map((schema) => (
+      <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+    ))}
   </head>
   <body>
     <Navigation />

@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import SchemaOrg from '../components/SchemaOrg.astro';
 import { getBreadcrumbSchema } from '../lib/schema';
 import siteConfig from '../lib/site-config';
 import { getPreset } from '../lib/business-presets';
@@ -54,10 +53,8 @@ const openingHours = [
   title={`Contact Us | ${siteConfig.name}`}
   description={`Get in touch with ${siteConfig.name}. We're ready to help your business rank higher and grow faster.`}
   canonical={pageUrl}
+  schemas={[contactPageSchema, breadcrumbSchema]}
 >
-  <SchemaOrg schema={contactPageSchema} />
-  <SchemaOrg schema={breadcrumbSchema} />
-
   <main>
     <!-- Breadcrumb -->
     <nav aria-label="Breadcrumb" class="border-b border-neutral-100" style="background:#fafafa;">

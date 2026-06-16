@@ -1,7 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
 import PostLayout from '../../layouts/PostLayout.astro';
-import SchemaOrg from '../../components/SchemaOrg.astro';
 import {
   getBlogPostSchema,
   getFAQSchema,
@@ -59,6 +58,12 @@ const orgSchema = getOrganizationSchema({
 
 const hasFaq = d.faq && d.faq.length > 0;
 const faqSchema = hasFaq ? getFAQSchema(d.faq) : null;
+
+// If Railway wrote a pre-built schema_jsonld into frontmatter, use it directly.
+const frontmatterSchema = d.schema_jsonld ?? null;
+const schemas: object[] = frontmatterSchema
+  ? [frontmatterSchema as object]
+  : [blogPostSchema, breadcrumbSchema, orgSchema, ...(faqSchema ? [faqSchema] : [])];
 ---
 
 <PostLayout
@@ -74,13 +79,8 @@ const faqSchema = hasFaq ? getFAQSchema(d.faq) : null;
   category={d.category}
   tags={d.tags}
   faq={d.faq}
+  schemas={schemas}
 >
-  <!-- Schema injection -->
-  <SchemaOrg schema={blogPostSchema} />
-  <SchemaOrg schema={breadcrumbSchema} />
-  <SchemaOrg schema={orgSchema} />
-  {faqSchema && <SchemaOrg schema={faqSchema} />}
-
   <main>
     <!-- Blog post hero -->
     <div class="page-hero" aria-label="Post hero">

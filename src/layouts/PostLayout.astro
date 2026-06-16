@@ -19,6 +19,7 @@ interface Props {
   category?: string;
   tags?: string[];
   faq?: FaqItem[];
+  schemas?: object[];
 }
 
 const {
@@ -27,6 +28,7 @@ const {
   ogImage,
   canonical,
   noindex,
+  schemas,
 } = Astro.props;
 ---
 
@@ -36,6 +38,7 @@ const {
   ogImage={ogImage}
   canonical={canonical}
   noindex={noindex}
+  schemas={schemas}
 >
   <slot />
 </BaseLayout>

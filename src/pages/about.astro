@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import SchemaOrg from '../components/SchemaOrg.astro';
 import { getOrganizationSchema, getBreadcrumbSchema } from '../lib/schema';
 import siteConfig from '../lib/site-config';
 import { getPreset, interpolate } from '../lib/business-presets';
@@ -89,10 +88,8 @@ const whyUs = [
   title={`About Us | ${siteConfig.name}`}
   description={`Learn about ${siteConfig.name} — your trusted ${nicheLabel} experts in ${siteConfig.city}, ${siteConfig.state}.`}
   canonical={pageUrl}
+  schemas={[orgSchema, breadcrumbSchema]}
 >
-  <SchemaOrg schema={orgSchema} />
-  <SchemaOrg schema={breadcrumbSchema} />
-
   <main>
     <!-- Breadcrumb -->
     <nav aria-label="Breadcrumb" class="border-b border-neutral-100" style="background:#fafafa;">

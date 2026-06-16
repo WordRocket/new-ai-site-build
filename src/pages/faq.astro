@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import SchemaOrg from '../components/SchemaOrg.astro';
 import { getFAQSchema, getBreadcrumbSchema } from '../lib/schema';
 import siteConfig from '../lib/site-config';
 
@@ -74,10 +73,8 @@ const breadcrumbSchema = getBreadcrumbSchema([
   title={`Frequently Asked Questions | ${siteConfig.name}`}
   description="Find answers to common questions about our SEO services, GEO optimisation, timelines, contracts, and how we work."
   canonical={pageUrl}
+  schemas={[faqSchema, breadcrumbSchema]}
 >
-  <SchemaOrg schema={faqSchema} />
-  <SchemaOrg schema={breadcrumbSchema} />
-
   <main>
     <!-- Breadcrumb -->
     <nav aria-label="Breadcrumb" class="border-b border-neutral-100" style="background:#fafafa;">

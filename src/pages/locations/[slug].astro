@@ -1,7 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import SchemaOrg from '../../components/SchemaOrg.astro';
 import NAPBlock from '../../components/NAPBlock.astro';
 import ServiceAreaMap from '../../components/ServiceAreaMap.astro';
 import ReviewBanner from '../../components/ReviewBanner.astro';
@@ -53,17 +52,15 @@ const breadcrumbSchema = getBreadcrumbSchema([
 
 const hasFaq = d.faq && d.faq.length > 0;
 const faqSchema = hasFaq ? getFAQSchema(d.faq) : null;
+const schemas = [localBusinessSchema, breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])];
 ---
 
 <BaseLayout
   title={pageTitle}
   description={d.description}
   canonical={pageUrl}
+  schemas={schemas}
 >
-  <SchemaOrg schema={localBusinessSchema} />
-  <SchemaOrg schema={breadcrumbSchema} />
-  {faqSchema && <SchemaOrg schema={faqSchema} />}
-
   <main>
     <!-- Page hero -->
     <div class="page-hero" aria-label="Location page hero">
