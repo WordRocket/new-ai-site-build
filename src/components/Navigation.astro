@@ -3,55 +3,82 @@ import siteConfig from '../lib/site-config';
 const pathname = Astro.url.pathname;
 
 const navLinks = [
-  { label: 'Home', href: '/' },
+  { label: 'Home',     href: '/' },
   { label: 'Services', href: '/services' },
-  { label: 'Blog', href: '/blog' },
-  { label: 'About', href: '/about' },
-  { label: 'Contact', href: '/contact' },
+  { label: 'Blog',     href: '/blog' },
+  { label: 'About',    href: '/about' },
+  { label: 'Contact',  href: '/contact' },
 ];
 
 function isActive(href: string) {
   if (href === '/') return pathname === '/';
   return pathname.startsWith(href);
 }
+
+const phoneDigits = siteConfig.phone ? siteConfig.phone.replace(/\D/g, '') : '';
 ---
+
+<!-- Top emergency bar (hidden if no phone) -->
+{siteConfig.phone && (
+  <div id="top-bar" class="flex items-center justify-between px-4 sm:px-6 lg:px-8 text-white text-[13px]">
+    <span style="color:rgba(255,255,255,0.75);">
+      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block mr-1 mb-0.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      Serving {siteConfig.city}, {siteConfig.state}
+    </span>
+    <a href={`tel:${phoneDigits}`} class="font-bold text-white hover:text-blue-200 transition-colors flex items-center gap-1.5">
+      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.36a2 2 0 0 1 1.99-2.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.06 6.06l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      Call Now: {siteConfig.phone}
+    </a>
+  </div>
+)}
 
 <header
   id="site-nav"
-  class="fixed top-0 left-0 right-0 z-50 h-16 transition-all duration-300"
-  style="background: transparent;"
+  class="fixed left-0 right-0 z-50 h-16 transition-all duration-300 bg-white"
+  style="border-bottom: 1px solid #e4e4e7;"
 >
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
 
     <!-- Logo -->
-    <a href="/" class="text-xl font-bold tracking-tight text-[var(--color-text)] hover:opacity-80 transition-opacity">
-      {siteConfig.name}
+    <a href="/" class="flex items-center hover:opacity-80 transition-opacity">
+      {siteConfig.logo
+        ? <img src={siteConfig.logo} alt={siteConfig.name} class="h-8 w-auto" />
+        : <span class="text-xl font-bold tracking-tight text-[var(--color-text)]">{siteConfig.name}</span>
+      }
     </a>
 
     <!-- Desktop nav -->
-    <nav class="hidden md:flex items-center gap-1" aria-label="Main navigation">
+    <nav class="hidden md:flex items-center gap-0.5" aria-label="Main navigation">
       {navLinks.map(({ label, href }) => (
         <a
           href={href}
           class={[
-            'px-3 py-1.5 rounded-md text-sm font-medium transition-colors',
+            'px-3 py-2 text-sm font-medium transition-colors relative',
             isActive(href)
-              ? 'text-[var(--color-brand)] font-semibold'
-              : 'text-[var(--color-text)] hover:text-[var(--color-brand)] hover:bg-black/5',
+              ? 'text-[var(--color-brand)] font-semibold nav-active'
+              : 'text-[var(--color-text)] hover:text-[var(--color-brand)]',
           ].join(' ')}
           aria-current={isActive(href) ? 'page' : undefined}
         >
           {label}
+          {isActive(href) && (
+            <span class="absolute bottom-0 left-3 right-3 h-0.5 rounded-full" style="background:var(--color-brand);"></span>
+          )}
         </a>
       ))}
     </nav>
 
-    <!-- CTA + hamburger -->
+    <!-- CTA + phone + hamburger -->
     <div class="flex items-center gap-3">
+      {siteConfig.phone && (
+        <a href={`tel:${phoneDigits}`} class="hidden lg:flex items-center gap-1.5 text-sm font-semibold transition-colors hover:text-[var(--color-brand)]" style="color:var(--color-text);">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.36a2 2 0 0 1 1.99-2.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.06 6.06l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          {siteConfig.phone}
+        </a>
+      )}
       <a
         href="/contact"
-        class="hidden md:inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold text-white transition-opacity hover:opacity-90"
-        style="background-color: var(--color-brand);"
+        class="hidden md:inline-flex btn-primary items-center px-4 py-2 rounded-[var(--radius-md)] text-sm font-semibold text-white"
       >
         Get in Touch
       </a>
@@ -92,10 +119,15 @@ function isActive(href: string) {
           {label}
         </a>
       ))}
+      {siteConfig.phone && (
+        <a href={`tel:${phoneDigits}`} class="mt-1 px-3 py-2 rounded-md text-sm font-semibold flex items-center gap-2" style="color:var(--color-brand);">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.36a2 2 0 0 1 1.99-2.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.06 6.06l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          {siteConfig.phone}
+        </a>
+      )}
       <a
         href="/contact"
-        class="mt-2 px-4 py-2 rounded-md text-sm font-semibold text-white text-center transition-opacity hover:opacity-90"
-        style="background-color: var(--color-brand);"
+        class="mt-2 btn-primary px-4 py-2 rounded-[var(--radius-md)] text-sm font-semibold text-white text-center"
       >
         Get in Touch
       </a>
@@ -103,8 +135,8 @@ function isActive(href: string) {
   </div>
 </header>
 
-<!-- Spacer so page content isn't hidden under fixed nav -->
-<div class="h-16"></div>
+<!-- Spacer: top-bar (36px) + nav (64px) -->
+<div style={siteConfig.phone ? 'height:100px;' : 'height:64px;'}></div>
 
 <script>
   const nav = document.getElementById('site-nav')!;
@@ -113,28 +145,28 @@ function isActive(href: string) {
   const hamTop = document.getElementById('ham-top')!;
   const hamMid = document.getElementById('ham-mid')!;
   const hamBot = document.getElementById('ham-bot')!;
-
-  // Solid-on-scroll: apply when not on homepage OR when scrolled
-  const isHomepage = document.body.classList.contains('homepage');
+  const topBar = document.getElementById('top-bar');
 
   function applyNavStyle() {
     const scrolled = window.scrollY > 50;
-    if (!isHomepage || scrolled) {
+    if (scrolled) {
       nav.classList.add('scrolled');
+      nav.style.top = '0';
+      if (topBar) topBar.style.display = 'none';
     } else {
       nav.classList.remove('scrolled');
+      nav.style.top = topBar ? '36px' : '0';
+      if (topBar) topBar.style.display = '';
     }
   }
 
   applyNavStyle();
   window.addEventListener('scroll', applyNavStyle, { passive: true });
 
-  // Hamburger toggle
   function openMenu(open: boolean) {
     toggle.setAttribute('aria-expanded', String(open));
     menu.setAttribute('aria-hidden', String(!open));
     menu.classList.toggle('hidden', !open);
-    // Animate bars
     hamTop.style.transform = open ? 'translateY(8px) rotate(45deg)' : '';
     hamMid.style.opacity = open ? '0' : '1';
     hamBot.style.transform = open ? 'translateY(-8px) rotate(-45deg)' : '';
@@ -145,12 +177,10 @@ function isActive(href: string) {
     openMenu(!isOpen);
   });
 
-  // Close on outside click
   document.addEventListener('click', (e) => {
     if (!nav.contains(e.target as Node)) openMenu(false);
   });
 
-  // Close on escape
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') openMenu(false);
   });
