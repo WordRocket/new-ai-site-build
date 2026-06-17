@@ -10,8 +10,15 @@ if (!bar.show) return;
 const phoneDigits = siteConfig.phone ? siteConfig.phone.replace(/\D/g, '') : '';
 const vars = { phone: phoneDigits, email: siteConfig.email ?? '' };
 
-const primaryHref  = interpolate(bar.primaryHref,  vars);
-const secondaryHref = interpolate(bar.secondaryHref, vars);
+function resolveHref(raw: string): string {
+  const href = interpolate(raw, vars);
+  // If a tel: link resolved to no number, fall back to /contact
+  if (href === 'tel:' || href === 'tel: ') return '/contact';
+  return href;
+}
+
+const primaryHref   = resolveHref(bar.primaryHref);
+const secondaryHref = resolveHref(bar.secondaryHref);
 ---
 
 <div class="sticky-bar" role="navigation" aria-label="Quick actions">
