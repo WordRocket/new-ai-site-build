@@ -108,3 +108,12 @@ const secondaryHref = resolveHref(bar.secondaryHref);
     }
   }
 </style>
+
+<style is:global>
+  /* Prevent the fixed bar from obscuring footer content on mobile */
+  @media (max-width: 767px) {
+    body:has(.sticky-bar) {
+      padding-bottom: 80px;
+    }
+  }
+</style>
