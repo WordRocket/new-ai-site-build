@@ -108,12 +108,12 @@ const heroStats = statsItems.slice(0, 3);
       {siteConfig.tagline}
     </p>
 
-    <!-- CTAs: daisyUI btn structure + rs-* token colors -->
+    <!-- CTAs: token-native u-btn-* utilities -->
     <div class="flex flex-col sm:flex-row items-start gap-3 mb-8">
-      <a href={primaryCta} class="btn" style="background:var(--rs-accent); color:var(--rs-accent-contrast); border-color:var(--rs-accent); border-radius:var(--rs-radius-md);">
+      <a href={primaryCta} class="u-btn u-btn-primary">
         {preset.heroCta}
       </a>
-      <a href="/services" class="btn" style="background:transparent; border:2px solid var(--rs-accent); color:var(--rs-accent); border-radius:var(--rs-radius-md);">
+      <a href="/services" class="u-btn u-btn-ghost">
         {preset.heroCtaSecondary} →
       </a>
     </div>
