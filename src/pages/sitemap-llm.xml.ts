@@ -1,14 +1,16 @@
+import { getCollection } from 'astro:content';
 import siteConfig from '../lib/site-config';
 
-const TODAY = '2026-06-11';
+const TODAY = '2026-06-17';
 
-const paths = [
+const staticPaths = [
   { path: '/', changefreq: 'weekly', priority: '1.0' },
   { path: '/services', changefreq: 'weekly', priority: '0.9' },
   { path: '/blog', changefreq: 'weekly', priority: '0.9' },
   { path: '/contact', changefreq: 'monthly', priority: '0.9' },
   { path: '/about', changefreq: 'monthly', priority: '0.8' },
   { path: '/faq', changefreq: 'monthly', priority: '0.8' },
+  { path: '/locations', changefreq: 'weekly', priority: '0.8' },
   { path: '/.well-known/ai.txt', changefreq: 'monthly', priority: '0.8' },
   { path: '/ai/summary.json', changefreq: 'monthly', priority: '0.8' },
   { path: '/ai/faq.json', changefreq: 'monthly', priority: '0.8' },
@@ -17,9 +19,19 @@ const paths = [
   { path: '/llms-full.txt', changefreq: 'monthly', priority: '0.8' },
 ];
 
-export function GET() {
+export async function GET() {
   const base = siteConfig.url.replace(/\/$/, '');
-  const entries = paths
+
+  const locations = await getCollection('locations').catch(() => []);
+  const locationPaths = locations.map((entry) => ({
+    path: `/${entry.slug.replace(/^\/+/, '')}`,
+    changefreq: 'monthly',
+    priority: '0.7',
+  }));
+
+  const allPaths = [...staticPaths, ...locationPaths];
+
+  const entries = allPaths
     .map(
       (u) => `  <url>
     <loc>${base}${u.path}</loc>
