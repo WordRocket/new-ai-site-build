@@ -58,6 +58,10 @@ const { title, description, ogImage, canonical, noindex, schemas = [], schemaJso
     <Footer />
     <StickyActionBar />
     <script>
+      function showAll() {
+        document.querySelectorAll('.reveal').forEach((el) => el.classList.add('visible'));
+      }
+
       function initReveal() {
         const obs = new IntersectionObserver(
           (entries) => entries.forEach((e) => {
@@ -68,17 +72,20 @@ const { title, description, ogImage, canonical, noindex, schemas = [], schemaJso
           }),
           { threshold: 0.1 }
         );
-        document.querySelectorAll<Element>('.reveal').forEach((el) => {
-          el.classList.remove('visible');
-          obs.observe(el);
-        });
+        // Only observe elements not yet visible — never strip existing visible state
+        document.querySelectorAll('.reveal:not(.visible)').forEach((el) => obs.observe(el));
       }
 
-      initReveal();
-
-      // Re-run when browser restores page from bfcache (back/forward navigation)
       window.addEventListener('pageshow', (e) => {
-        if (e.persisted) initReveal();
+        if (e.persisted) {
+          // True bfcache restore: page state is already correct, just ensure everything is shown
+          showAll();
+        } else {
+          // Initial load OR iframe/non-bfcache back navigation:
+          // Double RAF defers execution until after the browser has restored scroll position,
+          // so IntersectionObserver sees the correct viewport when first observing elements.
+          requestAnimationFrame(() => requestAnimationFrame(initReveal));
+        }
       });
     </script>
   </body>
