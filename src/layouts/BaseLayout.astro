@@ -5,6 +5,7 @@ import Navigation from '../components/Navigation.astro';
 import Footer from '../components/Footer.astro';
 import StickyActionBar from '../components/sections/StickyActionBar.astro';
 import siteConfig from '../data/site-config.json';
+import { getPreset } from '../lib/business-presets';
 import '../styles/global.css';
 
 interface Props {
@@ -18,10 +19,20 @@ interface Props {
 }
 
 const { title, description, ogImage, canonical, noindex, schemas = [], schemaJsonld } = Astro.props;
+
+const brandColor = siteConfig.brandColor ?? '#2563eb';
+const preset = getPreset(siteConfig.businessType);
+const configSkin = (siteConfig as Record<string, unknown>).skin;
+const skin: 'light' | 'dark' =
+  configSkin === 'dark' || configSkin === 'light'
+    ? (configSkin as 'light' | 'dark')
+    : siteConfig.darkMode
+    ? 'dark'
+    : preset.skin;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-skin={skin} style={`--rs-brand: ${brandColor}`}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

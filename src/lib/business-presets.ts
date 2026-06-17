@@ -28,6 +28,7 @@ export interface CtaBand {
 }
 
 export interface BusinessPreset {
+  skin: 'light' | 'dark';
   emergencyBarEnabled: boolean;
   heroCta: string;
   heroCtaSecondary: string;
@@ -44,6 +45,7 @@ export interface BusinessPreset {
 
 export const BUSINESS_PRESETS: Record<BusinessType, BusinessPreset> = {
   'local-service': {
+    skin: 'light',
     emergencyBarEnabled: true,
     heroCta: 'Get a Free Quote',
     heroCtaSecondary: 'Our Services',
@@ -74,6 +76,7 @@ export const BUSINESS_PRESETS: Record<BusinessType, BusinessPreset> = {
   },
 
   'professional': {
+    skin: 'light',
     emergencyBarEnabled: false,
     heroCta: 'Book a Consultation',
     heroCtaSecondary: 'Our Services',
@@ -104,6 +107,7 @@ export const BUSINESS_PRESETS: Record<BusinessType, BusinessPreset> = {
   },
 
   'health-wellness': {
+    skin: 'light',
     emergencyBarEnabled: false,
     heroCta: 'Book an Appointment',
     heroCtaSecondary: 'Our Services',
@@ -134,6 +138,7 @@ export const BUSINESS_PRESETS: Record<BusinessType, BusinessPreset> = {
   },
 
   'restaurant': {
+    skin: 'light',
     emergencyBarEnabled: false,
     heroCta: 'View Our Menu',
     heroCtaSecondary: 'Book a Table',
@@ -164,6 +169,7 @@ export const BUSINESS_PRESETS: Record<BusinessType, BusinessPreset> = {
   },
 
   'ecommerce': {
+    skin: 'light',
     emergencyBarEnabled: false,
     heroCta: 'Shop Now',
     heroCtaSecondary: 'View Collections',
@@ -194,6 +200,7 @@ export const BUSINESS_PRESETS: Record<BusinessType, BusinessPreset> = {
   },
 
   'real-estate': {
+    skin: 'light',
     emergencyBarEnabled: false,
     heroCta: 'Browse Listings',
     heroCtaSecondary: 'Free Valuation',
@@ -224,6 +231,7 @@ export const BUSINESS_PRESETS: Record<BusinessType, BusinessPreset> = {
   },
 
   'other': {
+    skin: 'light',
     emergencyBarEnabled: false,
     heroCta: 'Get Started',
     heroCtaSecondary: 'Learn More',
