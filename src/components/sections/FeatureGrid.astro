@@ -1,0 +1,136 @@
+---
+import { iconSvg } from '../../lib/icons';
+
+interface Item {
+  title: string;
+  desc: string;
+  icon?: string;
+}
+
+interface Props {
+  items: Item[];
+  heading?: string;
+  columns?: 2 | 3;
+}
+
+const { items, heading, columns = 3 } = Astro.props;
+
+if (!items || items.length === 0) return;
+
+const fallbackIcons = ['zap', 'shield-check', 'star', 'check-circle', 'trending-up', 'layers', 'users', 'settings'];
+---
+
+<section class="feature-grid" aria-labelledby={heading ? 'feature-grid-heading' : undefined}>
+  <div class="feature-grid__inner">
+    {heading && (
+      <h2 id="feature-grid-heading" class="feature-grid__heading reveal">{heading}</h2>
+    )}
+    <ul
+      class={`feature-grid__list feature-grid__list--cols-${columns}`}
+      role="list"
+    >
+      {items.map((item, i) => {
+        const iconName = item.icon ?? fallbackIcons[i % fallbackIcons.length];
+        return (
+          <li class="feature-grid__card card-hover reveal" role="listitem">
+            <span class="feature-grid__icon" aria-hidden="true">
+              <Fragment set:html={iconSvg(iconName, 22)} />
+            </span>
+            <h3 class="feature-grid__title">{item.title}</h3>
+            <p class="feature-grid__desc">{item.desc}</p>
+          </li>
+        );
+      })}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .feature-grid {
+    padding: 100px 1rem;
+    background: white;
+  }
+
+  @media (max-width: 768px) {
+    .feature-grid { padding: 64px 1rem; }
+  }
+
+  .feature-grid__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .feature-grid__heading {
+    text-align: center;
+    color: var(--color-text);
+    margin-bottom: 3rem;
+  }
+
+  .feature-grid__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 1.25rem;
+    /* 1 col mobile, 2 col mid, N col large */
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 560px) {
+    .feature-grid__list { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (min-width: 900px) {
+    .feature-grid__list--cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .feature-grid__list--cols-2 { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .feature-grid__card {
+    background: white;
+    border-radius: var(--radius-md);
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .feature-grid__icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    background: rgba(37, 99, 235, 0.08);
+    color: var(--color-brand);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .feature-grid__card:hover .feature-grid__icon {
+    background: var(--color-brand);
+    color: white;
+  }
+
+  .feature-grid__title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  .feature-grid__desc {
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .feature-grid__icon {
+      transition: none;
+    }
+  }
+</style>

@@ -1,0 +1,168 @@
+---
+interface Testimonial {
+  quote: string;
+  name: string;
+  role?: string;
+  rating?: number;
+}
+
+interface Props {
+  testimonials: Testimonial[];
+  heading?: string;
+}
+
+const { testimonials, heading = 'What Our Clients Say' } = Astro.props;
+
+if (!testimonials || testimonials.length === 0) return;
+
+function clampRating(r?: number): number {
+  if (r === undefined || r === null) return 5;
+  return Math.min(5, Math.max(1, Math.round(r)));
+}
+---
+
+<section class="testimonials" aria-labelledby="testimonials-heading">
+  <div class="testimonials__inner">
+    <h2 id="testimonials-heading" class="testimonials__heading reveal">{heading}</h2>
+
+    <ul class="testimonials__grid" role="list">
+      {testimonials.map((t) => {
+        const stars = clampRating(t.rating);
+        return (
+          <li class="testimonials__card reveal" role="listitem">
+            <div class="testimonials__stars" aria-label={`${stars} out of 5 stars`}>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill={i < stars ? '#f59e0b' : 'none'}
+                  stroke={i < stars ? '#f59e0b' : '#d1d5db'}
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                </svg>
+              ))}
+            </div>
+
+            <blockquote class="testimonials__quote">
+              <p>"{t.quote}"</p>
+            </blockquote>
+
+            <footer class="testimonials__author">
+              <span class="testimonials__name">{t.name}</span>
+              {t.role && <span class="testimonials__role">{t.role}</span>}
+            </footer>
+          </li>
+        );
+      })}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .testimonials {
+    padding: 100px 1rem;
+    background: var(--color-neutral-50);
+  }
+
+  @media (max-width: 768px) {
+    .testimonials { padding: 64px 1rem; }
+  }
+
+  .testimonials__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .testimonials__heading {
+    text-align: center;
+    color: var(--color-text);
+    margin-bottom: 3rem;
+  }
+
+  .testimonials__grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 600px) {
+    .testimonials__grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (min-width: 960px) {
+    .testimonials__grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  /* If only 1 or 2 items, limit max width so they don't stretch awkwardly */
+  .testimonials__grid:has(> :nth-child(1):last-child) { grid-template-columns: minmax(0, 480px); justify-content: center; }
+  .testimonials__grid:has(> :nth-child(2):last-child) { grid-template-columns: repeat(2, minmax(0, 480px)); justify-content: center; }
+
+  .testimonials__card {
+    background: white;
+    border-radius: var(--radius-md);
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .testimonials__card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .testimonials__stars {
+    display: flex;
+    gap: 2px;
+  }
+
+  .testimonials__quote {
+    margin: 0;
+    flex: 1;
+  }
+
+  .testimonials__quote p {
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    color: var(--color-text);
+    font-style: italic;
+    margin: 0;
+  }
+
+  .testimonials__author {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .testimonials__name {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  .testimonials__role {
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .testimonials__card {
+      transition: none;
+    }
+  }
+</style>

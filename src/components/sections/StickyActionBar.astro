@@ -1,0 +1,103 @@
+---
+import siteConfig from '../../lib/site-config';
+import { getPreset, interpolate } from '../../lib/business-presets';
+
+const preset = getPreset((siteConfig as any).businessType || 'other');
+const bar = preset.stickyBar;
+
+if (!bar.show) return;
+
+const phoneDigits = siteConfig.phone ? siteConfig.phone.replace(/\D/g, '') : '';
+const vars = { phone: phoneDigits, email: siteConfig.email ?? '' };
+
+const primaryHref  = interpolate(bar.primaryHref,  vars);
+const secondaryHref = interpolate(bar.secondaryHref, vars);
+---
+
+<div class="sticky-bar" role="navigation" aria-label="Quick actions">
+  <a
+    href={primaryHref}
+    class="sticky-bar__btn sticky-bar__btn--primary"
+    aria-label={bar.primaryLabel}
+  >
+    {bar.primaryLabel}
+  </a>
+  <a
+    href={secondaryHref}
+    class="sticky-bar__btn sticky-bar__btn--secondary"
+    aria-label={bar.secondaryLabel}
+  >
+    {bar.secondaryLabel}
+  </a>
+</div>
+
+<style>
+  .sticky-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: white;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+    /* safe area for notched phones */
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Hide on tablet and up */
+  @media (min-width: 768px) {
+    .sticky-bar {
+      display: none;
+    }
+  }
+
+  .sticky-bar__btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    border-radius: var(--radius-md);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+
+  .sticky-bar__btn:focus-visible {
+    outline: 3px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+
+  .sticky-bar__btn:active {
+    transform: scale(0.97);
+    opacity: 0.9;
+  }
+
+  .sticky-bar__btn--primary {
+    background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-light) 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+  }
+
+  .sticky-bar__btn--secondary {
+    background: transparent;
+    color: var(--color-brand);
+    border: 2px solid var(--color-brand);
+  }
+
+  .sticky-bar__btn--secondary:hover {
+    background: var(--color-brand);
+    color: white;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sticky-bar__btn {
+      transition: none;
+    }
+  }
+</style>
