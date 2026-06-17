@@ -1,9 +1,9 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
-/* ── CSS View Transitions ──────────────────────────────────────────────── */
-@view-transition { navigation: auto; }
-::view-transition-old(root) { animation: 200ms ease-out vt-fade-out; }
-::view-transition-new(root) { animation: 200ms ease-in  vt-fade-in;  }
+/* ── CSS View Transitions (Astro ClientRouter handles JS lifecycle) ─────── */
+::view-transition-old(root) { animation: 220ms ease-out vt-fade-out forwards; }
+::view-transition-new(root) { animation: 220ms ease-in  vt-fade-in  forwards; }
 @keyframes vt-fade-out { from { opacity: 1; } to { opacity: 0; } }
 @keyframes vt-fade-in  { from { opacity: 0; } to { opacity: 1; } }
 
@@ -45,10 +45,6 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 600; letter-spacing: -0
 /* ── Scroll Reveal ─────────────────────────────────────────────────────── */
 .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
 .reveal.visible { opacity: 1; transform: translateY(0); }
-@media (prefers-reduced-motion: reduce) {
-  .reveal { opacity: 1; transform: none; transition: none; }
-  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
-}
 
 /* ── Section spacing ───────────────────────────────────────────────────── */
 .section-pad { padding-top: 100px; padding-bottom: 100px; }
@@ -187,3 +183,286 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 600; letter-spacing: -0
 /* ── Wave divider ──────────────────────────────────────────────────────── */
 .wave-divider { display: block; width: 100%; overflow: hidden; line-height: 0; margin-bottom: -1px; }
 .wave-divider svg { display: block; width: 100%; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PROSE — tuned typography for all markdown content areas
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.prose {
+  /* Column width & rhythm */
+  max-width: 68ch;
+  line-height: 1.7;
+  color: var(--color-text);
+  font-size: 1.0625rem; /* ~17px */
+}
+
+/* First paragraph lead — larger, slightly lighter */
+.prose > p:first-of-type {
+  font-size: 1.15rem;
+  line-height: 1.75;
+  color: #374151;
+  font-weight: 400;
+}
+
+/* Headings — override prose defaults with site tokens */
+.prose h1, .prose h2, .prose h3, .prose h4 {
+  color: var(--color-text);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+/* H2 accent rule */
+.prose h2 {
+  font-size: clamp(1.35rem, 2.5vw, 1.7rem);
+  margin-top: 2.5em;
+  margin-bottom: 0.75em;
+  padding-bottom: 0.5em;
+  border-bottom: 2px solid var(--color-brand);
+  position: relative;
+}
+
+.prose h3 {
+  font-size: clamp(1.05rem, 2vw, 1.25rem);
+  margin-top: 2em;
+  margin-bottom: 0.5em;
+}
+
+/* Paragraph spacing */
+.prose p { margin-bottom: 1.4em; }
+
+/* Links */
+.prose a {
+  color: var(--color-brand);
+  text-decoration: underline;
+  text-decoration-color: rgba(37,99,235,0.35);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.15s ease, color 0.15s ease;
+}
+.prose a:hover {
+  color: var(--color-brand-dark);
+  text-decoration-color: var(--color-brand-dark);
+}
+
+/* ── Lists — brand-colored markers ─────────────────────────────────────── */
+.prose ul {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 1.4em;
+}
+.prose ul > li {
+  position: relative;
+  padding-left: 1.6em;
+  margin-bottom: 0.45em;
+  line-height: 1.65;
+}
+.prose ul > li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--color-brand);
+  flex-shrink: 0;
+}
+
+.prose ol {
+  padding-left: 1.4em;
+  margin-bottom: 1.4em;
+  counter-reset: prose-ol;
+  list-style: none;
+}
+.prose ol > li {
+  position: relative;
+  padding-left: 1.4em;
+  margin-bottom: 0.45em;
+  line-height: 1.65;
+  counter-increment: prose-ol;
+}
+.prose ol > li::before {
+  content: counter(prose-ol) ".";
+  position: absolute;
+  left: 0;
+  font-weight: 600;
+  color: var(--color-brand);
+  font-size: 0.9em;
+  top: 0.05em;
+}
+
+/* ── Tables — intentional pricing/factor styling ───────────────────────── */
+.prose table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  font-size: 0.9375rem;
+  margin-bottom: 2em;
+}
+
+/* Wrap tables so they scroll on mobile without breaking layout */
+.prose table {
+  display: table; /* override any block default from typography plugin */
+}
+/* The table scroller — applied via JS-free CSS trick: wrap the table prose block */
+.prose :where(table) {
+  min-width: 480px;
+}
+
+/* Mobile scroll wrapper — handled by wrapping .prose in .prose-table-wrap */
+.prose-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: var(--radius-md);
+  margin-bottom: 2em;
+}
+.prose-table-wrap table {
+  margin-bottom: 0;
+  min-width: 480px;
+}
+
+/* Header row */
+.prose thead tr {
+  background-color: rgba(37,99,235,0.08);
+}
+.prose thead th {
+  color: var(--color-brand-dark);
+  font-weight: 700;
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.75em 1em;
+  border-bottom: 2px solid rgba(37,99,235,0.2);
+  text-align: left;
+  white-space: nowrap;
+}
+
+/* Body rows */
+.prose tbody tr:nth-child(odd)  { background-color: #ffffff; }
+.prose tbody tr:nth-child(even) { background-color: rgba(37,99,235,0.03); }
+.prose tbody tr:hover           { background-color: rgba(37,99,235,0.06); transition: background-color 0.15s ease; }
+
+.prose tbody td {
+  padding: 0.65em 1em;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  vertical-align: top;
+  line-height: 1.55;
+}
+.prose tbody tr:last-child td { border-bottom: none; }
+
+/* ── Callout blocks — blockquote patterns ───────────────────────────────── */
+
+/* Default clean blockquote */
+.prose blockquote {
+  border-left: 3px solid #e4e4e7;
+  padding: 0.75em 1.25em;
+  margin: 1.75em 0;
+  color: var(--color-text-muted);
+  font-style: italic;
+  background: transparent;
+}
+.prose blockquote p { margin: 0; max-width: none; }
+.prose blockquote p:first-child { margin-top: 0; }
+.prose blockquote p:last-child  { margin-bottom: 0; }
+
+/* Callout: starts with **Note**, **TL;DR**, or GFM alerts [!TIP] / [!WARNING] */
+/* The JS-free approach: use :has() to detect paragraphs starting with the trigger text */
+
+.prose blockquote:has(p > strong:first-child) {
+  --callout-color: var(--color-brand);
+  --callout-bg: rgba(37,99,235,0.05);
+  border-left: 4px solid var(--callout-color);
+  background: var(--callout-bg);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 1em 1.25em 1em 1em;
+  font-style: normal;
+  color: var(--color-text);
+  position: relative;
+}
+
+/* Warning variant — blockquote whose first strong contains "Warning" or "⚠" */
+.prose blockquote:has(p > strong:first-child):has(p > strong:first-child:where([data-callout="warning"])),
+.prose .callout-warning {
+  --callout-color: #d97706;
+  --callout-bg: rgba(217,119,6,0.06);
+  border-left-color: var(--callout-color);
+  background: var(--callout-bg);
+}
+
+/* GFM-style > [!TIP] and > [!WARNING] blocks
+   Astro/remark renders these as blockquotes with a first paragraph of [!TIP] etc.
+   We target the text directly via content attribute trick using data attrs set by rehype,
+   but since we don't control the remark pipeline here, we style all callout blockquotes
+   uniformly and let the icon be the first strong element's text. */
+
+/* Callout icon using the first strong as a visual badge */
+.prose blockquote:has(p > strong:first-child) p > strong:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--callout-color, var(--color-brand));
+  margin-right: 0.5em;
+}
+
+/* ── Horizontal rule ────────────────────────────────────────────────────── */
+.prose hr {
+  border: none;
+  border-top: 1px solid #e4e4e7;
+  margin: 2.5em 0;
+}
+
+/* ── Code ───────────────────────────────────────────────────────────────── */
+.prose code {
+  background: rgba(37,99,235,0.07);
+  color: var(--color-brand-dark);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  font-size: 0.875em;
+  font-family: ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
+}
+.prose pre {
+  background: var(--color-dark-navy);
+  color: #e2e8f0;
+  border-radius: var(--radius-md);
+  padding: 1.25em 1.5em;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.65;
+  margin-bottom: 2em;
+}
+.prose pre code {
+  background: none;
+  color: inherit;
+  padding: 0;
+  border-radius: 0;
+  font-size: inherit;
+}
+
+/* ── Images ─────────────────────────────────────────────────────────────── */
+.prose img {
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  max-width: 100%;
+  height: auto;
+  margin: 1.5em 0;
+}
+
+/* ── Reduced motion — disable ALL transitions and animations ────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+  ::view-transition-old(root),
+  ::view-transition-new(root) { animation: none !important; }
+}
