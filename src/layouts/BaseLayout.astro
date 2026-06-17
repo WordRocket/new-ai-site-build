@@ -58,16 +58,28 @@ const { title, description, ogImage, canonical, noindex, schemas = [], schemaJso
     <Footer />
     <StickyActionBar />
     <script>
-      const observer = new IntersectionObserver(
-        (entries) => entries.forEach((e) => {
-          if (e.isIntersecting) {
-            e.target.classList.add('visible');
-            observer.unobserve(e.target);
-          }
-        }),
-        { threshold: 0.1 }
-      );
-      document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+      function initReveal() {
+        const obs = new IntersectionObserver(
+          (entries) => entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add('visible');
+              obs.unobserve(e.target);
+            }
+          }),
+          { threshold: 0.1 }
+        );
+        document.querySelectorAll<Element>('.reveal').forEach((el) => {
+          el.classList.remove('visible');
+          obs.observe(el);
+        });
+      }
+
+      initReveal();
+
+      // Re-run when browser restores page from bfcache (back/forward navigation)
+      window.addEventListener('pageshow', (e) => {
+        if (e.persisted) initReveal();
+      });
     </script>
   </body>
 </html>
