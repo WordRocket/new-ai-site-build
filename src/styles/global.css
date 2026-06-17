@@ -42,8 +42,21 @@ h2 { font-size: clamp(1.8rem, 3vw, 2.8rem); font-weight: 700; letter-spacing: -0
 h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 600; letter-spacing: -0.01em; }
 
 /* ── Scroll Reveal ─────────────────────────────────────────────────────── */
-.reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
-.reveal.visible { opacity: 1; transform: translateY(0); }
+/* Content is ALWAYS visible by default — no JS required, no hidden flash.  */
+/* Progressive enhancement: scroll-driven animation in supporting browsers. */
+@keyframes revealFade {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: revealFade linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 30%;
+    }
+  }
+}
 
 /* ── Section spacing ───────────────────────────────────────────────────── */
 .section-pad { padding-top: 100px; padding-bottom: 100px; }
@@ -461,7 +474,6 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 600; letter-spacing: -0
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  .reveal { opacity: 1; transform: none; }
   ::view-transition-old(root),
   ::view-transition-new(root) { animation: none !important; }
 }

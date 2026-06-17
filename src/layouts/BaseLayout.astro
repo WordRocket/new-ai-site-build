@@ -57,36 +57,5 @@ const { title, description, ogImage, canonical, noindex, schemas = [], schemaJso
     <slot />
     <Footer />
     <StickyActionBar />
-    <script>
-      function showAll() {
-        document.querySelectorAll('.reveal').forEach((el) => el.classList.add('visible'));
-      }
-
-      function initReveal() {
-        const obs = new IntersectionObserver(
-          (entries) => entries.forEach((e) => {
-            if (e.isIntersecting) {
-              e.target.classList.add('visible');
-              obs.unobserve(e.target);
-            }
-          }),
-          { threshold: 0.1 }
-        );
-        // Only observe elements not yet visible — never strip existing visible state
-        document.querySelectorAll('.reveal:not(.visible)').forEach((el) => obs.observe(el));
-      }
-
-      window.addEventListener('pageshow', (e) => {
-        if (e.persisted) {
-          // True bfcache restore: page state is already correct, just ensure everything is shown
-          showAll();
-        } else {
-          // Initial load OR iframe/non-bfcache back navigation:
-          // Double RAF defers execution until after the browser has restored scroll position,
-          // so IntersectionObserver sees the correct viewport when first observing elements.
-          requestAnimationFrame(() => requestAnimationFrame(initReveal));
-        }
-      });
-    </script>
   </body>
 </html>
