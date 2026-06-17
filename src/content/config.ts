@@ -34,6 +34,15 @@ const pages = defineCollection({
   }),
 });
 
+const stepSchema = z.object({ title: z.string(), desc: z.string(), icon: z.string().optional() });
+const featureSchema = z.object({ title: z.string(), desc: z.string(), icon: z.string().optional() });
+const testimonialSchema = z.object({
+  quote: z.string(),
+  name: z.string(),
+  role: z.string().optional(),
+  rating: z.number().optional(),
+});
+
 const services = defineCollection({
   schema: z.object({
     title: z.string(),
@@ -45,6 +54,9 @@ const services = defineCollection({
     areaServed: z.array(z.string()).default([]),
     faq: z.array(z.object({ question: z.string(), answer: z.string() })).default([]),
     order: z.number().default(0),
+    steps: z.array(stepSchema).optional(),
+    features: z.array(featureSchema).optional(),
+    testimonials: z.array(testimonialSchema).optional(),
     schema_jsonld: z.unknown().optional(),
     schemaJsonld: z.string().optional(),
   }),
@@ -60,6 +72,9 @@ const locations = defineCollection({
     latitude: z.number().optional(),
     longitude: z.number().optional(),
     faq: z.array(z.object({ question: z.string(), answer: z.string() })).default([]),
+    steps: z.array(stepSchema).optional(),
+    features: z.array(featureSchema).optional(),
+    testimonials: z.array(testimonialSchema).optional(),
     schema_jsonld: z.unknown().optional(),
     schemaJsonld: z.string().optional(),
   }),

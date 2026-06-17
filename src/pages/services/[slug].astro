@@ -3,6 +3,12 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import BusinessCard from '../../components/BusinessCard.astro';
 import ServiceAreaMap from '../../components/ServiceAreaMap.astro';
+import TrustBar from '../../components/sections/TrustBar.astro';
+import ProcessTimeline from '../../components/sections/ProcessTimeline.astro';
+import FeatureGrid from '../../components/sections/FeatureGrid.astro';
+import Testimonials from '../../components/sections/Testimonials.astro';
+import CtaBand from '../../components/sections/CtaBand.astro';
+import siteConfig from '../../lib/site-config';
 import {
   getServiceSchema,
   getFAQSchema,
@@ -45,6 +51,8 @@ const orgSchema = getOrganizationSchema({
 const hasFaq = d.faq && d.faq.length > 0;
 const faqSchema = hasFaq ? getFAQSchema(d.faq) : null;
 const schemas = [serviceSchema, breadcrumbSchema, orgSchema, ...(faqSchema ? [faqSchema] : [])];
+
+const testimonials = d.testimonials ?? (siteConfig as any).testimonials ?? [];
 ---
 
 <BaseLayout
@@ -54,7 +62,7 @@ const schemas = [serviceSchema, breadcrumbSchema, orgSchema, ...(faqSchema ? [fa
   schemas={schemas}
 >
   <main>
-    <!-- Page hero -->
+    <!-- Hero -->
     <div class="page-hero" aria-label="Service page hero">
       <div class="relative z-10 max-w-[1200px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-14">
         <nav aria-label="Breadcrumb" class="mb-5">
@@ -76,10 +84,13 @@ const schemas = [serviceSchema, breadcrumbSchema, orgSchema, ...(faqSchema ? [fa
       </div>
     </div>
 
-    <article class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+    <!-- Trust signals bar directly below hero -->
+    <TrustBar />
+
+    <!-- Prose content -->
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
       <div class="max-w-[740px] mx-auto">
 
-        <!-- Body -->
         <div class="prose prose-neutral prose-lg max-w-none">
           <Content />
         </div>
@@ -106,9 +117,20 @@ const schemas = [serviceSchema, breadcrumbSchema, orgSchema, ...(faqSchema ? [fa
           </section>
         )}
 
-        <!-- FAQ -->
-        {hasFaq && (
-          <section id="faq" class="mt-14 pt-10 border-t border-neutral-100">
+      </div>
+    </div>
+
+    <!-- Process timeline (full-width, only renders if d.steps has items) -->
+    <ProcessTimeline steps={d.steps ?? []} />
+
+    <!-- Feature grid (full-width, only renders if d.features has items) -->
+    <FeatureGrid items={d.features ?? []} />
+
+    <!-- FAQ accordion -->
+    {hasFaq && (
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        <div class="max-w-[740px] mx-auto">
+          <section id="faq" class="pt-10 border-t border-neutral-100">
             <h2 class="text-2xl font-bold tracking-tight text-[var(--color-text)] mb-8">Frequently Asked Questions</h2>
             <div class="flex flex-col divide-y divide-neutral-100" id="service-faq-list">
               {d.faq.map((item: { question: string; answer: string }, i: number) => (
@@ -135,27 +157,24 @@ const schemas = [serviceSchema, breadcrumbSchema, orgSchema, ...(faqSchema ? [fa
               ))}
             </div>
           </section>
-        )}
-
-        <!-- CTA -->
-        <div class="mt-14 p-8 rounded-[var(--radius-lg)] text-center" style="background:var(--color-neutral-50,#f9fafb); border:1px solid #e4e4e7;">
-          <h2 class="text-xl font-bold text-[var(--color-text)] mb-2">Ready to get started?</h2>
-          <p class="text-[var(--color-text-muted)] mb-5">Contact us today and let's talk about how we can help your business grow.</p>
-          <a
-            href="/contact"
-            class="inline-flex items-center gap-2 px-6 py-3 rounded-[var(--radius-md)] text-sm font-semibold text-white transition-opacity hover:opacity-90"
-            style="background-color:var(--color-brand);"
-          >
-            Contact Us Today
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
-          </a>
         </div>
+      </div>
+    )}
 
+    <!-- Testimonials (full-width, only renders if data present) -->
+    <Testimonials testimonials={testimonials} />
+
+    <!-- CTA band (full-width, preset-driven) -->
+    <CtaBand />
+
+    <!-- Business card + service area map -->
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+      <div class="max-w-[740px] mx-auto">
         <BusinessCard />
         <ServiceAreaMap areas={d.areaServed ?? []} />
-
       </div>
-    </article>
+    </div>
+
   </main>
 </BaseLayout>
 

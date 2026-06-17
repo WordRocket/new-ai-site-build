@@ -4,6 +4,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import NAPBlock from '../components/NAPBlock.astro';
 import ServiceAreaMap from '../components/ServiceAreaMap.astro';
 import ReviewBanner from '../components/ReviewBanner.astro';
+import TrustBar from '../components/sections/TrustBar.astro';
+import ProcessTimeline from '../components/sections/ProcessTimeline.astro';
+import FeatureGrid from '../components/sections/FeatureGrid.astro';
+import Testimonials from '../components/sections/Testimonials.astro';
+import CtaBand from '../components/sections/CtaBand.astro';
 import {
   getLocalBusinessSchema,
   getFAQSchema,
@@ -53,9 +58,11 @@ const breadcrumbSchema = getBreadcrumbSchema([
 const hasFaq = d.faq && d.faq.length > 0;
 const faqSchema = hasFaq ? getFAQSchema(d.faq) : null;
 
-// schemaJsonld (pre-serialized string from Railway) takes priority.
 const autoSchemas: object[] = [localBusinessSchema, breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])];
 const schemas: object[] = d.schemaJsonld ? [] : autoSchemas;
+
+const hasFeatures = d.features && d.features.length > 0;
+const testimonials = d.testimonials ?? (siteConfig as any).testimonials ?? [];
 ---
 
 <BaseLayout
@@ -66,7 +73,7 @@ const schemas: object[] = d.schemaJsonld ? [] : autoSchemas;
   schemaJsonld={d.schemaJsonld}
 >
   <main>
-    <!-- Page hero -->
+    <!-- Hero -->
     <div class="page-hero" aria-label="Location page hero">
       <div class="relative z-10 max-w-[1200px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-14">
         <nav aria-label="Breadcrumb" class="mb-5">
@@ -91,38 +98,55 @@ const schemas: object[] = d.schemaJsonld ? [] : autoSchemas;
       </div>
     </div>
 
-    <article class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-      <div class="max-w-[740px] mx-auto">
+    <!-- Trust signals bar directly below hero -->
+    <TrustBar />
 
-        <!-- Body content -->
+    <!-- Prose content -->
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
+      <div class="max-w-[740px] mx-auto">
         <section aria-label="Introduction">
           <div class="prose prose-neutral prose-lg max-w-none">
             <Content />
           </div>
         </section>
+      </div>
+    </div>
 
-        <!-- Why Choose Us -->
-        <section class="mt-12 pt-10 border-t border-neutral-100">
-          <h2 class="text-2xl font-bold tracking-tight text-[var(--color-text)] mb-6">
-            Why Choose Us in {d.city}
-          </h2>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            {[
-              { label: `Local expertise in ${d.city}` },
-              { label: `Proven ${d.service} results` },
-              { label: 'Transparent reporting & communication' },
-              { label: 'No long-term contracts required' },
-            ].map((point) => (
-              <div class="flex items-start gap-3 p-4 rounded-[var(--radius-md)]" style="background:var(--color-neutral-50,#f9fafb); border:1px solid #e4e4e7;">
-                <span class="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold text-white" style="background-color:var(--color-brand);" aria-hidden="true">✓</span>
-                <span class="text-sm text-[var(--color-text)] font-medium">{point.label}</span>
-              </div>
-            ))}
-          </div>
-        </section>
+    <!-- Process timeline (full-width, only renders if d.steps has items) -->
+    <ProcessTimeline steps={d.steps ?? []} />
 
-        <!-- FAQ -->
-        <section id="faq" class="mt-14 pt-10 border-t border-neutral-100">
+    <!-- Feature grid from frontmatter, or hardcoded "Why Choose Us" fallback -->
+    {hasFeatures ? (
+      <FeatureGrid items={d.features!} />
+    ) : (
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        <div class="max-w-[740px] mx-auto">
+          <section>
+            <h2 class="text-2xl font-bold tracking-tight text-[var(--color-text)] mb-6">
+              Why Choose Us in {d.city}
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              {[
+                { label: `Local expertise in ${d.city}` },
+                { label: `Proven ${d.service} results` },
+                { label: 'Transparent reporting & communication' },
+                { label: 'No long-term contracts required' },
+              ].map((point) => (
+                <div class="flex items-start gap-3 p-4 rounded-[var(--radius-md)]" style="background:var(--color-neutral-50,#f9fafb); border:1px solid #e4e4e7;">
+                  <span class="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold text-white" style="background-color:var(--color-brand);" aria-hidden="true">✓</span>
+                  <span class="text-sm text-[var(--color-text)] font-medium">{point.label}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+      </div>
+    )}
+
+    <!-- FAQ accordion -->
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+      <div class="max-w-[740px] mx-auto">
+        <section id="faq" class="pt-10 border-t border-neutral-100">
           <h2 class="text-2xl font-bold tracking-tight text-[var(--color-text)] mb-8">Frequently Asked Questions</h2>
           {hasFaq ? (
             <div class="flex flex-col divide-y divide-neutral-100" id="loc-faq-list">
@@ -165,9 +189,15 @@ const schemas: object[] = d.schemaJsonld ? [] : autoSchemas;
             location={`${d.city}, ${d.state}`}
           />
         )}
-
       </div>
-    </article>
+    </div>
+
+    <!-- Testimonials (full-width, only renders if data present) -->
+    <Testimonials testimonials={testimonials} />
+
+    <!-- CTA band (full-width, preset-driven) -->
+    <CtaBand />
+
   </main>
 </BaseLayout>
 

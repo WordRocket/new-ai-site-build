@@ -1,6 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
 import PostLayout from '../../layouts/PostLayout.astro';
+import TrustBar from '../../components/sections/TrustBar.astro';
+import CtaBand from '../../components/sections/CtaBand.astro';
 import {
   getBlogPostSchema,
   getFAQSchema,
@@ -112,6 +114,9 @@ const schemas: object[] = d.schemaJsonld ? [] : (d.schema_jsonld ? [d.schema_jso
       </div>
     </div>
 
+    <!-- Trust signals bar — useful context under every post hero -->
+    <TrustBar />
+
     {d.featuredImage && (
       <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 -mt-8 mb-2 relative z-10">
         <div class="max-w-[740px] mx-auto rounded-[var(--radius-lg)] overflow-hidden aspect-video" style="box-shadow:var(--shadow-md);">
@@ -209,6 +214,10 @@ const schemas: object[] = d.schemaJsonld ? [] : (d.schema_jsonld ? [d.schema_jso
 
       </div>
     </article>
+
+    <!-- CTA band (full-width, preset-driven) -->
+    <CtaBand />
+
   </main>
 </PostLayout>
 

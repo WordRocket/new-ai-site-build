@@ -1,0 +1,103 @@
+---
+import siteConfig from '../../lib/site-config';
+import { getPreset } from '../../lib/business-presets';
+import { iconSvg } from '../../lib/icons';
+
+const preset = getPreset((siteConfig as any).businessType || 'other');
+const band = preset.ctaBand;
+---
+
+<section class="cta-band" aria-labelledby="cta-band-heading">
+  <div class="cta-band__inner">
+    <div class="cta-band__icon" aria-hidden="true">
+      <Fragment set:html={iconSvg('zap', 28)} />
+    </div>
+    <h2 id="cta-band-heading" class="cta-band__heading">{band.heading}</h2>
+    <p class="cta-band__sub">{band.subtext}</p>
+    <a
+      href={band.buttonHref}
+      class="cta-band__btn btn-primary px-8 py-3 rounded-[var(--radius-md)] text-white font-semibold"
+    >
+      {band.buttonLabel}
+      <Fragment set:html={iconSvg('arrow-right', 16)} />
+    </a>
+  </div>
+</section>
+
+<style>
+  .cta-band {
+    background: linear-gradient(135deg, var(--color-dark-navy) 0%, var(--color-brand-dark) 100%);
+    padding: 80px 1rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-band::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .cta-band__inner {
+    position: relative;
+    z-index: 1;
+    max-width: 640px;
+    margin: 0 auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .cta-band__icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #93c5fd;
+    margin-bottom: 0.25rem;
+  }
+
+  .cta-band__heading {
+    color: white;
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+    margin: 0;
+  }
+
+  .cta-band__sub {
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    margin: 0;
+    max-width: 480px;
+  }
+
+  .cta-band__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    text-decoration: none;
+    font-size: 1rem;
+  }
+
+  .cta-band__btn:focus-visible {
+    outline: 3px solid white;
+    outline-offset: 3px;
+  }
+
+  @media (max-width: 640px) {
+    .cta-band { padding: 64px 1rem; }
+  }
+</style>
