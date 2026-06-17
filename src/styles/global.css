@@ -1,4 +1,8 @@
 @import "tailwindcss";
+/* daisyUI v5 (Tailwind v4 plugin) — component structure only, no theme colors */
+@plugin "daisyui" {
+  themes: false;
+}
 
 /* ── CSS View Transitions (Astro ClientRouter handles JS lifecycle) ─────── */
 ::view-transition-old(root) { animation: 220ms ease-out vt-fade-out forwards; }
@@ -214,6 +218,16 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 600; letter-spacing: -0
   .hero-split { grid-template-columns: 1fr; min-height: auto; }
   .hero-right { min-height: 320px; }
 }
+/* Hero skin-aware background: uses --rs-bg so light=white, dark=navy */
+.hero-split { background-color: var(--rs-bg); }
+/* Dark skin: subtle dot-grid overlay to match the premium dark look */
+[data-skin="dark"] .hero-split {
+  background-image:
+    linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
 .hero-right {
   position: relative;
   background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-dark) 100%);
