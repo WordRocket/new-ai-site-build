@@ -1,8 +1,25 @@
 ---
 import siteConfig from '../lib/site-config';
 import { getPreset } from '../lib/business-presets';
+import { getCollection } from 'astro:content';
 const currentYear = new Date().getFullYear();
 const preset = getPreset((siteConfig as any).businessType || 'other');
+
+// Build per-city area links from content collection; fall back to siteConfig.city
+const allLocations = await getCollection('locations').catch(() => []);
+
+// Deduplicate by city — one representative entry per city, linked to its slug
+const cityMap = new Map<string, { label: string; href: string }>();
+for (const entry of allLocations) {
+  const city = entry.data.city;
+  if (!cityMap.has(city)) {
+    const slug = entry.slug.replace(/^\/+/, '');
+    cityMap.set(city, { label: entry.data.title, href: `/${slug}` });
+  }
+}
+const areaLinks = cityMap.size > 0
+  ? Array.from(cityMap.values())
+  : [{ label: `${siteConfig.city}, ${siteConfig.state}`, href: '/' }];
 
 const quickLinks = [
   { label: 'Home',     href: '/' },
@@ -82,10 +99,12 @@ const phoneDigits = siteConfig.phone ? siteConfig.phone.replace(/\D/g, '') : '';
       <div>
         <h3 class="text-xs font-semibold uppercase tracking-wider mb-5" style="color:#64748b;">Areas We Serve</h3>
         <ul class="flex flex-col gap-2.5">
-          <li class="flex items-center gap-1.5 text-sm" style="color:#94a3b8;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand-light)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            {siteConfig.city}, {siteConfig.state}
-          </li>
+          {areaLinks.map(({ label, href }) => (
+            <li class="flex items-center gap-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand-light)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <a href={href} class="text-sm transition-colors hover:text-white" style="color:#94a3b8;">{label}</a>
+            </li>
+          ))}
           <li>
             <a href="/locations" class="text-sm transition-colors hover:text-white" style="color:#94a3b8;">View all service areas →</a>
           </li>

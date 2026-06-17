@@ -1,14 +1,15 @@
 ---
 import { getCollection } from 'astro:content';
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import NAPBlock from '../../components/NAPBlock.astro';
-import ServiceAreaMap from '../../components/ServiceAreaMap.astro';
-import ReviewBanner from '../../components/ReviewBanner.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import NAPBlock from '../components/NAPBlock.astro';
+import ServiceAreaMap from '../components/ServiceAreaMap.astro';
+import ReviewBanner from '../components/ReviewBanner.astro';
 import {
   getLocalBusinessSchema,
   getFAQSchema,
   getBreadcrumbSchema,
-} from '../../lib/schema';
+} from '../lib/schema';
+import siteConfig from '../lib/site-config';
 
 export async function getStaticPaths() {
   const locations = await getCollection('locations');
@@ -22,21 +23,21 @@ const { location } = Astro.props;
 const { Content } = await location.render();
 const d = location.data;
 
-const siteUrl = (import.meta.env.SITE ?? 'https://example.com').replace(/\/+$/, '');
-const pageUrl = `${siteUrl}/${location.slug.replace(/^\/+/, '')}`;
-const pageTitle = `${d.service} in ${d.city}, ${d.state} | SiteName`;
+const siteUrl = (import.meta.env.SITE ?? siteConfig.url ?? 'https://example.com').replace(/\/+$/, '');
+const pageUrl = `${siteUrl}/${location.slug}`;
 
 const localBusinessSchema = getLocalBusinessSchema({
-  name: `SiteName — ${d.service} in ${d.city}`,
+  name: `${siteConfig.name} — ${d.service} in ${d.city}`,
   url: pageUrl,
-  logo: `${siteUrl}/favicon.svg`,
+  logo: siteConfig.logo || `${siteUrl}/favicon.svg`,
   description: d.description,
+  telephone: siteConfig.phone,
   address: {
-    streetAddress: '',
+    streetAddress: siteConfig.address || '',
     addressLocality: d.city,
     addressRegion: d.state,
-    postalCode: '',
-    addressCountry: 'US',
+    postalCode: siteConfig.zip || '',
+    addressCountry: siteConfig.country || 'US',
   },
   ...(d.latitude && d.longitude
     ? { geo: { latitude: d.latitude, longitude: d.longitude } }
@@ -51,14 +52,18 @@ const breadcrumbSchema = getBreadcrumbSchema([
 
 const hasFaq = d.faq && d.faq.length > 0;
 const faqSchema = hasFaq ? getFAQSchema(d.faq) : null;
-const schemas = [localBusinessSchema, breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])];
+
+// schemaJsonld (pre-serialized string from Railway) takes priority.
+const autoSchemas: object[] = [localBusinessSchema, breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])];
+const schemas: object[] = d.schemaJsonld ? [] : autoSchemas;
 ---
 
 <BaseLayout
-  title={pageTitle}
+  title={`${d.title} | ${siteConfig.name}`}
   description={d.description}
   canonical={pageUrl}
   schemas={schemas}
+  schemaJsonld={d.schemaJsonld}
 >
   <main>
     <!-- Page hero -->
@@ -68,9 +73,9 @@ const schemas = [localBusinessSchema, breadcrumbSchema, ...(faqSchema ? [faqSche
           <ol class="flex items-center gap-2 text-sm flex-wrap" style="color:rgba(255,255,255,0.6);">
             <li><a href="/" class="hover:text-white transition-colors">Home</a></li>
             <li aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></li>
-            <li><a href="/locations" class="hover:text-white transition-colors">Locations</a></li>
+            <li><a href="/services" class="hover:text-white transition-colors">{d.service}</a></li>
             <li aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></li>
-            <li class="text-white font-medium">{d.city} › {d.service}</li>
+            <li class="text-white font-medium">{d.city}</li>
           </ol>
         </nav>
         <h1 class="text-white font-extrabold tracking-tight mb-3">{d.service} in {d.city}, {d.state}</h1>
@@ -89,34 +94,34 @@ const schemas = [localBusinessSchema, breadcrumbSchema, ...(faqSchema ? [faqSche
     <article class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
       <div class="max-w-[740px] mx-auto">
 
-        <!-- Intro / body -->
+        <!-- Body content -->
         <section aria-label="Introduction">
           <div class="prose prose-neutral prose-lg max-w-none">
             <Content />
           </div>
         </section>
 
-        <!-- Why Choose Us section -->
+        <!-- Why Choose Us -->
         <section class="mt-12 pt-10 border-t border-neutral-100">
           <h2 class="text-2xl font-bold tracking-tight text-[var(--color-text)] mb-6">
             Why Choose Us in {d.city}
           </h2>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {[
-              { icon: '✓', label: `Local expertise in ${d.city}` },
-              { icon: '✓', label: `Proven ${d.service} results` },
-              { icon: '✓', label: 'Transparent reporting & communication' },
-              { icon: '✓', label: 'No long-term contracts required' },
+              { label: `Local expertise in ${d.city}` },
+              { label: `Proven ${d.service} results` },
+              { label: 'Transparent reporting & communication' },
+              { label: 'No long-term contracts required' },
             ].map((point) => (
               <div class="flex items-start gap-3 p-4 rounded-[var(--radius-md)]" style="background:var(--color-neutral-50,#f9fafb); border:1px solid #e4e4e7;">
-                <span class="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold text-white" style="background-color:var(--color-brand);" aria-hidden="true">{point.icon}</span>
+                <span class="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold text-white" style="background-color:var(--color-brand);" aria-hidden="true">✓</span>
                 <span class="text-sm text-[var(--color-text)] font-medium">{point.label}</span>
               </div>
             ))}
           </div>
         </section>
 
-        <!-- FAQ (mandatory) -->
+        <!-- FAQ -->
         <section id="faq" class="mt-14 pt-10 border-t border-neutral-100">
           <h2 class="text-2xl font-bold tracking-tight text-[var(--color-text)] mb-8">Frequently Asked Questions</h2>
           {hasFaq ? (
