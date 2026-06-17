@@ -1,5 +1,20 @@
 ---
 import BaseLayout from './BaseLayout.astro';
+import FeatureGrid from '../components/sections/FeatureGrid.astro';
+import ProcessTimeline from '../components/sections/ProcessTimeline.astro';
+import Testimonials from '../components/sections/Testimonials.astro';
+import PricingCards from '../components/sections/PricingCards.astro';
+import CtaBand from '../components/sections/CtaBand.astro';
+
+interface FeatureItem { title: string; desc: string; icon?: string; }
+interface Step        { title: string; desc: string; }
+interface Testimonial { quote: string; name: string; role?: string; rating?: number; result?: string; }
+interface Plan        {
+  name: string; price: string; period?: string;
+  features: string[];
+  cta: { label: string; href: string };
+  highlighted?: boolean;
+}
 
 interface Props {
   title: string;
@@ -9,9 +24,29 @@ interface Props {
   noindex?: boolean;
   schemas?: object[];
   schemaJsonld?: string;
+  // section data
+  features?: FeatureItem[];
+  featuresHeading?: string;
+  featuresEyebrow?: string;
+  steps?: Step[];
+  stepsHeading?: string;
+  testimonials?: Testimonial[];
+  testimonialsHeading?: string;
+  plans?: Plan[];
+  plansHeading?: string;
+  plansEyebrow?: string;
+  ctaSecondaryLabel?: string;
+  ctaSecondaryHref?: string;
 }
 
-const { title, description, ogImage, canonical, noindex, schemas, schemaJsonld } = Astro.props;
+const {
+  title, description, ogImage, canonical, noindex, schemas, schemaJsonld,
+  features, featuresHeading, featuresEyebrow,
+  steps, stepsHeading,
+  testimonials, testimonialsHeading,
+  plans, plansHeading, plansEyebrow,
+  ctaSecondaryLabel, ctaSecondaryHref,
+} = Astro.props;
 ---
 
 <BaseLayout
@@ -26,4 +61,9 @@ const { title, description, ogImage, canonical, noindex, schemas, schemaJsonld }
   <main>
     <slot />
   </main>
+  <FeatureGrid    items={features ?? []}       heading={featuresHeading}    eyebrow={featuresEyebrow} />
+  <ProcessTimeline steps={steps ?? []}          heading={stepsHeading} />
+  <Testimonials   testimonials={testimonials}   heading={testimonialsHeading} />
+  <PricingCards   plans={plans ?? []}           heading={plansHeading}       eyebrow={plansEyebrow} />
+  <CtaBand        secondaryLabel={ctaSecondaryLabel} secondaryHref={ctaSecondaryHref} />
 </BaseLayout>

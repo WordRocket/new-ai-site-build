@@ -1,0 +1,193 @@
+---
+import Icon from '../Icon.astro';
+
+interface Cta {
+  label: string;
+  href: string;
+}
+
+interface Plan {
+  name: string;
+  price: string;
+  period?: string;
+  features: string[];
+  cta: Cta;
+  highlighted?: boolean;
+}
+
+interface Props {
+  plans: Plan[];
+  heading?: string;
+  eyebrow?: string;
+}
+
+const { plans, heading, eyebrow } = Astro.props;
+if (!plans || plans.length === 0) return;
+
+function splitH(h: string) {
+  const words = h.trim().split(/\s+/);
+  if (words.length === 1) return { main: '', last: words[0] };
+  return { main: words.slice(0, -1).join(' ') + ' ', last: words[words.length - 1] };
+}
+const { main: hMain, last: hLast } = heading ? splitH(heading) : { main: '', last: '' };
+---
+
+<section
+  class="pc section-pad"
+  style="background:var(--rs-bg);"
+  aria-labelledby={heading ? 'pc-heading' : undefined}
+>
+  <div class="pc__wrap">
+    {(eyebrow || heading) && (
+      <div class="pc__header reveal">
+        {eyebrow && <span class="u-eyebrow">{eyebrow}</span>}
+        {heading && (
+          <h2 id="pc-heading" style="color:var(--rs-text); margin:0;">
+            {hMain}<span class="u-gradient-text">{hLast}</span>
+          </h2>
+        )}
+      </div>
+    )}
+
+    <ul class="pc__grid" role="list">
+      {plans.map((plan) => (
+        <li
+          class={`u-card pc__card reveal${plan.highlighted ? ' pc__card--hi' : ''}`}
+          role="listitem"
+        >
+          {plan.highlighted && (
+            <div class="pc__badge-row">
+              <span class="u-badge">
+                <span class="u-badge__dot" aria-hidden="true"></span>
+                Most Popular
+              </span>
+            </div>
+          )}
+
+          <div class="pc__name" style="color:var(--rs-text-muted);">{plan.name}</div>
+
+          <div class="pc__price-row">
+            <span class="pc__price u-gradient-text">{plan.price}</span>
+            {plan.period && (
+              <span class="pc__period" style="color:var(--rs-text-muted);">/{plan.period}</span>
+            )}
+          </div>
+
+          <ul class="pc__features" role="list">
+            {plan.features.map((f) => (
+              <li class="pc__feature" role="listitem">
+                <Icon
+                  name="check"
+                  width={16}
+                  height={16}
+                  style="color:var(--rs-accent); flex-shrink:0; margin-top:2px;"
+                  aria-hidden="true"
+                />
+                <span style="color:var(--rs-text);">{f}</span>
+              </li>
+            ))}
+          </ul>
+
+          <a
+            href={plan.cta.href}
+            class={`u-btn pc__cta${plan.highlighted ? ' u-btn-primary' : ' u-btn-ghost'}`}
+          >
+            {plan.cta.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .pc__wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+  }
+
+  .pc__header {
+    text-align: center;
+    margin-bottom: 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .75rem;
+  }
+
+  .pc__grid {
+    list-style: none;
+    padding: 0; margin: 0;
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  @media (min-width: 640px) {
+    .pc__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 960px) {
+    .pc__grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .pc__card {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .pc__card--hi {
+    border-color: var(--rs-accent) !important;
+    border-width: 2px !important;
+    transform: scale(1.02);
+    box-shadow:
+      0 8px 40px color-mix(in srgb, var(--rs-accent) 20%, transparent),
+      0 0 0 1px var(--rs-accent) !important;
+  }
+  .pc__card--hi:hover {
+    transform: scale(1.02) translateY(-2px);
+  }
+
+  .pc__badge-row { display: flex; }
+
+  .pc__name {
+    font-size: .8125rem; font-weight: 700;
+    letter-spacing: .04em; text-transform: uppercase;
+  }
+
+  .pc__price-row {
+    display: flex;
+    align-items: baseline;
+    gap: .25rem;
+  }
+  .pc__price {
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-weight: 800; letter-spacing: -.03em; line-height: 1;
+  }
+  .pc__period { font-size: .9rem; }
+
+  .pc__features {
+    list-style: none;
+    padding: 0; margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: .6rem;
+    flex: 1;
+  }
+  .pc__feature {
+    display: flex;
+    align-items: flex-start;
+    gap: .5rem;
+    font-size: .9375rem;
+    line-height: 1.5;
+  }
+
+  .pc__cta {
+    width: 100%;
+    margin-top: auto;
+    justify-content: center;
+  }
+</style>

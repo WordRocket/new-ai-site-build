@@ -1,103 +1,144 @@
 ---
 import siteConfig from '../../lib/site-config';
-import { getPreset } from '../../lib/business-presets';
-import { iconSvg } from '../../lib/icons';
+import { getPreset, interpolate } from '../../lib/business-presets';
+import Icon from '../Icon.astro';
 
+interface Props {
+  secondaryLabel?: string;
+  secondaryHref?: string;
+}
+
+const { secondaryLabel, secondaryHref } = Astro.props;
 const preset = getPreset((siteConfig as any).businessType || 'other');
 const band = preset.ctaBand;
+const phoneDigits = siteConfig.phone ? siteConfig.phone.replace(/\D/g, '') : '';
+const btnHref = interpolate(band.buttonHref, {
+  phone: phoneDigits,
+  email: (siteConfig as any).email ?? '',
+});
 ---
 
-<section class="cta-band" aria-labelledby="cta-band-heading">
-  <div class="cta-band__inner">
-    <div class="cta-band__icon" aria-hidden="true">
-      <Fragment set:html={iconSvg('zap', 28)} />
+<section class="cb" aria-labelledby="cb-heading">
+  <div class="cb__inner">
+    <div class="cb__icon" aria-hidden="true">
+      <Icon name="zap" width={26} height={26} />
     </div>
-    <h2 id="cta-band-heading" class="cta-band__heading">{band.heading}</h2>
-    <p class="cta-band__sub">{band.subtext}</p>
-    <a
-      href={band.buttonHref}
-      class="cta-band__btn btn-primary px-8 py-3 rounded-[var(--radius-md)] text-white font-semibold"
-    >
-      {band.buttonLabel}
-      <Fragment set:html={iconSvg('arrow-right', 16)} />
-    </a>
+
+    <h2 id="cb-heading" class="cb__heading">{band.heading}</h2>
+    <p class="cb__sub">{band.subtext}</p>
+
+    <div class="cb__btns">
+      <a href={btnHref} class="u-btn cb__primary">
+        {band.buttonLabel}
+        <Icon name="arrow-right" width={16} height={16} aria-hidden="true" />
+      </a>
+      {secondaryLabel && secondaryHref && (
+        <a href={secondaryHref} class="u-btn cb__ghost">{secondaryLabel}</a>
+      )}
+    </div>
   </div>
 </section>
 
 <style>
-  .cta-band {
-    background: linear-gradient(135deg, var(--color-dark-navy) 0%, var(--color-brand-dark) 100%);
+  .cb {
     padding: 80px 1rem;
     position: relative;
     overflow: hidden;
+    background: var(--rs-surface-2);
   }
 
-  .cta-band::before {
+  /* Dark skin: bold accent gradient + dot grid */
+  [data-skin="dark"] .cb {
+    background: linear-gradient(135deg, var(--rs-grad-from), var(--rs-grad-to));
+  }
+  [data-skin="dark"] .cb::before {
     content: '';
-    position: absolute;
-    inset: 0;
+    position: absolute; inset: 0;
     background-image:
-      linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+      linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
     background-size: 40px 40px;
+    pointer-events: none;
   }
 
-  .cta-band__inner {
-    position: relative;
-    z-index: 1;
-    max-width: 640px;
-    margin: 0 auto;
+  .cb__inner {
+    position: relative; z-index: 1;
+    max-width: 640px; margin: 0 auto;
     text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 1rem;
   }
 
-  .cta-band__icon {
-    width: 56px;
-    height: 56px;
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #93c5fd;
-    margin-bottom: 0.25rem;
+  .cb__icon {
+    width: 52px; height: 52px;
+    border-radius: var(--rs-radius-md);
+    background: color-mix(in srgb, var(--rs-accent) 14%, transparent);
+    color: var(--rs-accent);
+    display: flex; align-items: center; justify-content: center;
+  }
+  [data-skin="dark"] .cb__icon {
+    background: rgba(255,255,255,.12);
+    color: #bfdbfe;
   }
 
-  .cta-band__heading {
-    color: white;
+  .cb__heading {
     font-size: clamp(1.6rem, 3vw, 2.2rem);
-    font-weight: 800;
-    letter-spacing: -0.025em;
-    line-height: 1.15;
-    margin: 0;
+    font-weight: 800; letter-spacing: -.025em; line-height: 1.15; margin: 0;
+    color: var(--rs-text);
+  }
+  [data-skin="dark"] .cb__heading { color: #ffffff; }
+
+  .cb__sub {
+    font-size: 1.0625rem; line-height: 1.6; margin: 0; max-width: 480px;
+    color: var(--rs-text-muted);
+  }
+  [data-skin="dark"] .cb__sub { color: rgba(255,255,255,.72); }
+
+  .cb__btns {
+    display: flex; flex-wrap: wrap;
+    gap: .75rem; justify-content: center;
+    margin-top: .5rem;
   }
 
-  .cta-band__sub {
-    color: rgba(255, 255, 255, 0.72);
-    font-size: 1.0625rem;
-    line-height: 1.6;
-    margin: 0;
-    max-width: 480px;
+  /* Primary button */
+  .cb__primary {
+    background: var(--rs-accent);
+    color: var(--rs-accent-contrast);
+    border: 2px solid var(--rs-accent);
+    box-shadow: 0 4px 14px color-mix(in srgb, var(--rs-accent) 32%, transparent);
+  }
+  .cb__primary:hover {
+    box-shadow: 0 6px 20px color-mix(in srgb, var(--rs-accent) 44%, transparent);
+  }
+  [data-skin="dark"] .cb__primary {
+    background: #ffffff;
+    color: var(--rs-brand);
+    border-color: #ffffff;
+    box-shadow: 0 4px 14px rgba(0,0,0,.2);
   }
 
-  .cta-band__btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-    text-decoration: none;
-    font-size: 1rem;
+  /* Ghost button */
+  .cb__ghost {
+    background: transparent;
+    color: var(--rs-accent);
+    border: 2px solid var(--rs-accent);
+  }
+  .cb__ghost:hover {
+    background: color-mix(in srgb, var(--rs-accent) 8%, transparent);
+  }
+  [data-skin="dark"] .cb__ghost {
+    color: rgba(255,255,255,.9);
+    border-color: rgba(255,255,255,.4);
+  }
+  [data-skin="dark"] .cb__ghost:hover {
+    background: rgba(255,255,255,.1);
   }
 
-  .cta-band__btn:focus-visible {
-    outline: 3px solid white;
+  .cb__primary:focus-visible,
+  .cb__ghost:focus-visible {
+    outline: 3px solid var(--rs-accent);
     outline-offset: 3px;
   }
 
-  @media (max-width: 640px) {
-    .cta-band { padding: 64px 1rem; }
-  }
+  @media (max-width: 640px) { .cb { padding: 64px 1rem; } }
 </style>

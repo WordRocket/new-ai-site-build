@@ -1,5 +1,5 @@
 ---
-import { iconSvg } from '../../lib/icons';
+import Icon from '../Icon.astro';
 
 interface Item {
   title: string;
@@ -10,34 +10,49 @@ interface Item {
 interface Props {
   items: Item[];
   heading?: string;
-  columns?: 2 | 3;
+  eyebrow?: string;
 }
 
-const { items, heading, columns = 3 } = Astro.props;
-
+const { items, heading, eyebrow } = Astro.props;
 if (!items || items.length === 0) return;
 
-const fallbackIcons = ['zap', 'shield-check', 'star', 'check-circle', 'trending-up', 'layers', 'users', 'settings'];
+const fallbackIcons = ['zap', 'shield-check', 'star', 'check-circle', 'award', 'lock', 'heart', 'thumbs-up'];
+
+function splitH(h: string) {
+  const words = h.trim().split(/\s+/);
+  if (words.length === 1) return { main: '', last: words[0] };
+  return { main: words.slice(0, -1).join(' ') + ' ', last: words[words.length - 1] };
+}
+const { main: hMain, last: hLast } = heading ? splitH(heading) : { main: '', last: '' };
 ---
 
-<section class="feature-grid" aria-labelledby={heading ? 'feature-grid-heading' : undefined}>
-  <div class="feature-grid__inner">
-    {heading && (
-      <h2 id="feature-grid-heading" class="feature-grid__heading reveal">{heading}</h2>
+<section
+  class="fg section-pad"
+  style="background:var(--rs-bg);"
+  aria-labelledby={heading ? 'fg-heading' : undefined}
+>
+  <div class="fg__wrap">
+    {(eyebrow || heading) && (
+      <div class="fg__header reveal">
+        {eyebrow && <span class="u-eyebrow">{eyebrow}</span>}
+        {heading && (
+          <h2 id="fg-heading" class="fg__h2" style="color:var(--rs-text);">
+            {hMain}<span class="u-gradient-text">{hLast}</span>
+          </h2>
+        )}
+      </div>
     )}
-    <ul
-      class={`feature-grid__list feature-grid__list--cols-${columns}`}
-      role="list"
-    >
+
+    <ul class="fg__grid" role="list">
       {items.map((item, i) => {
         const iconName = item.icon ?? fallbackIcons[i % fallbackIcons.length];
         return (
-          <li class="feature-grid__card card-hover reveal" role="listitem">
-            <span class="feature-grid__icon" aria-hidden="true">
-              <Fragment set:html={iconSvg(iconName, 22)} />
+          <li class="u-card fg__card reveal" role="listitem">
+            <span class="fg__chip" aria-hidden="true">
+              <Icon name={iconName} width={22} height={22} />
             </span>
-            <h3 class="feature-grid__title">{item.title}</h3>
-            <p class="feature-grid__desc">{item.desc}</p>
+            <h3 class="fg__title" style="color:var(--rs-text);">{item.title}</h3>
+            <p class="fg__desc" style="color:var(--rs-text-muted);">{item.desc}</p>
           </li>
         );
       })}
@@ -46,91 +61,79 @@ const fallbackIcons = ['zap', 'shield-check', 'star', 'check-circle', 'trending-
 </section>
 
 <style>
-  .feature-grid {
-    padding: 100px 1rem;
-    background: white;
-  }
-
-  @media (max-width: 768px) {
-    .feature-grid { padding: 64px 1rem; }
-  }
-
-  .feature-grid__inner {
+  .fg__wrap {
     max-width: 1200px;
     margin: 0 auto;
+    padding: 0 1.25rem;
   }
 
-  .feature-grid__heading {
+  .fg__header {
     text-align: center;
-    color: var(--color-text);
     margin-bottom: 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .75rem;
   }
 
-  .feature-grid__list {
+  .fg__h2 { margin: 0; }
+
+  .fg__grid {
     list-style: none;
-    padding: 0;
-    margin: 0;
+    padding: 0; margin: 0;
     display: grid;
     gap: 1.25rem;
-    /* 1 col mobile, 2 col mid, N col large */
     grid-template-columns: 1fr;
   }
 
   @media (min-width: 560px) {
-    .feature-grid__list { grid-template-columns: 1fr 1fr; }
+    .fg__grid { grid-template-columns: repeat(2, 1fr); }
   }
-
   @media (min-width: 900px) {
-    .feature-grid__list--cols-3 { grid-template-columns: repeat(3, 1fr); }
-    .feature-grid__list--cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .fg__grid { grid-template-columns: repeat(3, 1fr); }
   }
 
-  .feature-grid__card {
-    background: white;
-    border-radius: var(--radius-md);
+  .fg__grid:has(> :nth-child(1):last-child) {
+    grid-template-columns: minmax(0, 400px);
+    justify-content: center;
+  }
+  .fg__grid:has(> :nth-child(2):last-child) {
+    grid-template-columns: repeat(2, minmax(0, 400px));
+    justify-content: center;
+  }
+
+  .fg__card {
     padding: 1.75rem;
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
-    box-shadow: var(--shadow-sm);
+    gap: .75rem;
   }
 
-  .feature-grid__icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 10px;
-    background: rgba(37, 99, 235, 0.08);
-    color: var(--color-brand);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .fg__chip {
+    width: 48px; height: 48px;
+    border-radius: var(--rs-radius-sm);
+    background: color-mix(in srgb, var(--rs-accent) 12%, transparent);
+    color: var(--rs-accent);
+    display: inline-flex;
+    align-items: center; justify-content: center;
     flex-shrink: 0;
-    transition: background 0.2s ease, color 0.2s ease;
+    transition: background .2s ease, color .2s ease;
   }
 
-  .feature-grid__card:hover .feature-grid__icon {
-    background: var(--color-brand);
-    color: white;
+  .fg__card:hover .fg__chip {
+    background: var(--rs-accent);
+    color: var(--rs-accent-contrast);
   }
 
-  .feature-grid__title {
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--color-text);
-    margin: 0;
-    letter-spacing: -0.01em;
+  .fg__title {
+    font-size: 1rem; font-weight: 700;
+    margin: 0; letter-spacing: -.01em;
   }
-
-  .feature-grid__desc {
-    font-size: 0.9375rem;
-    line-height: 1.65;
-    color: var(--color-text-muted);
-    margin: 0;
+  .fg__desc {
+    font-size: .9375rem; line-height: 1.65; margin: 0;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .feature-grid__icon {
-      transition: none;
-    }
+    .fg__chip { transition: none; }
   }
 </style>

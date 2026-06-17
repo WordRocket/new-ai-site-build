@@ -1,47 +1,78 @@
 ---
+import siteConfig from '../../lib/site-config';
+
 interface Testimonial {
   quote: string;
   name: string;
   role?: string;
   rating?: number;
+  result?: string;
 }
 
 interface Props {
-  testimonials: Testimonial[];
+  testimonials?: Testimonial[];
   heading?: string;
 }
 
-const { testimonials, heading = 'What Our Clients Say' } = Astro.props;
+const { testimonials: propTestimonials, heading = 'What Our Clients Say' } = Astro.props;
 
-if (!testimonials || testimonials.length === 0) return;
+// Fall back to site-config single testimonial if no array passed
+const testimonials: Testimonial[] = (() => {
+  if (propTestimonials && propTestimonials.length > 0) return propTestimonials;
+  const text = (siteConfig as any).testimonial_text as string | undefined;
+  if (!text) return [];
+  return [{
+    quote: text,
+    name: ((siteConfig as any).testimonial_author as string) ?? 'Happy Customer',
+    role: ((siteConfig as any).testimonial_neighborhood as string) ?? siteConfig.city,
+    rating: 5,
+  }];
+})();
 
-function clampRating(r?: number): number {
-  if (r === undefined || r === null) return 5;
+if (testimonials.length === 0) return;
+
+function clamp(r?: number): number {
+  if (r == null) return 5;
   return Math.min(5, Math.max(1, Math.round(r)));
 }
+function initials(name: string): string {
+  return name.trim().split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2);
+}
+function splitH(h: string) {
+  const words = h.trim().split(/\s+/);
+  if (words.length === 1) return { main: '', last: words[0] };
+  return { main: words.slice(0, -1).join(' ') + ' ', last: words[words.length - 1] };
+}
+const { main: hMain, last: hLast } = splitH(heading);
 ---
 
-<section class="testimonials" aria-labelledby="testimonials-heading">
-  <div class="testimonials__inner">
-    <h2 id="testimonials-heading" class="testimonials__heading reveal">{heading}</h2>
+<section
+  class="tl section-pad"
+  style="background:var(--rs-surface);"
+  aria-labelledby="tl-heading"
+>
+  <div class="tl__wrap">
+    <div class="tl__header reveal">
+      <h2 id="tl-heading" style="color:var(--rs-text); margin:0;">
+        {hMain}<span class="u-gradient-text">{hLast}</span>
+      </h2>
+    </div>
 
-    <ul class="testimonials__grid" role="list">
+    <ul class="tl__grid" role="list">
       {testimonials.map((t) => {
-        const stars = clampRating(t.rating);
+        const stars = clamp(t.rating);
         return (
-          <li class="testimonials__card reveal" role="listitem">
-            <div class="testimonials__stars" aria-label={`${stars} out of 5 stars`}>
+          <li class="u-card tl__card reveal" role="listitem">
+            <div class="tl__stars" aria-label={`${stars} out of 5 stars`}>
               {Array.from({ length: 5 }).map((_, i) => (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
+                  width="15" height="15"
                   viewBox="0 0 24 24"
                   fill={i < stars ? '#f59e0b' : 'none'}
-                  stroke={i < stars ? '#f59e0b' : '#d1d5db'}
+                  stroke={i < stars ? '#f59e0b' : 'var(--rs-border)'}
                   stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  stroke-linecap="round" stroke-linejoin="round"
                   aria-hidden="true"
                 >
                   <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
@@ -49,13 +80,20 @@ function clampRating(r?: number): number {
               ))}
             </div>
 
-            <blockquote class="testimonials__quote">
-              <p>"{t.quote}"</p>
+            {t.result && (
+              <span class="tl__result">{t.result}</span>
+            )}
+
+            <blockquote class="tl__quote">
+              <p style="color:var(--rs-text);">"{t.quote}"</p>
             </blockquote>
 
-            <footer class="testimonials__author">
-              <span class="testimonials__name">{t.name}</span>
-              {t.role && <span class="testimonials__role">{t.role}</span>}
+            <footer class="tl__footer">
+              <span class="tl__avatar" aria-hidden="true">{initials(t.name)}</span>
+              <div class="tl__info">
+                <span class="tl__name" style="color:var(--rs-text);">{t.name}</span>
+                {t.role && <span class="tl__role" style="color:var(--rs-text-muted);">{t.role}</span>}
+              </div>
             </footer>
           </li>
         );
@@ -65,104 +103,71 @@ function clampRating(r?: number): number {
 </section>
 
 <style>
-  .testimonials {
-    padding: 100px 1rem;
-    background: var(--color-neutral-50);
-  }
-
-  @media (max-width: 768px) {
-    .testimonials { padding: 64px 1rem; }
-  }
-
-  .testimonials__inner {
+  .tl__wrap {
     max-width: 1200px;
     margin: 0 auto;
+    padding: 0 1.25rem;
   }
 
-  .testimonials__heading {
-    text-align: center;
-    color: var(--color-text);
-    margin-bottom: 3rem;
-  }
+  .tl__header { text-align: center; margin-bottom: 3rem; }
 
-  .testimonials__grid {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    gap: 1.25rem;
+  .tl__grid {
+    list-style: none; padding: 0; margin: 0;
+    display: grid; gap: 1.25rem;
     grid-template-columns: 1fr;
   }
+  @media (min-width: 600px) { .tl__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 960px) { .tl__grid { grid-template-columns: repeat(3, 1fr); } }
 
-  @media (min-width: 600px) {
-    .testimonials__grid { grid-template-columns: 1fr 1fr; }
+  .tl__grid:has(> :nth-child(1):last-child) {
+    grid-template-columns: minmax(0, 480px);
+    justify-content: center;
+  }
+  .tl__grid:has(> :nth-child(2):last-child) {
+    grid-template-columns: repeat(2, minmax(0, 480px));
+    justify-content: center;
   }
 
-  @media (min-width: 960px) {
-    .testimonials__grid { grid-template-columns: repeat(3, 1fr); }
-  }
-
-  /* If only 1 or 2 items, limit max width so they don't stretch awkwardly */
-  .testimonials__grid:has(> :nth-child(1):last-child) { grid-template-columns: minmax(0, 480px); justify-content: center; }
-  .testimonials__grid:has(> :nth-child(2):last-child) { grid-template-columns: repeat(2, minmax(0, 480px)); justify-content: center; }
-
-  .testimonials__card {
-    background: white;
-    border-radius: var(--radius-md);
+  .tl__card {
     padding: 1.75rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    box-shadow: var(--shadow-sm);
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    display: flex; flex-direction: column; gap: 1rem;
   }
 
-  .testimonials__card:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-md);
+  .tl__stars { display: flex; gap: 2px; }
+
+  .tl__result {
+    display: inline-flex; align-items: center;
+    padding: .3rem .75rem;
+    border-radius: var(--rs-radius-pill);
+    font-size: .8rem; font-weight: 600; line-height: 1;
+    color: var(--rs-accent);
+    background: color-mix(in srgb, var(--rs-accent) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--rs-accent) 28%, transparent);
+    align-self: flex-start;
   }
 
-  .testimonials__stars {
-    display: flex;
-    gap: 2px;
+  .tl__quote { margin: 0; flex: 1; }
+  .tl__quote p {
+    font-size: .9375rem; line-height: 1.7;
+    font-style: italic; margin: 0; max-width: none;
   }
 
-  .testimonials__quote {
-    margin: 0;
-    flex: 1;
+  .tl__footer {
+    display: flex; align-items: center; gap: .75rem;
+    padding-top: .75rem;
+    border-top: 1px solid var(--rs-border);
   }
 
-  .testimonials__quote p {
-    font-size: 0.9375rem;
-    line-height: 1.7;
-    color: var(--color-text);
-    font-style: italic;
-    margin: 0;
+  .tl__avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: color-mix(in srgb, var(--rs-accent) 16%, transparent);
+    color: var(--rs-accent);
+    font-size: .8125rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
   }
 
-  .testimonials__author {
-    display: flex;
-    flex-direction: column;
-    gap: 0.1rem;
-    padding-top: 0.75rem;
-    border-top: 1px solid rgba(0, 0, 0, 0.06);
-  }
-
-  .testimonials__name {
-    font-size: 0.875rem;
-    font-weight: 700;
-    color: var(--color-text);
-  }
-
-  .testimonials__role {
-    font-size: 0.8125rem;
-    color: var(--color-text-muted);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .testimonials__card {
-      transition: none;
-    }
-  }
+  .tl__info { display: flex; flex-direction: column; gap: .1rem; }
+  .tl__name { font-size: .875rem; font-weight: 700; }
+  .tl__role { font-size: .8125rem; }
 </style>
