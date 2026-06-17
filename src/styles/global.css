@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@plugin "@tailwindcss/typography";
 
 /* ── CSS View Transitions (Astro ClientRouter handles JS lifecycle) ─────── */
 ::view-transition-old(root) { animation: 220ms ease-out vt-fade-out forwards; }
