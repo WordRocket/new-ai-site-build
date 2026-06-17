@@ -102,10 +102,10 @@ const statsItems = [
     </div>
 
     <ul class="flex flex-col sm:flex-row flex-wrap gap-x-6 gap-y-2 text-sm" style="color:var(--color-text-muted);">
-      {preset.trustSignals.map((signal) => (
+      {preset.trustSignals.map(({ label }) => (
         <li class="flex items-center gap-1.5">
           <span class="text-[var(--color-brand)] font-bold" aria-hidden="true">✓</span>
-          {signal.replace(/^✓\s*/, '')}
+          {label}
         </li>
       ))}
     </ul>
