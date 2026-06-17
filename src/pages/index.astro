@@ -3,7 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import siteConfig from '../lib/site-config';
 import { getCollection } from 'astro:content';
 import { getPreset, interpolate } from '../lib/business-presets';
-import { Icon } from 'astro-icon/components';
+import Icon from '../components/Icon.astro';
 
 const serviceEntries = await getCollection('services').catch(() => []);
 const nicheLabel = siteConfig.niche || 'professional service';
@@ -122,7 +122,7 @@ const heroStats = statsItems.slice(0, 3);
     <ul class="flex flex-col sm:flex-row flex-wrap gap-x-6 gap-y-2 text-sm mb-8" style="color:var(--rs-text-muted);">
       {preset.trustSignals.map(({ icon: iconName, label }) => (
         <li class="flex items-center gap-1.5">
-          <Icon name={`lucide:${iconName}`} width={16} height={16} style="color:var(--rs-accent); flex-shrink:0;" aria-hidden="true" />
+          <Icon name={iconName} width={16} height={16} style="color:var(--rs-accent); flex-shrink:0;" aria-hidden="true" />
           {label}
         </li>
       ))}
@@ -145,14 +145,14 @@ const heroStats = statsItems.slice(0, 3);
   <div class="hero-right">
     <div class="hero-right-pattern" aria-hidden="true"></div>
     <div class="hero-right-icon" aria-hidden="true">
-      <Icon name="lucide:home" width={200} height={200} style="opacity:0.18; color:white;" />
+      <Icon name="home" width={200} height={200} style="opacity:0.18; color:white;" />
     </div>
     <div class="hero-float-card" style="top:10%; right:8%;">
-      <Icon name="lucide:star" width={14} height={14} style="fill:#f59e0b; color:#f59e0b;" aria-hidden="true" />
+      <Icon name="star" width={14} height={14} style="fill:#f59e0b; color:#f59e0b;" aria-hidden="true" />
       5-Star Rated
     </div>
     <div class="hero-float-card" style="bottom:10%; left:8%;">
-      <Icon name="lucide:file-text" width={14} height={14} style="color:var(--rs-accent);" aria-hidden="true" />
+      <Icon name="file-text" width={14} height={14} style="color:var(--rs-accent);" aria-hidden="true" />
       Free Estimates
     </div>
   </div>
