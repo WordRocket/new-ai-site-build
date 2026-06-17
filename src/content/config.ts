@@ -17,7 +17,6 @@ const blog = defineCollection({
     canonical: z.string().optional(),
     ogImage: z.string().optional(),
     faq: z.array(z.object({ question: z.string(), answer: z.string() })).default([]),
-    schema_jsonld: z.unknown().optional(),
     schemaJsonld: z.string().optional(),
   }),
 });
@@ -29,7 +28,6 @@ const pages = defineCollection({
     noindex: z.boolean().default(false),
     canonical: z.string().optional(),
     ogImage: z.string().optional(),
-    schema_jsonld: z.unknown().optional(),
     schemaJsonld: z.string().optional(),
   }),
 });
@@ -41,6 +39,7 @@ const testimonialSchema = z.object({
   name: z.string(),
   role: z.string().optional(),
   rating: z.number().optional(),
+  result: z.string().optional(),
 });
 
 const services = defineCollection({
@@ -57,7 +56,6 @@ const services = defineCollection({
     steps: z.array(stepSchema).optional(),
     features: z.array(featureSchema).optional(),
     testimonials: z.array(testimonialSchema).optional(),
-    schema_jsonld: z.unknown().optional(),
     schemaJsonld: z.string().optional(),
   }),
 });
@@ -75,7 +73,6 @@ const locations = defineCollection({
     steps: z.array(stepSchema).optional(),
     features: z.array(featureSchema).optional(),
     testimonials: z.array(testimonialSchema).optional(),
-    schema_jsonld: z.unknown().optional(),
     schemaJsonld: z.string().optional(),
   }),
 });
