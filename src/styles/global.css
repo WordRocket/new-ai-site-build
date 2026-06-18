@@ -27,19 +27,23 @@
 
 /* ── Base ──────────────────────────────────────────────────────────────── */
 html {
-  font-family: var(--font-sans);
+  font-family: var(--rs-font-body);
   color: var(--color-text);
   background-color: var(--color-neutral-50);
   font-size: 17px;
-  line-height: 1.8;
+  line-height: 1.6;
 }
 body { margin: 0; min-height: 100vh; }
 p { max-width: 65ch; }
 
 /* ── Fluid Typography ──────────────────────────────────────────────────── */
-h1 { font-size: clamp(2.2rem, 5vw, 3.8rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
-h2 { font-size: clamp(1.8rem, 3vw, 2.8rem); font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
-h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 600; letter-spacing: -0.01em; }
+h1, h2, h3 {
+  font-family: var(--rs-font-display);
+  color: var(--rs-heading-color);
+}
+h1 { font-size: clamp(2.5rem, 5vw, 4rem);   font-weight: 800; letter-spacing: -0.03em;  line-height: 1.08; }
+h2 { font-size: clamp(1.8rem, 3vw, 2.8rem); font-weight: 700; letter-spacing: -0.025em; line-height: 1.15; }
+h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0.015em; line-height: 1.25; }
 
 /* ── Scroll Reveal ─────────────────────────────────────────────────────── */
 /* Content is ALWAYS visible by default — no JS required, no hidden flash.  */
@@ -79,8 +83,16 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 600; letter-spacing: -0
   --rs-brand: #2563eb;
   --rs-radius-sm: 8px;  --rs-radius-md: 12px;
   --rs-radius-lg: 18px; --rs-radius-pill: 999px;
+  /* Display / body font stacks — swap heading font here for per-site pickers */
+  --rs-font-display:  'Space Grotesk', system-ui, sans-serif;
+  --rs-font-body:     'Inter', system-ui, sans-serif;
+  /* Heading color: premium near-navy in light skin */
+  --rs-heading-color: #0d1b2a;
+  /* Brand tint — derived from --rs-brand so per-site colors work automatically */
+  --rs-brand-tint:        color-mix(in srgb, var(--rs-brand) 10%, transparent);
+  --rs-brand-tint-border: color-mix(in srgb, var(--rs-brand) 22%, transparent);
   /* LIGHT skin (default) */
-  --rs-bg: #ffffff; --rs-surface: #f8fafc; --rs-surface-2: #f1f5f9;
+  --rs-bg: #ffffff; --rs-surface: #f8f9fb; --rs-surface-2: #f1f5f9;
   --rs-border: #e6e8ec; --rs-text: #0f172a; --rs-text-muted: #51607a;
   --rs-accent: var(--rs-brand); --rs-accent-contrast: #ffffff;
   --rs-grad-from: var(--rs-brand);
@@ -97,6 +109,8 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 600; letter-spacing: -0
   --rs-glow: color-mix(in srgb, var(--rs-brand) 28%, transparent);
   --rs-shadow-card: 0 0 0 1px rgba(255,255,255,.06), 0 24px 60px rgba(0,0,0,.55);
   --rs-shadow-card-hover: 0 0 0 1px rgba(255,255,255,.10), 0 28px 70px rgba(0,0,0,.6);
+  /* Heading color in dark: use the foreground text token */
+  --rs-heading-color: var(--rs-text);
   /* Bridge legacy --color-* tokens so every component using them adapts automatically */
   --color-text: #f6f8fc;
   --color-text-muted: #97a3b6;
@@ -171,15 +185,16 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 600; letter-spacing: -0
   display: inline-flex; align-items: center; gap: .5rem;
   padding: .35rem .85rem; border-radius: var(--rs-radius-pill);
   font-size: .8125rem; font-weight: 600; line-height: 1; color: var(--rs-accent);
-  background: color-mix(in srgb, var(--rs-accent) 12%, transparent);
-  border: 1px solid color-mix(in srgb, var(--rs-accent) 28%, transparent);
+  background: var(--rs-brand-tint);
+  border: 1px solid var(--rs-brand-tint-border);
 }
 .u-badge__dot { width:.5rem; height:.5rem; border-radius:50%; background: currentColor; }
 .u-eyebrow {
   display: inline-block; padding: .25rem .7rem; border-radius: var(--rs-radius-pill);
-  font-size: .75rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+  font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
   color: var(--rs-accent);
-  background: color-mix(in srgb, var(--rs-accent) 12%, transparent);
+  background: var(--rs-brand-tint);
+  border: 1px solid var(--rs-brand-tint-border);
 }
 .u-glow-bg { position: relative; isolation: isolate; }
 .u-glow-bg::before {
@@ -367,6 +382,7 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 600; letter-spacing: -0
 
 /* ── Dark section ──────────────────────────────────────────────────────── */
 .section-dark { background: var(--color-dark-navy); color: white; }
+.section-dark h1, .section-dark h2, .section-dark h3 { color: white; }
 .section-dark .stat-value { color: var(--color-brand-light); }
 .section-dark .stat-label { color: #94a3b8; }
 
@@ -379,6 +395,7 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 600; letter-spacing: -0
   position: relative;
   overflow: hidden;
 }
+.page-hero h1, .page-hero h2, .page-hero h3 { color: white; }
 .page-hero::before {
   content: '';
   position: absolute; inset: 0;
@@ -408,13 +425,14 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 600; letter-spacing: -0
 .prose > p:first-of-type {
   font-size: 1.15rem;
   line-height: 1.75;
-  color: #374151;
+  color: var(--rs-text-muted);
   font-weight: 400;
 }
 
 /* Headings — override prose defaults with site tokens */
 .prose h1, .prose h2, .prose h3, .prose h4 {
-  color: var(--color-text);
+  font-family: var(--rs-font-display);
+  color: var(--rs-heading-color);
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.25;
