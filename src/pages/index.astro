@@ -192,7 +192,7 @@ const heroStats = statsItems.slice(0, 3);
 </section>
 
 <!-- ─── SERVICES GRID ─────────────────────────────────────────────────── -->
-<section class="section-pad bg-[var(--color-neutral-50)]" aria-labelledby="services-heading">
+<section class="section-pad" style="background:var(--rs-surface);" aria-labelledby="services-heading">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center mb-14">
       <h2 id="services-heading" class="reveal text-[var(--color-text)] mb-4">{interpolate(preset.servicesHeading, vars)}</h2>
@@ -200,9 +200,9 @@ const heroStats = statsItems.slice(0, 3);
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {displayServices.map(({ slug, num, icon, title, description }) => (
-        <div class="reveal card-hover bg-white p-7 rounded-[var(--radius-md)] flex flex-col gap-4">
+        <div class="reveal card-hover p-7 rounded-[var(--radius-md)] flex flex-col gap-4" style="background:var(--rs-surface);">
           <div class="flex items-start justify-between">
-            <span class="inline-flex items-center justify-center w-11 h-11 rounded-lg text-[var(--color-brand)]" style="background:#eff6ff;">
+            <span class="inline-flex items-center justify-center w-11 h-11 rounded-lg text-[var(--color-brand)]" style="background:color-mix(in srgb, var(--rs-accent) 10%, transparent);">
               <Fragment set:html={icon} />
             </span>
             <span class="text-2xl font-black opacity-[0.07] select-none" style="color:var(--color-text);">{num}</span>
@@ -228,9 +228,9 @@ const heroStats = statsItems.slice(0, 3);
 
 <!-- ─── TESTIMONIAL (conditional) ────────────────────────────────────── -->
 {hasTestimonial && (
-  <section class="section-pad bg-white" aria-labelledby="testimonial-heading">
+  <section class="section-pad" style="background:var(--rs-bg);" aria-labelledby="testimonial-heading">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <div class="reveal rounded-[var(--radius-lg)] p-10 sm:p-14" style="background:#eff6ff; box-shadow:var(--shadow-sm);">
+      <div class="reveal rounded-[var(--radius-lg)] p-10 sm:p-14" style="background:color-mix(in srgb, var(--rs-accent) 10%, var(--rs-surface)); box-shadow:var(--rs-shadow-card);">
         <p class="text-7xl font-black leading-none mb-4" style="color:var(--color-brand); opacity:0.3;" aria-hidden="true">"</p>
         <blockquote id="testimonial-heading" class="text-lg sm:text-xl italic leading-relaxed text-[var(--color-text)] mb-6">
           {testimonialText}
@@ -256,7 +256,7 @@ const heroStats = statsItems.slice(0, 3);
   ctaHref={siteConfig.phone ? `tel:${phoneDigits}` : '/contact'}
   image={siteConfig.heroImage}
   imageAlt={`${siteConfig.name} professional service`}
-  bg="white"
+  bg="var(--rs-bg)"
 />
 
 <FeatureRow
@@ -268,7 +268,7 @@ const heroStats = statsItems.slice(0, 3);
   ctaHref="/services"
   image={siteConfig.aboutImage}
   imageAlt={`${siteConfig.name} professional team`}
-  bg="var(--color-neutral-50)"
+  bg="var(--rs-surface)"
   statValue={siteConfig.yearsInBusiness ? `${siteConfig.yearsInBusiness}+` : undefined}
   statLabel={siteConfig.yearsInBusiness ? 'Years Experience' : undefined}
   reverse
@@ -280,7 +280,7 @@ const heroStats = statsItems.slice(0, 3);
 </div>
 
 <!-- ─── SERVICE AREA ──────────────────────────────────────────────────── -->
-<section class="section-pad bg-[var(--color-neutral-50)]" aria-labelledby="area-heading">
+<section class="section-pad" style="background:var(--rs-surface);" aria-labelledby="area-heading">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
     <h2 id="area-heading" class="reveal text-[var(--color-text)] mb-4">
       Proudly Serving {siteConfig.city} &amp; Surrounding Areas
@@ -289,7 +289,7 @@ const heroStats = statsItems.slice(0, 3);
       We're local — we know these neighbourhoods, we live here too.
     </p>
     <div class="flex flex-wrap items-center justify-center gap-3 mb-8">
-      <span class="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium" style="background:white; border:1px solid #e4e4e7; color:var(--color-text);">
+      <span class="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium" style="background:var(--rs-surface); border:1px solid var(--rs-border); color:var(--rs-text);">
         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
         {siteConfig.city}, {siteConfig.state}
       </span>
@@ -340,7 +340,7 @@ const heroStats = statsItems.slice(0, 3);
 </div>
 
 <!-- ─── CTA / CONTACT SECTION ────────────────────────────────────────── -->
-<section class="section-pad bg-white" aria-labelledby="cta-heading">
+<section class="section-pad" style="background:var(--rs-bg);" aria-labelledby="cta-heading">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="u-reveal rounded-[var(--radius-lg)] overflow-hidden grid grid-cols-1 lg:grid-cols-2" style="background:var(--color-dark-navy); box-shadow:var(--shadow-md);">
 

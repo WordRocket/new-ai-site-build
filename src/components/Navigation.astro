@@ -38,7 +38,7 @@ const phoneDigits = siteConfig.phone ? siteConfig.phone.replace(/\D/g, '') : '';
 <header
   id="site-nav"
   class="fixed left-0 right-0 z-50 h-16 transition-all duration-300 bg-white"
-  style="border-bottom: 1px solid #e4e4e7;"
+  style="border-bottom: 1px solid var(--rs-border);"
 >
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
 
@@ -104,7 +104,8 @@ const phoneDigits = siteConfig.phone ? siteConfig.phone.replace(/\D/g, '') : '';
   <!-- Mobile menu -->
   <div
     id="mobile-menu"
-    class="md:hidden hidden bg-white border-t border-neutral-200 shadow-md"
+    class="md:hidden hidden bg-white border-t shadow-md"
+    style="border-color:var(--rs-border);"
     aria-hidden="true"
   >
     <nav class="max-w-7xl mx-auto px-4 py-3 flex flex-col gap-1" aria-label="Mobile navigation">

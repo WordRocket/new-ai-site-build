@@ -32,9 +32,9 @@ const signals = preset.trustSignals;
     justify-content: center;
     gap: 0.5rem 1.5rem;
     padding: 0.875rem 1rem;
-    background: var(--color-neutral-50);
-    border-top: 1px solid rgba(0, 0, 0, 0.06);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    background: var(--rs-surface);
+    border-top: 1px solid var(--rs-border);
+    border-bottom: 1px solid var(--rs-border);
   }
 
   .trust-bar__item {
@@ -43,12 +43,12 @@ const signals = preset.trustSignals;
     gap: 0.4rem;
     font-size: 0.8125rem;
     font-weight: 600;
-    color: var(--color-text);
+    color: var(--rs-text);
     white-space: nowrap;
   }
 
   .trust-bar__icon {
-    color: var(--color-brand);
+    color: var(--rs-accent);
     flex-shrink: 0;
     display: flex;
     align-items: center;

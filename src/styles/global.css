@@ -97,6 +97,51 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 600; letter-spacing: -0
   --rs-glow: color-mix(in srgb, var(--rs-brand) 28%, transparent);
   --rs-shadow-card: 0 0 0 1px rgba(255,255,255,.06), 0 24px 60px rgba(0,0,0,.55);
   --rs-shadow-card-hover: 0 0 0 1px rgba(255,255,255,.10), 0 28px 70px rgba(0,0,0,.6);
+  /* Bridge legacy --color-* tokens so every component using them adapts automatically */
+  --color-text: #f6f8fc;
+  --color-text-muted: #97a3b6;
+  --color-neutral-50: #111726;
+  --color-neutral-100: #161d2e;
+  color: var(--rs-text);
+  background-color: var(--rs-bg);
+}
+
+/* ── Dark-skin component overrides ────────────────────────────────────────── */
+/* .bg-white Tailwind utility: surface instead of white */
+[data-skin="dark"] .bg-white {
+  background-color: var(--rs-surface) !important;
+}
+/* Nav: default and scrolled states */
+[data-skin="dark"] #site-nav {
+  background-color: var(--rs-surface) !important;
+  border-bottom-color: var(--rs-border) !important;
+}
+[data-skin="dark"] #site-nav.scrolled {
+  background: rgba(17,23,38,0.95) !important;
+}
+[data-skin="dark"] #mobile-menu {
+  background-color: var(--rs-surface) !important;
+  border-color: var(--rs-border) !important;
+}
+/* Trust bar borders */
+[data-skin="dark"] .trust-bar {
+  border-top-color: var(--rs-border) !important;
+  border-bottom-color: var(--rs-border) !important;
+}
+/* Sticky bottom bar */
+[data-skin="dark"] .sticky-bar {
+  background: var(--rs-surface) !important;
+  border-top-color: var(--rs-border) !important;
+}
+/* Hero floating info cards */
+[data-skin="dark"] .hero-float-card {
+  background: var(--rs-surface-2) !important;
+  color: var(--rs-text) !important;
+  border: 1px solid var(--rs-border);
+}
+/* Wave dividers: hide decorative SVG waves in dark skin to avoid color mismatches */
+[data-skin="dark"] .wave-divider {
+  display: none;
 }
 
 /* ── RS Pop Utilities ───────────────────────────────────────────────────── */
@@ -239,7 +284,6 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 600; letter-spacing: -0
   border-bottom: 1px solid rgba(0,0,0,0.06) !important;
   box-shadow: 0 1px 20px rgba(0,0,0,0.05);
 }
-
 /* ── Top bar ───────────────────────────────────────────────────────────── */
 #top-bar { height: 36px; background: var(--color-dark-navy); }
 
