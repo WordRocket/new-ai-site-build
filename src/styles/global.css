@@ -291,6 +291,36 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 600; letter-spacing: -0
   gap: 6px;
 }
 
+/* ── Hero headline glow blob ───────────────────────────────────────────── */
+/* Decorative radial gradient behind the headline; transform/opacity only.  */
+/* prefers-reduced-motion: reduce → animation disabled, static low opacity. */
+.hero-left-panel { overflow: hidden; }
+.hero-left-panel::before {
+  content: "";
+  position: absolute;
+  top: 45%;
+  left: 45%;
+  width: 540px;
+  height: 540px;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--rs-brand) 13%, transparent) 0%,
+    transparent 62%
+  );
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -1;
+  animation: hero-glow-drift 10s ease-in-out infinite;
+}
+@keyframes hero-glow-drift {
+  0%   { transform: translate(-50%, -50%) scale(1);    opacity: 0.5; }
+  50%  { transform: translate(-52%, -57%) scale(1.18); opacity: 0.85; }
+  100% { transform: translate(-48%, -50%) scale(1.05); opacity: 0.55; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-left-panel::before { animation: none; opacity: 0.45; }
+}
+
 /* ── Dark section ──────────────────────────────────────────────────────── */
 .section-dark { background: var(--color-dark-navy); color: white; }
 .section-dark .stat-value { color: var(--color-brand-light); }

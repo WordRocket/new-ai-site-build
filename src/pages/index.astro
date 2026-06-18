@@ -89,7 +89,7 @@ const heroStats = statsItems.slice(0, 3);
 <section class="hero-split u-glow-bg" aria-label="Hero">
 
   <!-- Left: text -->
-  <div class="flex flex-col justify-center px-6 sm:px-10 lg:px-16 py-20 lg:py-0 relative z-10">
+  <div class="hero-left-panel flex flex-col justify-center px-6 sm:px-10 lg:px-16 py-20 lg:py-0 relative z-10">
 
     <!-- Eyebrow badge pill -->
     <div class="mb-5">
@@ -133,7 +133,7 @@ const heroStats = statsItems.slice(0, 3);
       <div class="u-reveal flex flex-wrap gap-x-8 gap-y-4 pt-6 border-t" style="border-color:var(--rs-border);">
         {heroStats.map(({ value, label }) => (
           <div class="flex flex-col">
-            <span class="text-2xl font-extrabold leading-none u-gradient-text">{value}</span>
+            <span class="text-2xl font-extrabold leading-none u-gradient-text" data-count-to={value}>{value}</span>
             <span class="text-xs font-medium mt-1 uppercase tracking-wide" style="color:var(--rs-text-muted);">{label}</span>
           </div>
         ))}
@@ -420,4 +420,33 @@ const heroStats = statsItems.slice(0, 3);
       }
     });
   });
+</script>
+
+<script>
+  function initCounters() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    document.querySelectorAll<HTMLElement>('[data-count-to]').forEach((el) => {
+      if (el.dataset.counted) return;
+      const raw = el.dataset.countTo!;
+      const num = parseFloat(raw);
+      if (isNaN(num)) return;
+      const suffix = raw.replace(/[\d.]/g, '');
+      el.dataset.counted = '1';
+      const obs = new IntersectionObserver(([entry]) => {
+        if (!entry.isIntersecting) return;
+        obs.disconnect();
+        const start = performance.now();
+        const dur = 1200;
+        function tick(now: number) {
+          const t = Math.min((now - start) / dur, 1);
+          const ease = 1 - Math.pow(1 - t, 3);
+          el.textContent = Math.round(ease * num) + suffix;
+          if (t < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      }, { threshold: 0.5 });
+      obs.observe(el);
+    });
+  }
+  document.addEventListener('astro:page-load', initCounters);
 </script>
