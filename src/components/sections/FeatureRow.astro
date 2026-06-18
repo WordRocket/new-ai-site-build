@@ -19,6 +19,9 @@ interface Props {
   /** Flip image/text sides on desktop. On mobile, image always stacks above text. */
   reverse?: boolean;
   bg?: string;
+  /** Floating stat badge overlaid on the image (bottom-left corner). */
+  statValue?: string;
+  statLabel?: string;
 }
 
 const {
@@ -33,7 +36,11 @@ const {
   imageAspect = '4/3',
   reverse = false,
   bg = 'var(--rs-bg, #ffffff)',
+  statValue,
+  statLabel,
 } = Astro.props;
+
+const showBadge = statValue && statLabel;
 ---
 
 <section class="fr-section u-reveal" style={`background:${bg};`}>
@@ -41,8 +48,19 @@ const {
 
     <!-- Image column -->
     <div class="fr-media">
-      <div class="fr-media-wrap">
-        <SmartImage src={image} alt={imageAlt || heading} aspect={imageAspect} />
+      <!-- fr-media-pos is position:relative without overflow:hidden so the badge isn't clipped -->
+      <div class="fr-media-pos">
+        <!-- fr-media-wrap clips the image to border-radius -->
+        <div class="fr-media-wrap">
+          <SmartImage src={image} alt={imageAlt || heading} aspect={imageAspect} />
+        </div>
+
+        {showBadge && (
+          <div class="fr-badge" aria-label={`${statValue} ${statLabel}`}>
+            <span class="fr-badge__value" aria-hidden="true">{statValue}</span>
+            <span class="fr-badge__label" aria-hidden="true">{statLabel}</span>
+          </div>
+        )}
       </div>
     </div>
 
@@ -95,7 +113,6 @@ const {
     gap: 4.5rem;
     align-items: center;
   }
-  /* Reversed: image on right, text on left */
   .fr-inner--rev .fr-media { order: 2; }
   .fr-inner--rev .fr-text  { order: 1; }
 
@@ -104,7 +121,6 @@ const {
       grid-template-columns: 1fr;
       gap: 2.5rem;
     }
-    /* On mobile always stack image above text regardless of reverse */
     .fr-inner .fr-media,
     .fr-inner--rev .fr-media { order: 1; }
     .fr-inner .fr-text,
@@ -116,10 +132,59 @@ const {
   }
 
   /* ── Media panel ────────────────────────── */
+  .fr-media-pos {
+    position: relative;
+  }
+
   .fr-media-wrap {
     border-radius: 20px;
     overflow: hidden;
     box-shadow: 0 8px 40px rgba(0, 0, 0, 0.10);
+  }
+
+  /* ── Floating stat badge ────────────────── */
+  .fr-badge {
+    position: absolute;
+    bottom: 1.25rem;
+    left: 1.25rem;
+    background: var(--rs-surface, #f8fafc);
+    border: 1px solid var(--rs-border, #e6e8ec);
+    border-radius: var(--rs-radius-md, 12px);
+    box-shadow: var(--rs-shadow-card);
+    padding: 0.625rem 0.875rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    min-width: 108px;
+    pointer-events: none;
+  }
+
+  .fr-badge__value {
+    font-size: 1.375rem;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--rs-brand, #2563eb);
+    letter-spacing: -0.02em;
+  }
+
+  .fr-badge__label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    line-height: 1.3;
+    color: var(--rs-text-muted, #51607a);
+    white-space: nowrap;
+  }
+
+  @media (max-width: 480px) {
+    .fr-badge {
+      bottom: 0.75rem;
+      left: 0.75rem;
+      padding: 0.5rem 0.75rem;
+      min-width: 90px;
+    }
+    .fr-badge__value { font-size: 1.125rem; }
   }
 
   /* ── Text panel ─────────────────────────── */
@@ -150,7 +215,6 @@ const {
     max-width: 52ch;
   }
 
-  /* ── Check list ─────────────────────────── */
   .fr-checks {
     list-style: none;
     padding: 0;
@@ -176,7 +240,6 @@ const {
     display: flex;
   }
 
-  /* ── CTA ────────────────────────────────── */
   .fr-cta {
     align-self: flex-start;
     padding: 0.75rem 1.5rem;
