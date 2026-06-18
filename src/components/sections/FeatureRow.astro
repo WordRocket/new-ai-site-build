@@ -56,9 +56,9 @@ const showBadge = statValue && statLabel;
         </div>
 
         {showBadge && (
-          <div class="fr-badge" aria-label={`${statValue} ${statLabel}`}>
-            <span class="fr-badge__value" aria-hidden="true">{statValue}</span>
-            <span class="fr-badge__label" aria-hidden="true">{statLabel}</span>
+          <div class="fr-badge">
+            <span class="fr-badge__value">{statValue}</span>
+            <span class="fr-badge__label">{statLabel}</span>
           </div>
         )}
       </div>

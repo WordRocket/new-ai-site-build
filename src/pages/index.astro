@@ -122,7 +122,7 @@ const heroStats = statsItems.slice(0, 3);
 
     <!-- Avatar trust cluster — only renders when clientsServed is set -->
     {siteConfig.clientsServed && (
-      <div class="trust-cluster mb-6" aria-label={`${siteConfig.clientsServed}+ ${siteConfig.city} customers served`}>
+      <div class="trust-cluster mb-6">
         <div class="trust-cluster__avatars" aria-hidden="true">
           <span class="trust-avatar ta-1"><Icon name="user" width={16} height={16} /></span>
           <span class="trust-avatar ta-2"><Icon name="user" width={16} height={16} /></span>
@@ -235,7 +235,7 @@ const heroStats = statsItems.slice(0, 3);
         <blockquote id="testimonial-heading" class="text-lg sm:text-xl italic leading-relaxed text-[var(--color-text)] mb-6">
           {testimonialText}
         </blockquote>
-        <div class="flex items-center justify-center gap-1 mb-3" aria-label="5-star rating">
+        <div class="flex items-center justify-center gap-1 mb-3" role="img" aria-label="5-star rating">
           {Array.from({ length: 5 }).map(() => (
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#f59e0b" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
           ))}
