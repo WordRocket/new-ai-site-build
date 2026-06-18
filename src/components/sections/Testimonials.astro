@@ -2,8 +2,8 @@
 import siteConfig from '../../lib/site-config';
 
 interface Testimonial {
-  quote: string;
-  name: string;
+  quote?: string;
+  name?: string;
   role?: string;
   rating?: number;
   result?: string;
@@ -17,7 +17,7 @@ interface Props {
 const { testimonials: propTestimonials, heading = 'What Our Clients Say' } = Astro.props;
 
 // Fall back to site-config single testimonial if no array passed
-const testimonials: Testimonial[] = (() => {
+const raw: Testimonial[] = (() => {
   if (propTestimonials && propTestimonials.length > 0) return propTestimonials;
   const text = (siteConfig as any).testimonial_text as string | undefined;
   if (!text) return [];
@@ -29,13 +29,17 @@ const testimonials: Testimonial[] = (() => {
   }];
 })();
 
+// Drop any entry that has no quote — never let a malformed item reach the template
+const testimonials = raw.filter((t) => t.quote && t.quote.trim().length > 0);
+
 if (testimonials.length === 0) return;
 
 function clamp(r?: number): number {
   if (r == null) return 5;
   return Math.min(5, Math.max(1, Math.round(r)));
 }
-function initials(name: string): string {
+function initials(name?: string): string {
+  if (!name) return '?';
   return name.trim().split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2);
 }
 function splitH(h: string) {
@@ -91,7 +95,7 @@ const { main: hMain, last: hLast } = splitH(heading);
             <footer class="tl__footer">
               <span class="tl__avatar" aria-hidden="true">{initials(t.name)}</span>
               <div class="tl__info">
-                <span class="tl__name" style="color:var(--rs-text);">{t.name}</span>
+                {t.name && <span class="tl__name" style="color:var(--rs-text);">{t.name}</span>}
                 {t.role && <span class="tl__role" style="color:var(--rs-text-muted);">{t.role}</span>}
               </div>
             </footer>

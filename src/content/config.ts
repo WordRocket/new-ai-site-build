@@ -35,8 +35,8 @@ const pages = defineCollection({
 const stepSchema = z.object({ title: z.string(), desc: z.string(), icon: z.string().optional() });
 const featureSchema = z.object({ title: z.string(), desc: z.string(), icon: z.string().optional() });
 const testimonialSchema = z.object({
-  quote: z.string(),
-  name: z.string(),
+  quote: z.string().optional(),
+  name: z.string().optional(),
   role: z.string().optional(),
   rating: z.number().optional(),
   result: z.string().optional(),
