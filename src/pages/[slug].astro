@@ -112,9 +112,6 @@ const testimonials = d.testimonials ?? (siteConfig as any).testimonials ?? [];
       </div>
     </div>
 
-    <!-- Process timeline (full-width, only renders if d.steps has items) -->
-    <ProcessTimeline steps={d.steps ?? []} />
-
     <!-- Feature grid from frontmatter, or hardcoded "Why Choose Us" fallback -->
     {hasFeatures ? (
       <FeatureGrid items={d.features!} />
@@ -142,6 +139,9 @@ const testimonials = d.testimonials ?? (siteConfig as any).testimonials ?? [];
         </div>
       </div>
     )}
+
+    <!-- Process timeline (full-width, only renders if d.steps has items) -->
+    <ProcessTimeline steps={d.steps ?? []} />
 
     <!-- FAQ accordion -->
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pb-16">

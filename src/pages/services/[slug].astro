@@ -120,11 +120,11 @@ const testimonials = d.testimonials ?? (siteConfig as any).testimonials ?? [];
       </div>
     </div>
 
-    <!-- Process timeline (full-width, only renders if d.steps has items) -->
-    <ProcessTimeline steps={d.steps ?? []} />
-
     <!-- Feature grid (full-width, only renders if d.features has items) -->
     <FeatureGrid items={d.features ?? []} />
+
+    <!-- Process timeline (full-width, only renders if d.steps has items) -->
+    <ProcessTimeline steps={d.steps ?? []} />
 
     <!-- FAQ accordion -->
     {hasFaq && (
