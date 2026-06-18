@@ -1,6 +1,27 @@
+import { getCollection } from 'astro:content';
 import siteConfig from '../lib/site-config';
 
-export function GET() {
+export async function GET() {
+  const [services, locations] = await Promise.all([
+    getCollection('services'),
+    getCollection('locations'),
+  ]);
+
+  const today = new Date().toISOString().slice(0, 10);
+
+  const serviceLinks = services.length > 0
+    ? services
+        .sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0))
+        .map(s => `- [${s.data.title}](${siteConfig.url}/services/${s.slug}): ${s.data.shortDescription || s.data.description}`)
+        .join('\n')
+    : `- [Services](${siteConfig.url}/services): View all services offered by ${siteConfig.name}.`;
+
+  const locationLinks = locations.length > 0
+    ? locations
+        .map(l => `- [${l.data.title}](${siteConfig.url}/${l.slug}): ${l.data.description}`)
+        .join('\n')
+    : '';
+
   const body = `# ${siteConfig.name}
 
 > ${siteConfig.name} is ${siteConfig.description}
@@ -13,28 +34,27 @@ export function GET() {
 - **Contact:** ${siteConfig.email}
 
 ## Services
-- Local SEO: End-to-end local search optimisation to rank in Google Maps and organic results.
-- GEO Optimisation: Structured content strategy to earn citations in AI answer engines like ChatGPT and Perplexity.
-- Website Design: Fast, accessible, conversion-focused websites built to rank from launch day.
 
-## About
-${siteConfig.name} serves local businesses in ${siteConfig.city}, ${siteConfig.state} and surrounding areas. We combine technical SEO, AI-optimised content, and high-performance web design into a single, measurable growth system.
-
+${serviceLinks}
+${locationLinks ? `\n## Service Areas\n\n${locationLinks}\n` : ''}
 ## Key Pages
-- Home: ${siteConfig.url}/
-- About: ${siteConfig.url}/about
-- Services: ${siteConfig.url}/services
-- Blog: ${siteConfig.url}/blog
-- Contact: ${siteConfig.url}/contact
-- FAQ: ${siteConfig.url}/faq
+
+- [Home](${siteConfig.url}/): ${siteConfig.description}
+- [About](${siteConfig.url}/about): Learn about ${siteConfig.name}, our team, and our commitment to ${siteConfig.city}.
+- [Services](${siteConfig.url}/services): Browse all services offered by ${siteConfig.name}.
+- [Blog](${siteConfig.url}/blog): Tips, guides, and industry news from ${siteConfig.name}.
+- [Contact](${siteConfig.url}/contact): Get in touch with ${siteConfig.name} in ${siteConfig.city}, ${siteConfig.state}.
+- [FAQ](${siteConfig.url}/faq): Answers to common questions about ${siteConfig.name}.
 
 ## AI Endpoints
-- Summary: ${siteConfig.url}/ai/summary.json
-- FAQ: ${siteConfig.url}/ai/faq.json
-- Service: ${siteConfig.url}/ai/service.json
+
+- [Business Summary](${siteConfig.url}/ai/summary.json): Structured JSON summary of ${siteConfig.name}.
+- [FAQ Data](${siteConfig.url}/ai/faq.json): Machine-readable FAQ for ${siteConfig.name}.
+- [Service Data](${siteConfig.url}/ai/service.json): Structured service information for AI agents.
 
 ## Last Updated
-2026-06-11
+
+${today}
 `;
 
   return new Response(body, {
