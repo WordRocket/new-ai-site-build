@@ -28,7 +28,23 @@ const PATHS: Record<string, string> = {
   'trending-up':   '<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',
   'check':         '<polyline points="20 6 9 17 4 12"/>',
   'arrow-right':   '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+  // Service-type icons
+  'bug':           '<rect width="8" height="14" x="8" y="6" rx="4"/><path d="m19 7-3 2"/><path d="m5 7 3 2"/><path d="m19 19-3-2"/><path d="m5 19 3-2"/><path d="M20 13h-4"/><path d="M4 13h4"/><path d="m10 4 1 2"/><path d="m14 4-1 2"/>',
+  'search':        '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+  'droplet':       '<path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>',
+  'paw-print':     '<circle cx="11" cy="4" r="2"/><circle cx="18" cy="4" r="2"/><circle cx="6" cy="8" r="2"/><circle cx="15" cy="9" r="2"/><path d="M9 10a5 5 0 0 1 5 5v3.5a3.5 3.5 0 0 1-6.84 1.045Q6.52 17.48 4.46 16.84A3.5 3.5 0 0 1 5.5 10Z"/>',
+  'leaf':          '<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>',
 };
+
+export function getServiceIcon(title: string): string {
+  const t = title.toLowerCase();
+  if (/rodent|rat\b|mice|mouse|squirrel|raccoon|wildlife|possum|opossum|mole|vole|gopher|bird/.test(t)) return 'paw-print';
+  if (/eco|organic|green|natural|biolog|environment/.test(t)) return 'leaf';
+  if (/bug|ant\b|ants|roach|cockroach|bedbug|bed.bug|flea|tick|termite|spider|beetle|moth|flies|fly\b|mosquito|wasp|bee\b|bees|hornet|stink|pest|insect/.test(t)) return 'bug';
+  if (/inspect|survey|assess|audit|detect/.test(t)) return 'search';
+  if (/spray|treat|fumigate|exterminate|eliminat|chemical|drip|liquid/.test(t)) return 'droplet';
+  return 'shield-check';
+}
 
 export function iconSvg(name: string, size = 20): string {
   const paths = PATHS[name];

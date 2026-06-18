@@ -4,6 +4,7 @@ import siteConfig from '../lib/site-config';
 import { getCollection } from 'astro:content';
 import { getPreset, interpolate } from '../lib/business-presets';
 import Icon from '../components/Icon.astro';
+import { iconSvg, getServiceIcon } from '../lib/icons';
 
 const serviceEntries = await getCollection('services').catch(() => []);
 const nicheLabel = siteConfig.niche || 'professional service';
@@ -16,19 +17,19 @@ const vars = { city: siteConfig.city, niche: nicheLabel };
 const placeholderServices = [
   {
     slug: null, num: '01',
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>`,
+    icon: iconSvg(getServiceIcon(nicheLabel), 22),
     title: `${nicheLabel.charAt(0).toUpperCase() + nicheLabel.slice(1)} Services`,
     description: `Professional ${nicheLabel} services tailored to your needs in ${siteConfig.city}, ${siteConfig.state}. Reliable results, every time.`,
   },
   {
     slug: null, num: '02',
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+    icon: iconSvg('check-circle', 22),
     title: 'Free Estimates',
     description: `Honest, transparent quotes before any work begins — no surprises, no hidden fees. Call us to book your free assessment.`,
   },
   {
     slug: null, num: '03',
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>`,
+    icon: iconSvg('clock', 22),
     title: 'Fast Response',
     description: `We respect your time. Prompt scheduling and reliable arrival — when you need us, we show up prepared and ready.`,
   },
@@ -38,7 +39,7 @@ const displayServices = serviceEntries.length > 0
   ? serviceEntries.map((e, i) => ({
       slug: e.slug,
       num: String(i + 1).padStart(2, '0'),
-      icon: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>`,
+      icon: iconSvg(getServiceIcon(e.data.title), 22),
       title: e.data.title,
       description: e.data.description ?? '',
     }))

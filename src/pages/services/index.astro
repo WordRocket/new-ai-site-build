@@ -1,6 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { getServiceIcon } from '../../lib/icons';
 
 const all = await getCollection('services');
 const services = all.sort((a, b) => a.data.order - b.data.order);
@@ -53,11 +55,10 @@ const services = all.sort((a, b) => a.data.order - b.data.order);
                   <article class="svc-card u-card">
                     <div class="svc-card__icon" aria-hidden="true">
                       {icon ? (
-                        /* emoji / text icon */
+                        /* emoji / text icon from content frontmatter */
                         <span class="svc-card__emoji">{icon}</span>
                       ) : (
-                        /* default inline SVG */
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+                        <Icon name={getServiceIcon(service.data.title)} width={20} height={20} aria-hidden="true" />
                       )}
                     </div>
 
