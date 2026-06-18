@@ -5,6 +5,7 @@ import { getCollection } from 'astro:content';
 import { getPreset, interpolate } from '../lib/business-presets';
 import Icon from '../components/Icon.astro';
 import { iconSvg, getServiceIcon } from '../lib/icons';
+import FeatureRow from '../components/sections/FeatureRow.astro';
 
 const serviceEntries = await getCollection('services').catch(() => []);
 const nicheLabel = siteConfig.niche || 'professional service';
@@ -229,35 +230,34 @@ const heroStats = statsItems.slice(0, 3);
   </section>
 )}
 
-<!-- ─── WHY CHOOSE US ──────────────────────────────────────────────────── -->
-<section class="section-pad bg-white" aria-labelledby="why-heading">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-      <div>
-        <h2 id="why-heading" class="reveal text-[var(--color-text)] mb-5">
-          Why {siteConfig.city} Trusts {siteConfig.name}
-        </h2>
-        <p class="text-[var(--color-text-muted)] text-lg leading-relaxed">{siteConfig.description}</p>
-      </div>
-      <ul class="flex flex-col gap-5">
-        {features.map(({ title, desc, icon }) => (
-          <li class="reveal flex items-start gap-4">
-            <span class="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center text-[var(--color-brand)]" style="background:#eff6ff;">
-              <Fragment set:html={icon} />
-            </span>
-            <div>
-              <p class="font-semibold text-[var(--color-text)] text-sm mb-0.5">{title}</p>
-              <p class="text-sm text-[var(--color-text-muted)] leading-relaxed">{desc}</p>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </div>
-  </div>
-</section>
+<!-- ─── FEATURE ROWS ───────────────────────────────────────────────────── -->
+<FeatureRow
+  eyebrow="Trusted Locally"
+  heading={`Why ${siteConfig.city} Trusts ${siteConfig.name}`}
+  body={siteConfig.description}
+  checks={features.slice(0, 3).map((f) => ({ text: f.title }))}
+  ctaText="Get a Free Estimate"
+  ctaHref={siteConfig.phone ? `tel:${phoneDigits}` : '/contact'}
+  image={siteConfig.heroImage}
+  imageAlt={`${siteConfig.name} professional service`}
+  bg="white"
+/>
 
-<!-- wave: white → neutral -->
-<div class="wave-divider" style="background:white;" aria-hidden="true">
+<FeatureRow
+  eyebrow="How It Works"
+  heading={`Professional ${nicheLabel.charAt(0).toUpperCase() + nicheLabel.slice(1)} You Can Count On`}
+  body={`When you choose ${siteConfig.name}, you get more than a service — you get a team committed to exceptional results. From the first call to the final job, we're with you every step of the way.`}
+  checks={features.slice(1).map((f) => ({ text: f.title }))}
+  ctaText="View Our Services"
+  ctaHref="/services"
+  image={siteConfig.aboutImage}
+  imageAlt={`${siteConfig.name} professional team`}
+  bg="var(--color-neutral-50)"
+  reverse
+/>
+
+<!-- wave: neutral → neutral (section separator) -->
+<div class="wave-divider" style="background:var(--color-neutral-50);" aria-hidden="true">
   <svg viewBox="0 0 1440 48" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,24 C360,0 1080,48 1440,24 L1440,48 L0,48 Z" fill="var(--color-neutral-50)"/></svg>
 </div>
 

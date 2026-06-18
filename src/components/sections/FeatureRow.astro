@@ -1,0 +1,185 @@
+---
+import SmartImage from '../SmartImage.astro';
+import Icon from '../Icon.astro';
+
+interface CheckItem {
+  text: string;
+}
+
+interface Props {
+  eyebrow?: string;
+  heading: string;
+  body: string;
+  checks?: CheckItem[];
+  ctaText?: string;
+  ctaHref?: string;
+  image?: string;
+  imageAlt?: string;
+  imageAspect?: string;
+  /** Flip image/text sides on desktop. On mobile, image always stacks above text. */
+  reverse?: boolean;
+  bg?: string;
+}
+
+const {
+  eyebrow,
+  heading,
+  body,
+  checks = [],
+  ctaText,
+  ctaHref,
+  image,
+  imageAlt = '',
+  imageAspect = '4/3',
+  reverse = false,
+  bg = 'var(--rs-bg, #ffffff)',
+} = Astro.props;
+---
+
+<section class="fr-section u-reveal" style={`background:${bg};`}>
+  <div class:list={['fr-inner', reverse && 'fr-inner--rev']}>
+
+    <!-- Image column -->
+    <div class="fr-media">
+      <div class="fr-media-wrap">
+        <SmartImage src={image} alt={imageAlt || heading} aspect={imageAspect} />
+      </div>
+    </div>
+
+    <!-- Text column -->
+    <div class="fr-text">
+      {eyebrow && <span class="u-eyebrow fr-eyebrow">{eyebrow}</span>}
+
+      <h2 class="fr-heading">{heading}</h2>
+
+      <p class="fr-body">{body}</p>
+
+      {checks.length > 0 && (
+        <ul class="fr-checks" role="list">
+          {checks.map(({ text }) => (
+            <li class="fr-check-item">
+              <span class="fr-check-icon" aria-hidden="true">
+                <Icon name="check-circle" width={18} height={18} />
+              </span>
+              {text}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {ctaText && ctaHref && (
+        <a href={ctaHref} class="u-btn u-btn-primary fr-cta">
+          {ctaText}
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+      )}
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .fr-section {
+    padding: 96px 0;
+  }
+  @media (max-width: 768px) {
+    .fr-section { padding: 64px 0; }
+  }
+
+  .fr-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4.5rem;
+    align-items: center;
+  }
+  /* Reversed: image on right, text on left */
+  .fr-inner--rev .fr-media { order: 2; }
+  .fr-inner--rev .fr-text  { order: 1; }
+
+  @media (max-width: 900px) {
+    .fr-inner {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+    }
+    /* On mobile always stack image above text regardless of reverse */
+    .fr-inner .fr-media,
+    .fr-inner--rev .fr-media { order: 1; }
+    .fr-inner .fr-text,
+    .fr-inner--rev .fr-text  { order: 2; }
+  }
+
+  @media (min-width: 901px) and (max-width: 1100px) {
+    .fr-inner { gap: 3rem; }
+  }
+
+  /* ── Media panel ────────────────────────── */
+  .fr-media-wrap {
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.10);
+  }
+
+  /* ── Text panel ─────────────────────────── */
+  .fr-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .fr-eyebrow {
+    margin-bottom: 0.875rem;
+  }
+
+  .fr-heading {
+    font-size: clamp(1.65rem, 2.4vw, 2.15rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    color: var(--rs-text, var(--color-text));
+    margin: 0 0 1rem;
+  }
+
+  .fr-body {
+    font-size: 1.0625rem;
+    line-height: 1.75;
+    color: var(--rs-text-muted, var(--color-text-muted));
+    margin: 0 0 1.5rem;
+    max-width: 52ch;
+  }
+
+  /* ── Check list ─────────────────────────── */
+  .fr-checks {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+
+  .fr-check-item {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--rs-text, var(--color-text));
+    line-height: 1.4;
+  }
+
+  .fr-check-icon {
+    color: var(--rs-brand, var(--color-brand));
+    flex-shrink: 0;
+    display: flex;
+  }
+
+  /* ── CTA ────────────────────────────────── */
+  .fr-cta {
+    align-self: flex-start;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9375rem;
+  }
+</style>
