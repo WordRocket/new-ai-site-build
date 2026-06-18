@@ -1,0 +1,62 @@
+---
+import Icon from './Icon.astro';
+
+interface Props {
+  src?: string;
+  alt: string;
+  /** CSS aspect-ratio value, e.g. "16/9", "4/3", "1/1". Defaults to "16/9". */
+  aspect?: string;
+  class?: string;
+}
+
+const { src, alt, aspect = '16/9', class: cls } = Astro.props;
+const hasImage = typeof src === 'string' && src.trim().length > 0;
+---
+
+{hasImage ? (
+  <img
+    src={src}
+    alt={alt}
+    loading="lazy"
+    decoding="async"
+    class:list={['si-img', cls]}
+    style={`aspect-ratio:${aspect};`}
+  />
+) : (
+  <div
+    class:list={['si-placeholder', cls]}
+    style={`aspect-ratio:${aspect};`}
+    role="img"
+    aria-label={alt}
+  >
+    <Icon name="image" width={48} height={48} aria-hidden="true" />
+  </div>
+)}
+
+<style>
+  .si-img {
+    display: block;
+    width: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .si-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--rs-brand, #2563eb) 7%, var(--rs-bg, #ffffff)) 0%,
+      color-mix(in srgb, var(--rs-brand, #2563eb) 16%, var(--rs-bg, #ffffff)) 100%
+    );
+    color: var(--rs-brand, #2563eb);
+    overflow: hidden;
+  }
+
+  .si-placeholder svg {
+    opacity: 0.28;
+    flex-shrink: 0;
+  }
+</style>
