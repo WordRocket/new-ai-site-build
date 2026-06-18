@@ -8,20 +8,16 @@ const siteUrl = (import.meta.env.SITE ?? siteConfig.url ?? 'https://example.com'
 const pageUrl = `${siteUrl}/locations`;
 
 const allLocations = await getCollection('locations');
-
-// Group by city, preserving insertion order
-const byCity = new Map<string, Array<{ title: string; slug: string; service: string; state: string }>>();
-for (const entry of allLocations) {
-  const city = entry.data.city;
-  if (!byCity.has(city)) byCity.set(city, []);
-  byCity.get(city)!.push({
-    title: entry.data.title,
-    slug: entry.slug.replace(/^\/+/, ''),
+const locations = allLocations
+  .map((entry) => ({
+    city:    entry.data.city,
+    state:   entry.data.state,
     service: entry.data.service,
-    state: entry.data.state,
-  });
-}
-const cities = Array.from(byCity.entries()).sort(([a], [b]) => a.localeCompare(b));
+    slug:    entry.slug.replace(/^\/+/, ''),
+  }))
+  .sort((a, b) => a.city.localeCompare(b.city));
+
+const cityCount = new Set(locations.map((l) => l.city)).size;
 
 const breadcrumbSchema = getBreadcrumbSchema([
   { name: 'Home', url: siteUrl },
@@ -36,7 +32,7 @@ const breadcrumbSchema = getBreadcrumbSchema([
   schemas={[breadcrumbSchema]}
 >
   <main>
-    <!-- Hero -->
+    <!-- Hero (unchanged dark gradient) -->
     <div class="page-hero" aria-label="Service areas hero">
       <div class="relative z-10 max-w-[1200px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-14">
         <nav aria-label="Breadcrumb" class="mb-5">
@@ -48,40 +44,137 @@ const breadcrumbSchema = getBreadcrumbSchema([
         </nav>
         <h1 class="text-white font-extrabold tracking-tight mb-3">Areas We Serve</h1>
         <p class="text-lg" style="color:rgba(255,255,255,0.75);">
-          Browse all {allLocations.length} service {allLocations.length === 1 ? 'location' : 'locations'} across {cities.length} {cities.length === 1 ? 'city' : 'cities'}.
+          Browse all {locations.length} service {locations.length === 1 ? 'location' : 'locations'} across {cityCount} {cityCount === 1 ? 'city' : 'cities'}.
         </p>
       </div>
     </div>
 
-    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-      {cities.length > 0 ? (
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {cities.map(([city, entries]) => (
-            <div>
-              <h2 class="text-base font-bold text-[var(--color-text)] mb-3 flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                {city}, {entries[0].state}
-              </h2>
-              <ul class="flex flex-col gap-2">
-                {entries.map((loc) => (
-                  <li>
-                    <a
-                      href={`/${loc.slug}`}
-                      class="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-brand)] transition-colors"
-                    >
-                      {loc.service}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p class="text-[var(--color-text-muted)]">
-          Service area pages are being prepared. <a href="/contact" class="underline hover:text-[var(--color-brand)]">Contact us</a> to find out if we serve your area.
-        </p>
-      )}
-    </div>
+    <!-- Location card grid -->
+    <section class="loc-section" aria-label="Service area locations">
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-18">
+        {locations.length === 0 ? (
+          <div class="flex flex-col items-center gap-4 py-20 text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#d4d4d8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+            <p class="text-[var(--color-text-muted)] text-lg font-medium">Service areas coming soon</p>
+            <p class="text-sm text-[var(--color-text-muted)]">
+              <a href="/contact" class="underline hover:text-[var(--color-brand)] transition-colors">Contact us</a> to find out if we serve your area.
+            </p>
+          </div>
+        ) : (
+          <ul class="loc-grid" role="list">
+            {locations.map(({ city, state, service, slug }) => (
+              <li>
+                <a
+                  href={`/${slug}`}
+                  class="loc-card u-card"
+                  aria-label={`${city}, ${state} – ${service}`}
+                >
+                  <!-- Icon chip -->
+                  <div class="loc-card__icon" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                  </div>
+
+                  <!-- City + state -->
+                  <h2 class="loc-card__city">{city}<span class="loc-card__state">, {state}</span></h2>
+
+                  <!-- Service as eyebrow/subtitle -->
+                  <p class="loc-card__service">{service}</p>
+
+                  <!-- CTA affordance -->
+                  <span class="loc-card__cta" aria-hidden="true">
+                    View details
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </section>
   </main>
 </BaseLayout>
+
+<style>
+  .loc-grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+  @media (min-width: 640px) {
+    .loc-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .loc-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .loc-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.5rem;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+    /* override u-card's -2px with -4px */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .loc-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px -4px rgba(0, 0, 0, 0.12), 0 4px 10px -2px rgba(0, 0, 0, 0.07);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .loc-card { transition: box-shadow 0.2s ease; }
+    .loc-card:hover { transform: none; }
+  }
+
+  .loc-card__icon {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: color-mix(in srgb, var(--color-brand) 10%, transparent);
+    color: var(--color-brand);
+    margin-bottom: 0.25rem;
+  }
+
+  .loc-card__city {
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--color-text);
+    margin: 0;
+    text-transform: capitalize;
+  }
+  .loc-card__state {
+    text-transform: none;
+    font-weight: 500;
+    color: var(--color-text-muted);
+  }
+
+  .loc-card__service {
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    margin: 0;
+    flex: 1;
+    line-height: 1.5;
+  }
+
+  .loc-card__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-brand);
+    margin-top: auto;
+    padding-top: 0.75rem;
+  }
+</style>
