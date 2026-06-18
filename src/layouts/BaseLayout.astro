@@ -5,7 +5,6 @@ import Navigation from '../components/Navigation.astro';
 import Footer from '../components/Footer.astro';
 import StickyActionBar from '../components/sections/StickyActionBar.astro';
 import siteConfig from '../data/site-config.json';
-import { getPreset } from '../lib/business-presets';
 import '../styles/global.css';
 
 interface Props {
@@ -21,14 +20,14 @@ interface Props {
 const { title, description, ogImage, canonical, noindex, schemas = [], schemaJsonld } = Astro.props;
 
 const brandColor = siteConfig.brandColor ?? '#2563eb';
-const preset = getPreset(siteConfig.businessType);
-const configSkin = (siteConfig as Record<string, unknown>).skin;
+// Explicit validation: only exactly "light" or "dark" are accepted.
+// Empty string, missing, or any other value falls back to "light".
+// darkMode:true acts as a secondary opt-in if skin field is blank.
+const rawSkin = siteConfig.skin;
 const skin: 'light' | 'dark' =
-  configSkin === 'dark' || configSkin === 'light'
-    ? (configSkin as 'light' | 'dark')
-    : siteConfig.darkMode
-    ? 'dark'
-    : preset.skin;
+  rawSkin === 'dark'  ? 'dark'  :
+  rawSkin === 'light' ? 'light' :
+  siteConfig.darkMode ? 'dark'  : 'light';
 ---
 
 <!doctype html>

@@ -5,6 +5,7 @@
   "description": "Local business serving your area",
   "logo": "",
   "brandColor": "#2563eb",
+  "skin": "",
   "fontStyle": "inter",
   "buttonStyle": "rounded",
   "darkMode": false,
