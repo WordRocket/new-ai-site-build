@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import SmartImage from '../components/SmartImage.astro';
 import NAPBlock from '../components/NAPBlock.astro';
 import ServiceAreaMap from '../components/ServiceAreaMap.astro';
 import ReviewBanner from '../components/ReviewBanner.astro';
@@ -101,6 +102,11 @@ const testimonials = d.testimonials ?? (siteConfig as any).testimonials ?? [];
     <!-- Trust signals bar directly below hero -->
     <TrustBar />
 
+    <!-- Hero image -->
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14">
+      <SmartImage src={d.heroImage} alt={d.title} aspect="16/9" />
+    </div>
+
     <!-- Prose content -->
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
       <div class="max-w-[740px] mx-auto">
@@ -111,6 +117,13 @@ const testimonials = d.testimonials ?? (siteConfig as any).testimonials ?? [];
         </section>
       </div>
     </div>
+
+    <!-- Section image -->
+    {d.sectionImage && (
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pb-10">
+        <SmartImage src={d.sectionImage} alt={`${d.title} – location detail`} aspect="16/9" />
+      </div>
+    )}
 
     <!-- Feature grid from frontmatter, or hardcoded "Why Choose Us" fallback -->
     {hasFeatures ? (
