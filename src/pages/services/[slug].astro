@@ -7,6 +7,7 @@ import ServiceAreaMap from '../../components/ServiceAreaMap.astro';
 import TrustBar from '../../components/sections/TrustBar.astro';
 import ProcessTimeline from '../../components/sections/ProcessTimeline.astro';
 import FeatureGrid from '../../components/sections/FeatureGrid.astro';
+import FeatureRow from '../../components/sections/FeatureRow.astro';
 import Testimonials from '../../components/sections/Testimonials.astro';
 import CtaBand from '../../components/sections/CtaBand.astro';
 import siteConfig from '../../lib/site-config';
@@ -88,10 +89,25 @@ const testimonials = d.testimonials ?? (siteConfig as any).testimonials ?? [];
     <!-- Trust signals bar directly below hero -->
     <TrustBar />
 
-    <!-- Hero image -->
+    <!-- Hero image — eager-loaded, LCP element -->
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14">
-      <SmartImage src={d.heroImage} alt={d.title} aspect="16/9" />
+      <SmartImage src={d.heroImage} alt={d.title} aspect="16/9" loading="eager" fetchpriority="high" />
     </div>
+
+    <!-- Section image band — only when sectionImage is bound -->
+    {d.sectionImage && (
+      <FeatureRow
+        heading={d.title}
+        body={d.shortDescription || d.description}
+        image={d.sectionImage}
+        imageAlt={d.title}
+        imageAspect="4/3"
+        ctaText="Get a Free Quote"
+        ctaHref="/contact"
+        bg="var(--rs-surface)"
+        reverse
+      />
+    )}
 
     <!-- Prose content -->
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
@@ -125,13 +141,6 @@ const testimonials = d.testimonials ?? (siteConfig as any).testimonials ?? [];
 
       </div>
     </div>
-
-    <!-- Section image -->
-    {d.sectionImage && (
-      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pb-10">
-        <SmartImage src={d.sectionImage} alt={`${d.title} – service detail`} aspect="4/3" />
-      </div>
-    )}
 
     <!-- Feature grid (full-width, only renders if d.features has items) -->
     <FeatureGrid items={d.features ?? []} />

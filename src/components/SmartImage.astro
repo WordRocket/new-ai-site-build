@@ -7,9 +7,11 @@ interface Props {
   /** CSS aspect-ratio value, e.g. "16/9", "4/3", "1/1". Defaults to "16/9". */
   aspect?: string;
   class?: string;
+  loading?: 'eager' | 'lazy';
+  fetchpriority?: 'high' | 'auto' | 'low';
 }
 
-const { src, alt, aspect = '16/9', class: cls } = Astro.props;
+const { src, alt, aspect = '16/9', class: cls, loading = 'lazy', fetchpriority } = Astro.props;
 const hasImage = typeof src === 'string' && src.trim().length > 0;
 ---
 
@@ -17,8 +19,9 @@ const hasImage = typeof src === 'string' && src.trim().length > 0;
   <img
     src={src}
     alt={alt}
-    loading="lazy"
+    loading={loading}
     decoding="async"
+    fetchpriority={fetchpriority}
     class:list={['si-img', cls]}
     style={`aspect-ratio:${aspect};`}
   />
