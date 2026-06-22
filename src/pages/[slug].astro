@@ -108,6 +108,17 @@ const testimonials = d.testimonials ?? (siteConfig as any).testimonials ?? [];
       <SmartImage src={d.heroImage} alt={d.title} aspect="16/9" loading="eager" fetchpriority="high" />
     </div>
 
+    <!-- Prose content -->
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
+      <div class="max-w-[740px] mx-auto">
+        <section aria-label="Introduction">
+          <div class="prose prose-neutral prose-lg max-w-none">
+            <Content />
+          </div>
+        </section>
+      </div>
+    </div>
+
     <!-- Section image band — only when sectionImage is bound -->
     {d.sectionImage && (
       <FeatureRow
@@ -122,17 +133,6 @@ const testimonials = d.testimonials ?? (siteConfig as any).testimonials ?? [];
         reverse
       />
     )}
-
-    <!-- Prose content -->
-    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
-      <div class="max-w-[740px] mx-auto">
-        <section aria-label="Introduction">
-          <div class="prose prose-neutral prose-lg max-w-none">
-            <Content />
-          </div>
-        </section>
-      </div>
-    </div>
 
     <!-- Feature grid from frontmatter, or hardcoded "Why Choose Us" fallback -->
     {hasFeatures ? (

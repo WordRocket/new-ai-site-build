@@ -94,21 +94,6 @@ const testimonials = d.testimonials ?? (siteConfig as any).testimonials ?? [];
       <SmartImage src={d.heroImage} alt={d.title} aspect="16/9" loading="eager" fetchpriority="high" />
     </div>
 
-    <!-- Section image band — only when sectionImage is bound -->
-    {d.sectionImage && (
-      <FeatureRow
-        heading={d.title}
-        body={d.shortDescription || d.description}
-        image={d.sectionImage}
-        imageAlt={d.title}
-        imageAspect="4/3"
-        ctaText="Get a Free Quote"
-        ctaHref="/contact"
-        bg="var(--rs-surface)"
-        reverse
-      />
-    )}
-
     <!-- Prose content -->
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
       <div class="max-w-[740px] mx-auto">
@@ -141,6 +126,21 @@ const testimonials = d.testimonials ?? (siteConfig as any).testimonials ?? [];
 
       </div>
     </div>
+
+    <!-- Section image band — only when sectionImage is bound -->
+    {d.sectionImage && (
+      <FeatureRow
+        heading={d.title}
+        body={d.shortDescription || d.description}
+        image={d.sectionImage}
+        imageAlt={d.title}
+        imageAspect="4/3"
+        ctaText="Get a Free Quote"
+        ctaHref="/contact"
+        bg="var(--rs-surface)"
+        reverse
+      />
+    )}
 
     <!-- Feature grid (full-width, only renders if d.features has items) -->
     <FeatureGrid items={d.features ?? []} />
