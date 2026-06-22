@@ -1,11 +1,20 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { getEntry, getCollection } from 'astro:content';
 import { getBreadcrumbSchema } from '../lib/schema';
 import siteConfig from '../lib/site-config';
 import { getPreset } from '../lib/business-presets';
 
 const siteUrl = import.meta.env.SITE ?? siteConfig.url;
 const pageUrl = `${siteUrl}/contact`;
+
+const contactEntry = await getEntry('pages', 'contact').catch(() => null);
+const cp = contactEntry?.data;
+
+const serviceEntries = await getCollection('services').catch(() => []);
+const serviceOptions = serviceEntries.length > 0
+  ? serviceEntries.map((s) => ({ value: s.slug, label: s.data.title }))
+  : [{ value: 'general-inquiry', label: 'General Inquiry' }];
 
 const contactPageSchema = {
   '@context': 'https://schema.org',
@@ -42,11 +51,7 @@ const breadcrumbSchema = getBreadcrumbSchema([
 
 const preset = getPreset((siteConfig as any).businessType || 'other');
 
-const openingHours = [
-  { days: 'Monday – Friday', hours: '9:00 AM – 6:00 PM PST' },
-  { days: 'Saturday', hours: '10:00 AM – 2:00 PM PST' },
-  { days: 'Sunday', hours: 'Closed' },
-];
+const openingHours: Array<{ days: string; hours: string }> = (siteConfig as any).openingHours || [];
 ---
 
 <BaseLayout
@@ -72,9 +77,9 @@ const openingHours = [
     <!-- Header -->
     <section class="py-14 sm:py-20 text-center" style="background:var(--rs-surface);">
       <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-[var(--color-text)] mb-4">Get In Touch</h1>
+        <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-[var(--color-text)] mb-4">{cp?.title || 'Get In Touch'}</h1>
         <p class="text-[var(--color-text-muted)] text-lg max-w-xl mx-auto">
-          {preset.contactSubtext} We respond to all inquiries within one business day.
+          {cp?.description || (preset.contactSubtext + ' We respond to all inquiries within one business day.')}
         </p>
       </div>
     </section>
@@ -150,12 +155,9 @@ const openingHours = [
                 style="border:1px solid var(--rs-border); background:var(--rs-surface); color:var(--rs-text); appearance:none; background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E\"); background-repeat:no-repeat; background-position:right 12px center; padding-right:40px;"
               >
                 <option value="" disabled selected>Select a service…</option>
-                <option value="local-seo">Local SEO</option>
-                <option value="geo-optimisation">GEO Optimisation</option>
-                <option value="website-design">Website Design</option>
-                <option value="content-strategy">Content Strategy</option>
-                <option value="technical-seo">Technical SEO</option>
-                <option value="other">Other / Not Sure</option>
+                {serviceOptions.map(({ value, label }) => (
+                  <option value={value}>{label}</option>
+                ))}
               </select>
             </div>
 
@@ -211,7 +213,8 @@ const openingHours = [
               </div>
             </address>
 
-            <!-- Opening hours -->
+            <!-- Opening hours — only shown when configured in siteConfig.openingHours -->
+            {openingHours.length > 0 && (
             <div class="pt-4 border-t" style="border-color:var(--rs-border);">
               <p class="text-sm font-semibold text-[var(--color-text)] mb-3">Opening Hours</p>
               <ul class="flex flex-col gap-2">
@@ -223,6 +226,7 @@ const openingHours = [
                 ))}
               </ul>
             </div>
+            )}
           </div>
 
           <!-- Map / GBP link -->

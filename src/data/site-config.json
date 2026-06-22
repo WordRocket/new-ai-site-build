@@ -27,5 +27,9 @@
   "tagline2": "",
   "businessType": "local-service",
   "heroImage": "",
-  "aboutImage": ""
+  "aboutImage": "",
+  "testimonial_text": "",
+  "testimonial_author": "",
+  "testimonial_neighborhood": "",
+  "openingHours": []
 }

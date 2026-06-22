@@ -1,13 +1,15 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import siteConfig from '../lib/site-config';
-import { getCollection } from 'astro:content';
+import { getCollection, getEntry } from 'astro:content';
 import { getPreset, interpolate } from '../lib/business-presets';
 import Icon from '../components/Icon.astro';
 import { iconSvg, getServiceIcon } from '../lib/icons';
 import FeatureRow from '../components/sections/FeatureRow.astro';
 
 const serviceEntries = await getCollection('services').catch(() => []);
+const homeEntry = await getEntry('pages', 'home').catch(() => null);
+const hp = homeEntry?.data;
 const nicheLabel = siteConfig.niche || 'professional service';
 const phoneDigits = siteConfig.phone ? siteConfig.phone.replace(/\D/g, '') : '';
 const primaryCta = siteConfig.phone ? `tel:${phoneDigits}` : '/contact';
@@ -250,11 +252,11 @@ const heroStats = statsItems.slice(0, 3);
 <FeatureRow
   eyebrow="Trusted Locally"
   heading={`Why ${siteConfig.city} Trusts ${siteConfig.name}`}
-  body={siteConfig.description}
+  body={hp?.description || siteConfig.description}
   checks={features.slice(0, 3).map((f) => ({ text: f.title }))}
   ctaText="Get a Free Estimate"
   ctaHref={siteConfig.phone ? `tel:${phoneDigits}` : '/contact'}
-  image={siteConfig.heroImage}
+  image={hp?.heroImage || siteConfig.heroImage}
   imageAlt={`${siteConfig.name} professional service`}
   bg="var(--rs-bg)"
 />
@@ -266,7 +268,7 @@ const heroStats = statsItems.slice(0, 3);
   checks={features.slice(1).map((f) => ({ text: f.title }))}
   ctaText="View Our Services"
   ctaHref="/services"
-  image={siteConfig.aboutImage}
+  image={hp?.aboutImage || siteConfig.aboutImage}
   imageAlt={`${siteConfig.name} professional team`}
   bg="var(--rs-surface)"
   statValue={siteConfig.yearsInBusiness ? `${siteConfig.yearsInBusiness}+` : undefined}
