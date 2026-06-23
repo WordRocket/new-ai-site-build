@@ -74,7 +74,6 @@ const servicesActive = pathname.startsWith('/services');
                 ? 'text-[var(--color-brand)] font-semibold nav-active'
                 : 'text-[var(--color-text)] hover:text-[var(--color-brand)]',
             ].join(' ')}
-            aria-haspopup="true"
             aria-current={servicesActive ? 'page' : undefined}
           >
             Services
@@ -83,7 +82,7 @@ const servicesActive = pathname.startsWith('/services');
               <span class="absolute bottom-0 left-3 right-10 h-0.5 rounded-full" style="background:var(--color-brand);"></span>
             )}
           </a>
-          <ul class="nav-dd__menu" role="list" aria-label="Service pages">
+          <ul class="nav-dd__menu" aria-label="Service pages">
             {serviceLinks.map((s) => (
               <li>
                 <a
@@ -282,9 +281,9 @@ const servicesActive = pathname.startsWith('/services');
   .nav-dd__menu {
     list-style: none;
     margin: 0;
-    padding: 6px 0;
+    padding: 8px 0 6px;
     position: absolute;
-    top: calc(100% + 6px);
+    top: 100%;
     left: 50%;
     transform: translateX(-50%) translateY(-4px);
     min-width: 200px;
