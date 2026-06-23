@@ -34,8 +34,6 @@ const fallbackLabel = phone ? `call ${phone}` : 'email us';
   class="lf-form flex flex-col gap-4"
   novalidate
   data-endpoint={endpoint}
-  data-fallback-href={fallbackHref}
-  data-fallback-label={fallbackLabel}
 >
   {/* Honeypot: invisible to humans, bots fill it — provider-agnostic spam reduction */}
   <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none !important;" />
