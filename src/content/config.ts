@@ -34,6 +34,7 @@ const pages = defineCollection({
     noindex: z.boolean().default(false),
     canonical: z.string().optional(),
     ogImage: z.string().optional(),
+    faq: z.array(z.object({ question: z.string(), answer: z.string() })).default([]),
     schemaJsonld: z.string().optional(),
   }),
 });
