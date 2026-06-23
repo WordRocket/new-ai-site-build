@@ -31,5 +31,6 @@
   "testimonial_text": "",
   "testimonial_author": "",
   "testimonial_neighborhood": "",
-  "openingHours": []
+  "openingHours": [],
+  "formEndpoint": ""
 }

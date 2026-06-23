@@ -52,6 +52,11 @@ const breadcrumbSchema = getBreadcrumbSchema([
 const preset = getPreset((siteConfig as any).businessType || 'other');
 
 const openingHours: Array<{ days: string; hours: string }> = (siteConfig as any).openingHours || [];
+const formEndpoint: string = ((siteConfig as any).formEndpoint ?? '').trim();
+const formConnected = formEndpoint !== '';
+const fallbackContact = siteConfig.phone
+  ? `call ${siteConfig.phone}`
+  : `email ${siteConfig.email}`;
 ---
 
 <BaseLayout
@@ -92,11 +97,18 @@ const openingHours: Array<{ days: string; hours: string }> = (siteConfig as any)
         <div>
           <h2 class="text-xl font-bold text-[var(--color-text)] mb-6">Send Us a Message</h2>
           <form
-            action="#"
+            id="contact-form"
+            action={formConnected ? formEndpoint : undefined}
             method="POST"
             class="flex flex-col gap-5"
             novalidate
+            data-endpoint={formEndpoint}
+            data-fallback={fallbackContact}
           >
+            <!-- Honeypot: bots fill this; humans don't see it -->
+            <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none !important;" />
+            <!-- Subject line for providers that support it (Formspree, Web3Forms, Basin ignores harmlessly) -->
+            <input type="hidden" name="_subject" value={`New enquiry from ${siteConfig.name}`} />
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div class="flex flex-col gap-1.5">
                 <label for="name" class="text-sm font-medium text-[var(--color-text)]">
@@ -107,9 +119,10 @@ const openingHours: Array<{ days: string; hours: string }> = (siteConfig as any)
                   id="name"
                   name="name"
                   required
+                  disabled={!formConnected}
                   autocomplete="name"
                   placeholder="Jane Smith"
-                  class="w-full px-4 py-2.5 rounded-[var(--radius-md)] text-sm text-[var(--color-text)] transition-colors outline-none focus:ring-2"
+                  class="w-full px-4 py-2.5 rounded-[var(--radius-md)] text-sm text-[var(--color-text)] transition-colors outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   style="border:1px solid var(--rs-border); background:var(--rs-surface); color:var(--rs-text); focus-ring-color:var(--rs-brand);"
                 />
               </div>
@@ -122,9 +135,10 @@ const openingHours: Array<{ days: string; hours: string }> = (siteConfig as any)
                   id="email"
                   name="email"
                   required
+                  disabled={!formConnected}
                   autocomplete="email"
                   placeholder="jane@example.com"
-                  class="w-full px-4 py-2.5 rounded-[var(--radius-md)] text-sm text-[var(--color-text)] transition-colors outline-none focus:ring-2"
+                  class="w-full px-4 py-2.5 rounded-[var(--radius-md)] text-sm text-[var(--color-text)] transition-colors outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   style="border:1px solid var(--rs-border); background:var(--rs-surface); color:var(--rs-text);"
                 />
               </div>
@@ -136,9 +150,10 @@ const openingHours: Array<{ days: string; hours: string }> = (siteConfig as any)
                 type="tel"
                 id="phone"
                 name="phone"
+                disabled={!formConnected}
                 autocomplete="tel"
                 placeholder="+1 (555) 000-0000"
-                class="w-full px-4 py-2.5 rounded-[var(--radius-md)] text-sm text-[var(--color-text)] transition-colors outline-none focus:ring-2"
+                class="w-full px-4 py-2.5 rounded-[var(--radius-md)] text-sm text-[var(--color-text)] transition-colors outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 style="border:1px solid var(--rs-border); background:var(--rs-surface); color:var(--rs-text);"
               />
             </div>
@@ -151,7 +166,8 @@ const openingHours: Array<{ days: string; hours: string }> = (siteConfig as any)
                 id="service"
                 name="service"
                 required
-                class="w-full px-4 py-2.5 rounded-[var(--radius-md)] text-sm text-[var(--color-text)] transition-colors outline-none focus:ring-2"
+                disabled={!formConnected}
+                class="w-full px-4 py-2.5 rounded-[var(--radius-md)] text-sm text-[var(--color-text)] transition-colors outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 style="border:1px solid var(--rs-border); background:var(--rs-surface); color:var(--rs-text); appearance:none; background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E\"); background-repeat:no-repeat; background-position:right 12px center; padding-right:40px;"
               >
                 <option value="" disabled selected>Select a service…</option>
@@ -169,21 +185,60 @@ const openingHours: Array<{ days: string; hours: string }> = (siteConfig as any)
                 id="message"
                 name="message"
                 required
+                disabled={!formConnected}
                 rows="5"
                 placeholder="Tell us about your business and what you're looking to achieve…"
-                class="w-full px-4 py-2.5 rounded-[var(--radius-md)] text-sm text-[var(--color-text)] transition-colors outline-none focus:ring-2 resize-y"
+                class="w-full px-4 py-2.5 rounded-[var(--radius-md)] text-sm text-[var(--color-text)] transition-colors outline-none focus:ring-2 resize-y disabled:opacity-50 disabled:cursor-not-allowed"
                 style="border:1px solid var(--rs-border); background:var(--rs-surface); color:var(--rs-text);"
               ></textarea>
             </div>
 
+            {!formConnected && (
+              <p class="text-sm px-4 py-3 rounded-[var(--radius-md)]" style="background:var(--rs-surface-2); border:1px solid var(--rs-border); color:var(--color-text-muted);">
+                Online form coming soon — please {siteConfig.phone
+                  ? <><a href={`tel:${siteConfig.phone.replace(/\D/g,'')}`} class="font-semibold underline" style="color:var(--color-brand);">call {siteConfig.phone}</a></>
+                  : <><a href={`mailto:${siteConfig.email}`} class="font-semibold underline" style="color:var(--color-brand);">email us</a></>
+                } to get in touch.
+              </p>
+            )}
+
+            <div
+              id="form-error"
+              role="alert"
+              style="display:none;"
+              class="text-sm px-4 py-3 rounded-[var(--radius-md)]"
+              style="background:#fef2f2; border:1px solid #fecaca; color:#b91c1c;"
+            >
+              Could not send your message — please {siteConfig.phone
+                ? <><a href={`tel:${siteConfig.phone.replace(/\D/g,'')}`} class="font-semibold underline">call {siteConfig.phone}</a> or try again.</>
+                : <><a href={`mailto:${siteConfig.email}`} class="font-semibold underline">email us</a> or try again.</>
+              }
+            </div>
+
             <button
+              id="form-submit"
               type="submit"
-              class="self-start px-8 py-3 rounded-[var(--radius-md)] text-sm font-semibold text-white transition-opacity hover:opacity-90"
+              disabled={!formConnected}
+              class="self-start px-8 py-3 rounded-[var(--radius-md)] text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
               style="background-color:var(--color-brand);"
             >
               {preset.contactCta}
             </button>
           </form>
+
+          <!-- Success state — shown by JS after confirmed send -->
+          <div
+            id="form-success"
+            style="display:none;"
+            class="flex flex-col gap-3 px-6 py-8 rounded-[var(--radius-lg)] text-center"
+            style="border:1px solid var(--rs-border); background:var(--rs-surface);"
+            role="status"
+            aria-live="polite"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <p class="text-lg font-semibold text-[var(--color-text)]">Message sent!</p>
+            <p class="text-sm text-[var(--color-text-muted)]">Thanks for reaching out. We'll get back to you within one business day.</p>
+          </div>
         </div>
 
         <!-- Right: Business info -->
@@ -259,3 +314,47 @@ const openingHours: Array<{ days: string; hours: string }> = (siteConfig as any)
     </div>
   </main>
 </BaseLayout>
+
+<script>
+  const form    = document.getElementById('contact-form') as HTMLFormElement | null;
+  const success = document.getElementById('form-success') as HTMLElement | null;
+  const errBox  = document.getElementById('form-error')   as HTMLElement | null;
+  const submit  = document.getElementById('form-submit')  as HTMLButtonElement | null;
+
+  if (form && success && errBox && submit) {
+    const endpoint = form.dataset.endpoint ?? '';
+
+    // Only attach the fetch handler when an endpoint is configured.
+    // JS-disabled path: native POST to the endpoint works without this.
+    if (endpoint) {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errBox.style.display = 'none';
+        submit.disabled = true;
+        submit.textContent = 'Sending…';
+
+        try {
+          const res = await fetch(endpoint, {
+            method: 'POST',
+            body: new FormData(form),
+            headers: { Accept: 'application/json' },
+          });
+
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+          // Success: hide form, show thank-you panel
+          form.style.display = 'none';
+          success.style.display = '';
+        } catch {
+          // Network error, CORS failure, or non-2xx response
+          errBox.style.display = '';
+          submit.disabled = false;
+          submit.textContent = submit.dataset.label ?? 'Send Message';
+        }
+      });
+
+      // Preserve original label so we can restore it on error
+      submit.dataset.label = submit.textContent ?? 'Send Message';
+    }
+  }
+</script>
