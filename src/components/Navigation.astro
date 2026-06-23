@@ -1,15 +1,18 @@
 ---
 import siteConfig from '../lib/site-config';
 import { getPreset } from '../lib/business-presets';
+import { getEntry } from 'astro:content';
 const pathname = Astro.url.pathname;
 
 const preset = getPreset((siteConfig as any).businessType || 'other');
+const faqEntry = await getEntry('pages', 'faq').catch(() => null);
 
 const navLinks = [
   { label: 'Home',     href: '/' },
   { label: 'Services', href: '/services' },
   { label: 'Blog',     href: '/blog' },
   { label: 'About',    href: '/about' },
+  ...(faqEntry ? [{ label: 'FAQ', href: '/faq' }] : []),
   { label: 'Contact',  href: '/contact' },
 ];
 
