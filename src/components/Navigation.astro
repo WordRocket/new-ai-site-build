@@ -1,19 +1,25 @@
 ---
 import siteConfig from '../lib/site-config';
 import { getPreset } from '../lib/business-presets';
-import { getEntry } from 'astro:content';
+import { getEntry, getCollection } from 'astro:content';
 const pathname = Astro.url.pathname;
 
 const preset = getPreset((siteConfig as any).businessType || 'other');
 const faqEntry = await getEntry('pages', 'faq').catch(() => null);
 
+const rawServices = await getCollection('services').catch(() => []);
+const serviceLinks = rawServices
+  .sort((a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title))
+  .map((s) => ({ label: s.data.title, href: `/services/${s.slug}` }));
+const hasServiceDropdown = serviceLinks.length > 0;
+
+// Services item is handled separately; remaining flat links
 const navLinks = [
-  { label: 'Home',     href: '/' },
-  { label: 'Services', href: '/services' },
-  { label: 'Blog',     href: '/blog' },
-  { label: 'About',    href: '/about' },
+  { label: 'Home',    href: '/' },
+  { label: 'Blog',    href: '/blog' },
+  { label: 'About',   href: '/about' },
   ...(faqEntry ? [{ label: 'FAQ', href: '/faq' }] : []),
-  { label: 'Contact',  href: '/contact' },
+  { label: 'Contact', href: '/contact' },
 ];
 
 function isActive(href: string) {
@@ -22,6 +28,7 @@ function isActive(href: string) {
 }
 
 const phoneDigits = siteConfig.phone ? siteConfig.phone.replace(/\D/g, '') : '';
+const servicesActive = pathname.startsWith('/services');
 ---
 
 <!-- Top emergency bar (hidden if no phone or preset disables it) -->
@@ -55,6 +62,60 @@ const phoneDigits = siteConfig.phone ? siteConfig.phone.replace(/\D/g, '') : '';
 
     <!-- Desktop nav -->
     <nav class="hidden md:flex items-center gap-0.5" aria-label="Main navigation">
+
+      <!-- Services: dropdown when service pages exist, plain link otherwise -->
+      {hasServiceDropdown ? (
+        <div class="nav-dd">
+          <a
+            href="/services"
+            class={[
+              'nav-dd__trigger px-3 py-2 text-sm font-medium transition-colors relative inline-flex items-center gap-1',
+              servicesActive
+                ? 'text-[var(--color-brand)] font-semibold nav-active'
+                : 'text-[var(--color-text)] hover:text-[var(--color-brand)]',
+            ].join(' ')}
+            aria-haspopup="true"
+            aria-current={servicesActive ? 'page' : undefined}
+          >
+            Services
+            <svg class="nav-dd__chevron" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            {servicesActive && (
+              <span class="absolute bottom-0 left-3 right-10 h-0.5 rounded-full" style="background:var(--color-brand);"></span>
+            )}
+          </a>
+          <ul class="nav-dd__menu" role="list" aria-label="Service pages">
+            {serviceLinks.map((s) => (
+              <li>
+                <a
+                  href={s.href}
+                  class={['nav-dd__item', pathname === s.href ? 'nav-dd__item--active' : ''].join(' ')}
+                  aria-current={pathname === s.href ? 'page' : undefined}
+                >
+                  {s.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : (
+        <a
+          href="/services"
+          class={[
+            'px-3 py-2 text-sm font-medium transition-colors relative',
+            servicesActive
+              ? 'text-[var(--color-brand)] font-semibold nav-active'
+              : 'text-[var(--color-text)] hover:text-[var(--color-brand)]',
+          ].join(' ')}
+          aria-current={servicesActive ? 'page' : undefined}
+        >
+          Services
+          {servicesActive && (
+            <span class="absolute bottom-0 left-3 right-3 h-0.5 rounded-full" style="background:var(--color-brand);"></span>
+          )}
+        </a>
+      )}
+
+      <!-- All other nav links -->
       {navLinks.map(({ label, href }) => (
         <a
           href={href}
@@ -112,6 +173,68 @@ const phoneDigits = siteConfig.phone ? siteConfig.phone.replace(/\D/g, '') : '';
     aria-hidden="true"
   >
     <nav class="max-w-7xl mx-auto px-4 py-3 flex flex-col gap-1" aria-label="Mobile navigation">
+
+      <!-- Services: expandable group when service pages exist, plain link otherwise -->
+      {hasServiceDropdown ? (
+        <div class="mob-svc">
+          <div class="mob-svc__row">
+            <a
+              href="/services"
+              class={[
+                'mob-svc__label px-3 py-2 rounded-md text-sm font-medium transition-colors flex-1',
+                servicesActive
+                  ? 'text-[var(--color-brand)] font-semibold bg-blue-50'
+                  : 'text-[var(--color-text)] hover:text-[var(--color-brand)] hover:bg-neutral-100',
+              ].join(' ')}
+              aria-current={servicesActive ? 'page' : undefined}
+            >
+              Services
+            </a>
+            <button
+              id="mob-svc-toggle"
+              class="mob-svc__caret px-2 py-2 rounded-md transition-colors hover:bg-neutral-100"
+              style="color:var(--color-text);"
+              aria-expanded="false"
+              aria-controls="mob-svc-submenu"
+              aria-label="Toggle service pages"
+            >
+              <svg id="mob-svc-chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transition:transform 0.2s ease;"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+          </div>
+          <ul id="mob-svc-submenu" class="mob-svc__submenu" aria-hidden="true">
+            {serviceLinks.map((s) => (
+              <li>
+                <a
+                  href={s.href}
+                  class={[
+                    'block pl-6 pr-3 py-2 rounded-md text-sm font-medium transition-colors',
+                    pathname === s.href
+                      ? 'text-[var(--color-brand)] font-semibold bg-blue-50'
+                      : 'text-[var(--color-text-muted)] hover:text-[var(--color-brand)] hover:bg-neutral-100',
+                  ].join(' ')}
+                  aria-current={pathname === s.href ? 'page' : undefined}
+                >
+                  {s.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : (
+        <a
+          href="/services"
+          class={[
+            'px-3 py-2 rounded-md text-sm font-medium transition-colors',
+            servicesActive
+              ? 'text-[var(--color-brand)] font-semibold bg-blue-50'
+              : 'text-[var(--color-text)] hover:text-[var(--color-brand)] hover:bg-neutral-100',
+          ].join(' ')}
+          aria-current={servicesActive ? 'page' : undefined}
+        >
+          Services
+        </a>
+      )}
+
       {navLinks.map(({ label, href }) => (
         <a
           href={href}
@@ -145,50 +268,158 @@ const phoneDigits = siteConfig.phone ? siteConfig.phone.replace(/\D/g, '') : '';
 <!-- Spacer: top-bar (36px) + nav (64px) -->
 <div style={(siteConfig.phone && preset.emergencyBarEnabled) ? 'height:100px;' : 'height:64px;'}></div>
 
-<script>
-  const nav = document.getElementById('site-nav')!;
-  const toggle = document.getElementById('nav-toggle')!;
-  const menu = document.getElementById('mobile-menu')!;
-  const hamTop = document.getElementById('ham-top')!;
-  const hamMid = document.getElementById('ham-mid')!;
-  const hamBot = document.getElementById('ham-bot')!;
-  const topBar = document.getElementById('top-bar');
+<style>
+  /* ── Desktop dropdown ──────────────────────────────────────── */
+  .nav-dd {
+    position: relative;
+  }
 
-  function applyNavStyle() {
-    const scrolled = window.scrollY > 50;
-    if (scrolled) {
-      nav.classList.add('scrolled');
-      nav.style.top = '0';
-      if (topBar) topBar.style.display = 'none';
-    } else {
-      nav.classList.remove('scrolled');
-      nav.style.top = topBar ? '36px' : '0';
-      if (topBar) topBar.style.display = '';
+  .nav-dd__chevron {
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .nav-dd__menu {
+    list-style: none;
+    margin: 0;
+    padding: 6px 0;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%) translateY(-4px);
+    min-width: 200px;
+    background: #fff;
+    border: 1px solid var(--rs-border, #e4e4e7);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px -4px rgba(0,0,0,0.12), 0 2px 8px -2px rgba(0,0,0,0.06);
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease, visibility 0.15s ease, transform 0.15s ease;
+    z-index: 100;
+  }
+
+  .nav-dd:hover .nav-dd__menu,
+  .nav-dd:focus-within .nav-dd__menu {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .nav-dd:hover .nav-dd__chevron,
+  .nav-dd:focus-within .nav-dd__chevron {
+    transform: rotate(180deg);
+  }
+
+  .nav-dd__item {
+    display: block;
+    padding: 8px 16px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text, #111);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.1s ease, color 0.1s ease;
+  }
+  .nav-dd__item:hover,
+  .nav-dd__item:focus-visible {
+    background: color-mix(in srgb, var(--color-brand) 8%, transparent);
+    color: var(--color-brand);
+    outline: none;
+  }
+  .nav-dd__item--active {
+    color: var(--color-brand);
+    font-weight: 600;
+  }
+
+  /* ── Mobile services group ─────────────────────────────────── */
+  .mob-svc__row {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .mob-svc__submenu {
+    list-style: none;
+    margin: 2px 0 0;
+    padding: 0;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.25s ease;
+  }
+</style>
+
+<script>
+  function initNav() {
+    const nav    = document.getElementById('site-nav');
+    const toggle = document.getElementById('nav-toggle');
+    const menu   = document.getElementById('mobile-menu');
+    const hamTop = document.getElementById('ham-top');
+    const hamMid = document.getElementById('ham-mid');
+    const hamBot = document.getElementById('ham-bot');
+    const topBar = document.getElementById('top-bar');
+
+    if (!nav || !toggle || !menu || !hamTop || !hamMid || !hamBot) return;
+
+    function applyNavStyle() {
+      const scrolled = window.scrollY > 50;
+      if (scrolled) {
+        nav!.classList.add('scrolled');
+        nav!.style.top = '0';
+        if (topBar) topBar.style.display = 'none';
+      } else {
+        nav!.classList.remove('scrolled');
+        nav!.style.top = topBar ? '36px' : '0';
+        if (topBar) topBar.style.display = '';
+      }
+    }
+
+    applyNavStyle();
+    window.addEventListener('scroll', applyNavStyle, { passive: true });
+
+    function openMenu(open: boolean) {
+      toggle!.setAttribute('aria-expanded', String(open));
+      menu!.setAttribute('aria-hidden', String(!open));
+      menu!.classList.toggle('hidden', !open);
+      hamTop!.style.transform = open ? 'translateY(8px) rotate(45deg)' : '';
+      hamMid!.style.opacity   = open ? '0' : '1';
+      hamBot!.style.transform = open ? 'translateY(-8px) rotate(-45deg)' : '';
+    }
+
+    toggle.addEventListener('click', () => {
+      openMenu(toggle.getAttribute('aria-expanded') !== 'true');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!nav.contains(e.target as Node)) openMenu(false);
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      openMenu(false);
+      // Return focus to trigger if Esc pressed inside a desktop dropdown
+      const focused = document.activeElement as HTMLElement | null;
+      const dd = focused?.closest<HTMLElement>('.nav-dd');
+      if (dd) dd.querySelector<HTMLElement>('.nav-dd__trigger')?.focus();
+    });
+
+    // Mobile services submenu
+    const mobToggle  = document.getElementById('mob-svc-toggle');
+    const mobSubmenu = document.getElementById('mob-svc-submenu');
+    const mobChevron = document.getElementById('mob-svc-chevron');
+
+    if (mobToggle && mobSubmenu) {
+      mobToggle.addEventListener('click', () => {
+        const open = mobToggle.getAttribute('aria-expanded') !== 'true';
+        mobToggle.setAttribute('aria-expanded', String(open));
+        mobSubmenu.setAttribute('aria-hidden', String(!open));
+        mobSubmenu.style.maxHeight = open ? mobSubmenu.scrollHeight + 'px' : '0';
+        if (mobChevron) (mobChevron as HTMLElement).style.transform = open ? 'rotate(180deg)' : '';
+      });
     }
   }
 
-  applyNavStyle();
-  window.addEventListener('scroll', applyNavStyle, { passive: true });
-
-  function openMenu(open: boolean) {
-    toggle.setAttribute('aria-expanded', String(open));
-    menu.setAttribute('aria-hidden', String(!open));
-    menu.classList.toggle('hidden', !open);
-    hamTop.style.transform = open ? 'translateY(8px) rotate(45deg)' : '';
-    hamMid.style.opacity = open ? '0' : '1';
-    hamBot.style.transform = open ? 'translateY(-8px) rotate(-45deg)' : '';
-  }
-
-  toggle.addEventListener('click', () => {
-    const isOpen = toggle.getAttribute('aria-expanded') === 'true';
-    openMenu(!isOpen);
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!nav.contains(e.target as Node)) openMenu(false);
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') openMenu(false);
-  });
+  initNav();
+  document.addEventListener('astro:page-load', initNav);
 </script>
