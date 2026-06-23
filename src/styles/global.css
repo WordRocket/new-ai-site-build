@@ -350,7 +350,40 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
   gap: 6px;
 }
 
-/* ── Hero headline glow blob ───────────────────────────────────────────── */
+/* ── Hero form variant ─────────────────────────────────────────────────── */
+/* hero-split--form: same 55/45 grid but right side is the form panel.     */
+/* Declared height prevents CLS — matches compact LeadForm card height.    */
+.hero-split--form {
+  /* Override the grid so both columns are present (same as default) */
+}
+.hero-form-panel {
+  background: var(--rs-surface);
+  border-left: 1px solid var(--rs-border);
+  min-height: 540px;
+}
+[data-skin="dark"] .hero-form-panel {
+  border-left-color: var(--rs-border);
+  background: var(--rs-surface);
+}
+.hero-form-card {
+  background: var(--rs-bg);
+  border: 1px solid var(--rs-border);
+  border-radius: var(--rs-radius-lg);
+  padding: 2rem;
+  box-shadow: var(--rs-shadow-card);
+  width: 100%;
+  max-width: 420px;
+}
+@media (max-width: 900px) {
+  /* On mobile the grid collapses to 1-col; form panel stacks below headline */
+  .hero-form-panel {
+    border-left: none;
+    border-top: 1px solid var(--rs-border);
+    min-height: auto;
+    padding: 2.5rem 1.5rem;
+  }
+  .hero-form-card { max-width: 100%; }
+}
 /* Decorative radial gradient behind the headline; transform/opacity only.  */
 /* prefers-reduced-motion: reduce → animation disabled, static low opacity. */
 .hero-left-panel { overflow: hidden; }

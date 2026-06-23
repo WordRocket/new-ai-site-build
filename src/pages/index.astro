@@ -7,6 +7,7 @@ import Icon from '../components/Icon.astro';
 import { iconSvg, getServiceIcon } from '../lib/icons';
 import FeatureRow from '../components/sections/FeatureRow.astro';
 import { getFAQSchema } from '../lib/schema';
+import LeadForm from '../components/LeadForm.astro';
 
 const serviceEntries = await getCollection('services').catch(() => []);
 const homeEntry = await getEntry('pages', 'home').catch(() => null);
@@ -89,6 +90,12 @@ const heroNameLast = nameParts[nameParts.length - 1];
 const heroNameMain = nameParts.length > 1 ? nameParts.slice(0, -1).join(' ') : '';
 // First three stats used in the hero triplet; renders nothing if empty
 const heroStats = statsItems.slice(0, 3);
+
+const formEndpoint: string = ((siteConfig as any).formEndpoint ?? '').trim();
+const formConnected = formEndpoint !== '';
+const heroServiceOptions = serviceEntries.length > 0
+  ? serviceEntries.map((e) => ({ value: e.slug, label: e.data.title }))
+  : [{ value: 'general-inquiry', label: 'General Inquiry' }];
 ---
 
 <BaseLayout
@@ -99,12 +106,14 @@ const heroStats = statsItems.slice(0, 3);
 <body class="homepage">
 
 <!-- ─── HERO SPLIT ────────────────────────────────────────────────────── -->
-<section class="hero-split u-glow-bg" aria-label="Hero">
+{formConnected ? (
 
-  <!-- Left: text -->
+<!-- ── HERO: form variant (endpoint configured) ─────────────────────── -->
+<section class="hero-split hero-split--form u-glow-bg" aria-label="Hero">
+
+  <!-- Left: text (unchanged) -->
   <div class="hero-left-panel flex flex-col justify-center px-6 sm:px-10 lg:px-16 py-20 lg:py-0 relative z-10">
 
-    <!-- Eyebrow badge pill -->
     <div class="mb-5">
       <span class="u-badge">
         <span class="u-badge__dot" aria-hidden="true"></span>
@@ -112,7 +121,6 @@ const heroStats = statsItems.slice(0, 3);
       </span>
     </div>
 
-    <!-- Headline: gradient accent on the last word -->
     <h1 class="font-extrabold tracking-tight leading-[1.1] mb-5" style="color:var(--rs-text);">
       {heroNameMain ? `${heroNameMain} ` : ''}<span class="u-gradient-text">{heroNameLast}</span>
     </h1>
@@ -121,7 +129,6 @@ const heroStats = statsItems.slice(0, 3);
       {siteConfig.tagline}
     </p>
 
-    <!-- CTAs: token-native u-btn-* utilities -->
     <div class="flex flex-col sm:flex-row items-start gap-3 mb-4">
       <a href={primaryCta} class="u-btn u-btn-primary">
         {preset.heroCta}
@@ -131,7 +138,6 @@ const heroStats = statsItems.slice(0, 3);
       </a>
     </div>
 
-    <!-- Avatar trust cluster — only renders when clientsServed is set -->
     {siteConfig.clientsServed && (
       <div class="trust-cluster mb-6">
         <div class="trust-cluster__avatars" aria-hidden="true">
@@ -147,7 +153,82 @@ const heroStats = statsItems.slice(0, 3);
       </div>
     )}
 
-    <!-- Trust signals with lucide icons -->
+    <ul class="flex flex-col sm:flex-row flex-wrap gap-x-6 gap-y-2 text-sm" style="color:var(--rs-text-muted);">
+      {preset.trustSignals.map(({ icon: iconName, label }) => (
+        <li class="flex items-center gap-1.5">
+          <Icon name={iconName} width={16} height={16} style="color:var(--rs-accent); flex-shrink:0;" aria-hidden="true" />
+          {label}
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <!-- Right: lead capture form card -->
+  <div class="hero-form-panel flex items-center justify-center px-6 sm:px-10 py-12 lg:py-16">
+    <div class="hero-form-card w-full">
+      <p class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--rs-accent);">Get a Free Estimate</p>
+      <LeadForm
+        formId="hero-form"
+        endpoint={formEndpoint}
+        siteName={siteConfig.name}
+        serviceOptions={heroServiceOptions}
+        submitLabel={preset.contactCta}
+        phone={siteConfig.phone}
+        email={siteConfig.email}
+        compact={true}
+      />
+    </div>
+  </div>
+
+</section>
+
+) : (
+
+<!-- ── HERO: original variant (no endpoint) ──────────────────────────── -->
+<section class="hero-split u-glow-bg" aria-label="Hero">
+
+  <!-- Left: text -->
+  <div class="hero-left-panel flex flex-col justify-center px-6 sm:px-10 lg:px-16 py-20 lg:py-0 relative z-10">
+
+    <div class="mb-5">
+      <span class="u-badge">
+        <span class="u-badge__dot" aria-hidden="true"></span>
+        {siteConfig.city}'s Trusted {nicheLabel}
+      </span>
+    </div>
+
+    <h1 class="font-extrabold tracking-tight leading-[1.1] mb-5" style="color:var(--rs-text);">
+      {heroNameMain ? `${heroNameMain} ` : ''}<span class="u-gradient-text">{heroNameLast}</span>
+    </h1>
+
+    <p class="text-lg leading-relaxed mb-8" style="color:var(--rs-text-muted); max-width:480px;">
+      {siteConfig.tagline}
+    </p>
+
+    <div class="flex flex-col sm:flex-row items-start gap-3 mb-4">
+      <a href={primaryCta} class="u-btn u-btn-primary">
+        {preset.heroCta}
+      </a>
+      <a href="/services" class="u-btn u-btn-ghost">
+        {preset.heroCtaSecondary} →
+      </a>
+    </div>
+
+    {siteConfig.clientsServed && (
+      <div class="trust-cluster mb-6">
+        <div class="trust-cluster__avatars" aria-hidden="true">
+          <span class="trust-avatar ta-1"><Icon name="user" width={16} height={16} /></span>
+          <span class="trust-avatar ta-2"><Icon name="user" width={16} height={16} /></span>
+          <span class="trust-avatar ta-3"><Icon name="user" width={16} height={16} /></span>
+          <span class="trust-avatar ta-4"><Icon name="user" width={16} height={16} /></span>
+        </div>
+        <div class="trust-cluster__copy">
+          <span class="trust-cluster__count">{siteConfig.clientsServed}+</span>
+          <span class="trust-cluster__text">{siteConfig.city} customers served</span>
+        </div>
+      </div>
+    )}
+
     <ul class="flex flex-col sm:flex-row flex-wrap gap-x-6 gap-y-2 text-sm mb-8" style="color:var(--rs-text-muted);">
       {preset.trustSignals.map(({ icon: iconName, label }) => (
         <li class="flex items-center gap-1.5">
@@ -157,7 +238,6 @@ const heroStats = statsItems.slice(0, 3);
       ))}
     </ul>
 
-    <!-- Hero stat triplet — only renders when data exists -->
     {heroStats.length > 0 && (
       <div class="u-reveal flex flex-wrap gap-x-8 gap-y-4 pt-6 border-t" style="border-color:var(--rs-border);">
         {heroStats.map(({ value, label }) => (
@@ -187,6 +267,8 @@ const heroStats = statsItems.slice(0, 3);
   </div>
 
 </section>
+
+)}
 
 <!-- ─── DARK STATS BAR ─────────────────────────────────────────────────── -->
 <section class="section-dark" aria-label="Trust statistics">

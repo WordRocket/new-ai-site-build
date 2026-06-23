@@ -1,0 +1,249 @@
+---
+interface Props {
+  formId: string;
+  endpoint: string;
+  siteName: string;
+  serviceOptions: Array<{ value: string; label: string }>;
+  submitLabel: string;
+  phone: string;
+  email: string;
+  compact?: boolean;
+}
+
+const {
+  formId,
+  endpoint,
+  siteName,
+  serviceOptions,
+  submitLabel,
+  phone,
+  email,
+  compact = false,
+} = Astro.props;
+
+const formConnected = endpoint.trim() !== '';
+const phoneDigits   = phone ? phone.replace(/\D/g, '') : '';
+const fallbackHref  = phone ? `tel:${phoneDigits}` : `mailto:${email}`;
+const fallbackLabel = phone ? `call ${phone}` : 'email us';
+---
+
+<form
+  id={formId}
+  action={formConnected ? endpoint : undefined}
+  method="POST"
+  class="lf-form flex flex-col gap-4"
+  novalidate
+  data-endpoint={endpoint}
+  data-fallback-href={fallbackHref}
+  data-fallback-label={fallbackLabel}
+>
+  {/* Honeypot: invisible to humans, bots fill it — provider-agnostic spam reduction */}
+  <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none !important;" />
+  {/* Subject line: honoured by Formspree & Web3Forms; Basin ignores it harmlessly */}
+  <input type="hidden" name="_subject" value={`New enquiry from ${siteName}`} />
+
+  {/* Name + Email row */}
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="lf-field">
+      <label for={`${formId}-name`} class="lf-label">
+        Full Name <span class="text-red-500" aria-hidden="true">*</span>
+      </label>
+      <input
+        type="text"
+        id={`${formId}-name`}
+        name="name"
+        required
+        disabled={!formConnected}
+        autocomplete="name"
+        placeholder="Jane Smith"
+        class="lf-input disabled:opacity-50 disabled:cursor-not-allowed"
+      />
+    </div>
+    <div class="lf-field">
+      <label for={`${formId}-email`} class="lf-label">
+        Email <span class="text-red-500" aria-hidden="true">*</span>
+      </label>
+      <input
+        type="email"
+        id={`${formId}-email`}
+        name="email"
+        required
+        disabled={!formConnected}
+        autocomplete="email"
+        placeholder="jane@example.com"
+        class="lf-input disabled:opacity-50 disabled:cursor-not-allowed"
+      />
+    </div>
+  </div>
+
+  {/* Phone */}
+  <div class="lf-field">
+    <label for={`${formId}-phone`} class="lf-label">Phone Number</label>
+    <input
+      type="tel"
+      id={`${formId}-phone`}
+      name="phone"
+      disabled={!formConnected}
+      autocomplete="tel"
+      placeholder="+1 (555) 000-0000"
+      class="lf-input disabled:opacity-50 disabled:cursor-not-allowed"
+    />
+  </div>
+
+  {/* Service select */}
+  <div class="lf-field">
+    <label for={`${formId}-service`} class="lf-label">
+      Service Interested In <span class="text-red-500" aria-hidden="true">*</span>
+    </label>
+    <select
+      id={`${formId}-service`}
+      name="service"
+      required
+      disabled={!formConnected}
+      class="lf-input lf-select disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      <option value="" disabled selected>Select a service…</option>
+      {serviceOptions.map(({ value, label }) => (
+        <option value={value}>{label}</option>
+      ))}
+    </select>
+  </div>
+
+  {/* Message textarea — omitted in compact (hero) mode */}
+  {!compact && (
+    <div class="lf-field">
+      <label for={`${formId}-message`} class="lf-label">
+        Message <span class="text-red-500" aria-hidden="true">*</span>
+      </label>
+      <textarea
+        id={`${formId}-message`}
+        name="message"
+        required
+        disabled={!formConnected}
+        rows="5"
+        placeholder="Tell us about your project…"
+        class="lf-input resize-y disabled:opacity-50 disabled:cursor-not-allowed"
+      ></textarea>
+    </div>
+  )}
+
+  {/* No-endpoint note — contact page only; hero never renders this */}
+  {!formConnected && (
+    <p class="text-sm px-4 py-3 rounded-[var(--radius-md)]" style="background:var(--rs-surface-2); border:1px solid var(--rs-border); color:var(--rs-text-muted);">
+      Online form coming soon — please{' '}
+      <a href={fallbackHref} class="font-semibold underline" style="color:var(--rs-accent);">
+        {fallbackLabel}
+      </a>{' '}to get in touch.
+    </p>
+  )}
+
+  {/* Error box — shown by JS on failed/uncertain send */}
+  <div
+    id={`${formId}-error`}
+    role="alert"
+    class="lf-error-box text-sm px-4 py-3 rounded-[var(--radius-md)]"
+    style="display:none; background:#fef2f2; border:1px solid #fecaca; color:#b91c1c;"
+  >
+    Could not send your message — please{' '}
+    <a href={fallbackHref} class="font-semibold underline">{fallbackLabel}</a>{' '}
+    or try again.
+  </div>
+
+  <button
+    id={`${formId}-submit`}
+    type="submit"
+    disabled={!formConnected}
+    class="lf-submit w-full py-3 rounded-[var(--radius-md)] text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
+    style="background-color:var(--rs-accent);"
+  >
+    {submitLabel}
+  </button>
+</form>
+
+{/* Success panel — hidden until JS confirms send */}
+<div
+  id={`${formId}-success`}
+  role="status"
+  aria-live="polite"
+  class="flex flex-col items-center gap-3 px-6 py-10 rounded-[var(--radius-lg)] text-center"
+  style="display:none; border:1px solid var(--rs-border); background:var(--rs-surface);"
+>
+  <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--rs-accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+  <p class="text-lg font-semibold" style="color:var(--rs-text);">Message sent!</p>
+  <p class="text-sm" style="color:var(--rs-text-muted);">Thanks for reaching out. We'll get back to you within one business day.</p>
+</div>
+
+<style>
+  .lf-label {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    color: var(--rs-text);
+  }
+  .lf-field { display: flex; flex-direction: column; }
+  .lf-input {
+    width: 100%;
+    padding: 0.625rem 1rem;
+    border-radius: var(--rs-radius-md);
+    border: 1px solid var(--rs-border);
+    background: var(--rs-bg);
+    color: var(--rs-text);
+    font-size: 0.875rem;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .lf-input:focus {
+    border-color: var(--rs-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--rs-accent) 16%, transparent);
+  }
+  .lf-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 40px;
+  }
+</style>
+
+<script define:vars={{ formId }}>
+  (function () {
+    const form    = document.getElementById(formId);
+    const success = document.getElementById(formId + '-success');
+    const errBox  = document.getElementById(formId + '-error');
+    const submit  = document.getElementById(formId + '-submit');
+
+    if (!form || !success || !errBox || !submit) return;
+
+    const endpoint = form.dataset.endpoint ?? '';
+    if (!endpoint) return;
+
+    // Store original label once for error recovery
+    submit.dataset.label = submit.textContent ?? 'Send Message';
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errBox.style.display = 'none';
+      submit.disabled = true;
+      submit.textContent = 'Sending…';
+
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { Accept: 'application/json' },
+        });
+
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+
+        form.style.display = 'none';
+        success.style.display = '';
+      } catch (_) {
+        // CORS failure, network error, or non-2xx response — never claim success
+        errBox.style.display = '';
+        submit.disabled = false;
+        submit.textContent = submit.dataset.label ?? 'Send Message';
+      }
+    });
+  })();
+</script>
