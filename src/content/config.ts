@@ -23,6 +23,8 @@ const blog = defineCollection({
   }),
 });
 
+const faqItemSchema = z.object({ question: z.string(), answer: z.string() });
+
 const pages = defineCollection({
   schema: z.object({
     title: z.string(),
@@ -34,7 +36,10 @@ const pages = defineCollection({
     noindex: z.boolean().default(false),
     canonical: z.string().optional(),
     ogImage: z.string().optional(),
-    faq: z.array(z.object({ question: z.string(), answer: z.string() })).default([]),
+    faq: z.array(faqItemSchema).default([]),
+    faqCategories: z.array(z.object({ label: z.string(), items: z.array(faqItemSchema) })).optional(),
+    faqPageTitle: z.string().optional(),
+    faqPageDescription: z.string().optional(),
     schemaJsonld: z.string().optional(),
   }),
 });
