@@ -171,39 +171,6 @@ const fallbackLabel = phone ? `call ${phone}` : 'email us';
   <p class="text-sm" style="color:var(--rs-text-muted);">Thanks for reaching out. We'll get back to you within one business day.</p>
 </div>
 
-<style>
-  .lf-label {
-    display: block;
-    font-size: 0.8125rem;
-    font-weight: 600;
-    margin-bottom: 0.3rem;
-    color: var(--rs-text);
-  }
-  .lf-field { display: flex; flex-direction: column; }
-  .lf-input {
-    width: 100%;
-    padding: 0.625rem 1rem;
-    border-radius: var(--rs-radius-md);
-    border: 1px solid var(--rs-border);
-    background: var(--rs-bg);
-    color: var(--rs-text);
-    font-size: 0.875rem;
-    outline: none;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
-  }
-  .lf-input:focus {
-    border-color: var(--rs-accent);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--rs-accent) 16%, transparent);
-  }
-  .lf-select {
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    padding-right: 40px;
-  }
-</style>
-
 <script define:vars={{ formId }}>
   (function () {
     const form    = document.getElementById(formId);

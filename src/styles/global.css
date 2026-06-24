@@ -350,39 +350,93 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
   gap: 6px;
 }
 
-/* ── Hero form variant ─────────────────────────────────────────────────── */
-/* hero-split--form: same 55/45 grid but right side is the form panel.     */
-/* Declared height prevents CLS — matches compact LeadForm card height.    */
-.hero-split--form {
-  /* Override the grid so both columns are present (same as default) */
+/* ── LeadForm base styles (global so hero-card context can override) ───── */
+/* Identical values to the original scoped <style> in LeadForm.astro.      */
+/* /contact and any other LeadForm consumer is visually unchanged.         */
+.lf-label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  color: var(--rs-text);
 }
-.hero-form-panel {
-  background: var(--rs-surface);
-  border-left: 1px solid var(--rs-border);
-  min-height: 540px;
-}
-[data-skin="dark"] .hero-form-panel {
-  border-left-color: var(--rs-border);
-  background: var(--rs-surface);
-}
-.hero-form-card {
-  background: var(--rs-bg);
-  border: 1px solid var(--rs-border);
-  border-radius: var(--rs-radius-lg);
-  padding: 2rem;
-  box-shadow: var(--rs-shadow-card);
+.lf-field { display: flex; flex-direction: column; }
+.lf-input {
   width: 100%;
-  max-width: 420px;
+  padding: 0.625rem 1rem;
+  border-radius: var(--rs-radius-md);
+  border: 1px solid var(--rs-border);
+  background: var(--rs-bg);
+  color: var(--rs-text);
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
+.lf-input:focus {
+  border-color: var(--rs-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--rs-accent) 16%, transparent);
+}
+.lf-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 40px;
+}
+
+/* ── Hero form variant ─────────────────────────────────────────────────── */
+/* .hero-split--form: 50/50 grid (form variant only); no-form hero stays 55/45 */
+.hero-split--form {
+  grid-template-columns: 50fr 50fr;
+}
+
+/* Panel: hardcoded navy gradient on both skins — the contrast IS the design */
+.hero-form-panel {
+  background: linear-gradient(160deg, #0d1b2a 0%, #0f2040 100%);
+  border-left: 1px solid rgba(255,255,255,0.07);
+  min-height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 3.5rem;
+}
+
+/* Card: white on both skins — strong shadow for lift off the dark panel */
+.hero-form-card {
+  background: #ffffff;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: var(--rs-radius-lg);
+  padding: 2.5rem;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.04),
+    0 4px 16px rgba(0,0,0,0.20),
+    0 20px 60px rgba(0,0,0,0.40);
+  width: 100%;
+  max-width: 540px;
+}
+
+/* Input/label overrides: force dark-text on white card regardless of skin  */
+.hero-form-card .lf-label {
+  color: #374151;
+}
+.hero-form-card .lf-input {
+  background: #f8fafc;
+  color: #0f172a;
+  border-color: #d1d5db;
+}
+.hero-form-card .lf-input:focus {
+  border-color: var(--rs-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--rs-accent) 16%, transparent);
+}
+
 @media (max-width: 900px) {
-  /* On mobile the grid collapses to 1-col; form panel stacks below headline */
   .hero-form-panel {
     border-left: none;
-    border-top: 1px solid var(--rs-border);
+    border-top: 1px solid rgba(255,255,255,0.07);
     min-height: auto;
     padding: 2.5rem 1.5rem;
   }
-  .hero-form-card { max-width: 100%; }
+  .hero-form-card { max-width: 480px; margin: 0 auto; }
 }
 /* Decorative radial gradient behind the headline; transform/opacity only.  */
 /* prefers-reduced-motion: reduce → animation disabled, static low opacity. */
