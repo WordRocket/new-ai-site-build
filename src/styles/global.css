@@ -309,8 +309,10 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
   grid-template-columns: 55fr 45fr;
 }
 @media (max-width: 900px) {
-  .hero-split { grid-template-columns: 1fr; min-height: auto; }
+  .hero-split,
+  .hero-split--form { grid-template-columns: 1fr; min-height: auto; }
   .hero-right { min-height: 320px; }
+  .hero-form-panel { min-height: 0; border-left: none; }
 }
 /* Hero skin-aware background: uses --rs-bg so light=white, dark=navy */
 .hero-split { background-color: var(--rs-bg); }
