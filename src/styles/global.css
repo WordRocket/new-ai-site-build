@@ -387,12 +387,10 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
 }
 
 /* ── Hero form variant ─────────────────────────────────────────────────── */
-/* .hero-split--form: 50/50 grid (form variant only); no-form hero stays 55/45 */
-.hero-split--form {
-  grid-template-columns: 50fr 50fr;
-}
+/* .hero-split--form: desktop-only overrides; mobile inherits the 1fr reset above */
 @media (min-width: 901px) {
   .hero-split--form {
+    grid-template-columns: 50fr 50fr;
     min-height: calc(100vh - 100px);
   }
 }
