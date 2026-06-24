@@ -389,6 +389,11 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
 .hero-split--form {
   grid-template-columns: 50fr 50fr;
 }
+@media (min-width: 901px) {
+  .hero-split--form {
+    min-height: calc(100vh - 100px);
+  }
+}
 
 /* Panel: navy gradient provides contrast on both skins. On dark skin the   */
 /* dark card has clear elevation above it; on light skin it frames a white  */

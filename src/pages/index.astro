@@ -161,6 +161,17 @@ const heroServiceOptions = serviceEntries.length > 0
         </li>
       ))}
     </ul>
+
+    {heroStats.length > 0 && (
+      <div class="u-reveal flex flex-wrap gap-x-8 gap-y-4 pt-6 border-t" style="border-color:var(--rs-border);">
+        {heroStats.map(({ value, label }) => (
+          <div class="flex flex-col">
+            <span class="text-2xl font-extrabold leading-none u-gradient-text" data-count-to={value}>{value}</span>
+            <span class="text-xs font-medium mt-1 uppercase tracking-wide" style="color:var(--rs-text-muted);">{label}</span>
+          </div>
+        ))}
+      </div>
+    )}
   </div>
 
   <!-- Right: lead capture form card -->
@@ -270,7 +281,8 @@ const heroServiceOptions = serviceEntries.length > 0
 
 )}
 
-<!-- ─── DARK STATS BAR ─────────────────────────────────────────────────── -->
+<!-- ─── DARK STATS BAR (no-form variant only; form variant shows stats in hero) ─ -->
+{!formConnected && (
 <section class="section-dark" aria-label="Trust statistics">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
     <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
@@ -283,6 +295,7 @@ const heroServiceOptions = serviceEntries.length > 0
     </div>
   </div>
 </section>
+)}
 
 <!-- ─── SERVICES GRID ─────────────────────────────────────────────────── -->
 <section class="section-pad" style="background:var(--rs-surface);" aria-labelledby="services-heading">
