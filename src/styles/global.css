@@ -390,32 +390,34 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
   grid-template-columns: 50fr 50fr;
 }
 
-/* Panel: hardcoded navy gradient on both skins — the contrast IS the design */
+/* Panel: navy gradient provides contrast on both skins. On dark skin the   */
+/* dark card has clear elevation above it; on light skin it frames a white  */
+/* card. The hardcoded gradient is intentional — token bg would disappear.  */
 .hero-form-panel {
   background: linear-gradient(160deg, #0d1b2a 0%, #0f2040 100%);
   border-left: 1px solid rgba(255,255,255,0.07);
-  min-height: 600px;
+  min-height: 560px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 3rem 3.5rem;
+  padding: 2.5rem 3rem;
 }
 
-/* Card: white on both skins — strong shadow for lift off the dark panel */
+/* Card base — light skin: crisp white lifted card */
 .hero-form-card {
   background: #ffffff;
-  border: 1px solid rgba(255,255,255,0.12);
+  border: 1px solid #e2e8f0;
   border-radius: var(--rs-radius-lg);
-  padding: 2.5rem;
+  padding: 1.75rem;
   box-shadow:
-    0 0 0 1px rgba(0,0,0,0.04),
-    0 4px 16px rgba(0,0,0,0.20),
-    0 20px 60px rgba(0,0,0,0.40);
+    0 1px 3px rgba(0,0,0,0.08),
+    0 8px 24px rgba(0,0,0,0.12),
+    0 20px 48px rgba(0,0,0,0.10);
   width: 100%;
-  max-width: 540px;
+  max-width: 460px;
 }
 
-/* Input/label overrides: force dark-text on white card regardless of skin  */
+/* Light-skin label/input overrides: dark text on white card */
 .hero-form-card .lf-label {
   color: #374151;
 }
@@ -429,14 +431,44 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--rs-accent) 16%, transparent);
 }
 
+/* Dark-skin card: elevated dark surface — integrated, premium, not white */
+[data-skin="dark"] .hero-form-card {
+  background: var(--rs-surface-2);
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.06),
+    0 8px 24px rgba(0,0,0,0.40),
+    0 20px 48px rgba(0,0,0,0.50);
+}
+/* Dark-skin card: inherit base .lf-* token values (--rs-text, --rs-bg) — correct */
+[data-skin="dark"] .hero-form-card .lf-label {
+  color: var(--rs-text);
+}
+[data-skin="dark"] .hero-form-card .lf-input {
+  background: var(--rs-bg);
+  color: var(--rs-text);
+  border-color: var(--rs-border);
+}
+
+/* Hero-card field sizing: taller inputs + larger font to fill the card */
+.hero-form-card .lf-input {
+  padding: 0.75rem 1rem;
+  font-size: 0.9375rem;
+}
+
+/* Field gap: slightly more breathing room between fields in the hero card */
+.hero-form-card .lf-form {
+  gap: 1.125rem;
+}
+
 @media (max-width: 900px) {
   .hero-form-panel {
     border-left: none;
     border-top: 1px solid rgba(255,255,255,0.07);
     min-height: auto;
-    padding: 2.5rem 1.5rem;
+    padding: 2rem 1.5rem;
   }
-  .hero-form-card { max-width: 480px; margin: 0 auto; }
+  .hero-form-card { max-width: 440px; margin: 0 auto; }
 }
 /* Decorative radial gradient behind the headline; transform/opacity only.  */
 /* prefers-reduced-motion: reduce → animation disabled, static low opacity. */
