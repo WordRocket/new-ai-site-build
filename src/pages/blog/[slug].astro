@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import PostLayout from '../../layouts/PostLayout.astro';
 import TrustBar from '../../components/sections/TrustBar.astro';
 import CtaBand from '../../components/sections/CtaBand.astro';
+import siteConfig from '../../lib/site-config';
 import {
   getBlogPostSchema,
   getFAQSchema,
@@ -52,10 +53,10 @@ const breadcrumbSchema = getBreadcrumbSchema([
 ]);
 
 const orgSchema = getOrganizationSchema({
-  name: 'SiteName',
+  name: siteConfig.name,
   url: siteUrl,
   logo: `${siteUrl}/favicon.svg`,
-  description: 'AI-Powered Websites That Actually Rank',
+  ...(siteConfig.description ? { description: siteConfig.description } : {}),
 });
 
 const hasFaq = d.faq && d.faq.length > 0;
@@ -69,7 +70,7 @@ const schemas: object[] = d.schemaJsonld ? [] : (d.schema_jsonld ? [d.schema_jso
 ---
 
 <PostLayout
-  title={`${d.title} | Blog`}
+  title={`${d.title} | ${siteConfig.name}`}
   description={d.description}
   ogImage={d.ogImage ?? d.featuredImage}
   canonical={d.canonical ?? postUrl}
@@ -207,7 +208,7 @@ const schemas: object[] = d.schemaJsonld ? [] : (d.schema_jsonld ? [d.schema_jso
             <span class="text-base font-semibold text-[var(--color-text)]">{d.author}</span>
             {d.authorBio
               ? <p class="text-sm text-[var(--color-text-muted)] leading-relaxed mt-1">{d.authorBio}</p>
-              : <p class="text-sm text-[var(--color-text-muted)] leading-relaxed mt-1">Contributing writer at SiteName.</p>
+              : <p class="text-sm text-[var(--color-text-muted)] leading-relaxed mt-1">Contributing writer at {siteConfig.name}.</p>
             }
           </div>
         </div>

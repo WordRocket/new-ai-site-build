@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import siteConfig from '../../lib/site-config';
 
 const posts = await getCollection('blog');
 
@@ -23,7 +24,7 @@ function formatDate(iso: string): string {
 ---
 
 <BaseLayout
-  title="Blog | SiteName"
+  title={`Blog | ${siteConfig.name}`}
   description="Tips, guides, and insights on local SEO, GEO optimization, and AI-powered websites for small businesses."
 >
   <main>

@@ -54,7 +54,6 @@ const skin: 'light' | 'dark' =
       canonical={canonical}
       noindex={noindex}
     />
-    <meta property="og:image" content={ogImage ?? 'https://placeholder.com/og-default.svg'} />
     {schemas.map((schema) => (
       <script type="application/ld+json" set:html={JSON.stringify(schema)} />
     ))}

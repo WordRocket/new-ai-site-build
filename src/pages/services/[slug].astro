@@ -33,8 +33,8 @@ const pageUrl = `${siteUrl}/services/${service.slug}`;
 const serviceSchema = getServiceSchema({
   name: d.title,
   description: d.description,
-  providerName: 'SiteName',
-  areaServed: d.areaServed.join(', '),
+  providerName: siteConfig.name,
+  areaServed: (d.areaServed ?? []).join(', '),
 });
 
 const breadcrumbSchema = getBreadcrumbSchema([
@@ -44,10 +44,10 @@ const breadcrumbSchema = getBreadcrumbSchema([
 ]);
 
 const orgSchema = getOrganizationSchema({
-  name: 'SiteName',
+  name: siteConfig.name,
   url: siteUrl,
   logo: `${siteUrl}/favicon.svg`,
-  description: 'AI-Powered Websites That Actually Rank',
+  ...(siteConfig.description ? { description: siteConfig.description } : {}),
 });
 
 const hasFaq = d.faq && d.faq.length > 0;
@@ -58,7 +58,7 @@ const testimonials = d.testimonials ?? (siteConfig as any).testimonials ?? [];
 ---
 
 <BaseLayout
-  title={`${d.title} | SiteName`}
+  title={`${d.title} | ${siteConfig.name}`}
   description={d.description}
   canonical={pageUrl}
   schemas={schemas}

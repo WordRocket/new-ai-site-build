@@ -1,9 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import siteConfig from '../lib/site-config';
 ---
 
 <BaseLayout
-  title="Page Not Found | SiteName"
+  title={`Page Not Found | ${siteConfig.name}`}
   description="The page you were looking for could not be found."
   noindex={true}
 >

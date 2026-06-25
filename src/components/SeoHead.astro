@@ -1,5 +1,10 @@
 ---
-const SITE_NAME = 'YourBrand';
+import siteConfigData from '../data/site-config.json';
+
+// Use real business name; omit if still the placeholder default
+const siteName = siteConfigData.name && siteConfigData.name !== 'SiteName'
+  ? siteConfigData.name
+  : undefined;
 
 interface Props {
   title: string;
@@ -18,7 +23,7 @@ interface Props {
 export function getSeoDefaults(pageTitle: string) {
   return {
     title: pageTitle,
-    description: `${pageTitle} — ${SITE_NAME}`,
+    description: siteName ? `${pageTitle} — ${siteName}` : pageTitle,
     ogTitle: pageTitle,
     ogImage: '/og-default.png',
     noindex: false,
@@ -44,9 +49,7 @@ const robotsContent = noindex
   : 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1';
 ---
 
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>{title} | {SITE_NAME}</title>
+<title>{title}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />
 <meta name="robots" content={robotsContent} />
@@ -56,7 +59,7 @@ const robotsContent = noindex
 <meta property="og:image" content={ogImage} />
 <meta property="og:type" content={type} />
 <meta property="og:url" content={canonical} />
-<meta property="og:site_name" content={SITE_NAME} />
+{siteName && <meta property="og:site_name" content={siteName} />}
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={ogTitle} />

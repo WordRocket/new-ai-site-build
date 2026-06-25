@@ -3,13 +3,14 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../../components/Icon.astro';
 import { getServiceIcon } from '../../lib/icons';
+import siteConfig from '../../lib/site-config';
 
 const all = await getCollection('services');
 const services = all.sort((a, b) => a.data.order - b.data.order);
 ---
 
 <BaseLayout
-  title="Our Services | SiteName"
+  title={`Our Services | ${siteConfig.name}`}
   description="Explore our full range of professional services designed to help your business grow online."
 >
   <main>
