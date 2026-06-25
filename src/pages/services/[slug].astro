@@ -2,8 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SmartImage from '../../components/SmartImage.astro';
-import BusinessCard from '../../components/BusinessCard.astro';
-import ServiceAreaMap from '../../components/ServiceAreaMap.astro';
+import PageSidebar from '../../components/PageSidebar.astro';
 import TrustBar from '../../components/sections/TrustBar.astro';
 import ProcessTimeline from '../../components/sections/ProcessTimeline.astro';
 import FeatureGrid from '../../components/sections/FeatureGrid.astro';
@@ -36,13 +35,11 @@ const serviceSchema = getServiceSchema({
   providerName: siteConfig.name,
   areaServed: (d.areaServed ?? []).join(', '),
 });
-
 const breadcrumbSchema = getBreadcrumbSchema([
   { name: 'Home', url: siteUrl },
   { name: 'Services', url: `${siteUrl}/services` },
   { name: d.title, url: pageUrl },
 ]);
-
 const orgSchema = getOrganizationSchema({
   name: siteConfig.name,
   url: siteUrl,
@@ -53,8 +50,17 @@ const orgSchema = getOrganizationSchema({
 const hasFaq = d.faq && d.faq.length > 0;
 const faqSchema = hasFaq ? getFAQSchema(d.faq) : null;
 const schemas = [serviceSchema, breadcrumbSchema, orgSchema, ...(faqSchema ? [faqSchema] : [])];
-
 const testimonials = d.testimonials ?? (siteConfig as any).testimonials ?? [];
+
+// Sidebar data
+const allServices  = await getCollection('services').catch(() => []);
+const allLocations = await getCollection('locations').catch(() => []);
+const sidebarServices  = allServices.map(s => ({ slug: s.slug, title: s.data.title }));
+const sidebarLocations = allLocations.map(l => ({
+  slug: l.slug,
+  city: l.data.city,
+  service: l.data.service,
+}));
 ---
 
 <BaseLayout
@@ -64,11 +70,12 @@ const testimonials = d.testimonials ?? (siteConfig as any).testimonials ?? [];
   schemas={schemas}
 >
   <main>
-    <!-- Hero -->
+
+    <!-- ─── Hero band ──────────────────────────────────────────────────── -->
     <div class="page-hero">
       <div class="relative z-10 max-w-[1200px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-14">
         <nav aria-label="Breadcrumb" class="mb-5">
-          <ol class="flex items-center gap-2 text-sm" style="color:rgba(255,255,255,0.6);">
+          <ol class="flex items-center gap-2 text-sm flex-wrap" style="color:rgba(255,255,255,0.6);">
             <li><a href="/" class="hover:text-white transition-colors">Home</a></li>
             <li aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></li>
             <li><a href="/services" class="hover:text-white transition-colors">Services</a></li>
@@ -86,23 +93,23 @@ const testimonials = d.testimonials ?? (siteConfig as any).testimonials ?? [];
       </div>
     </div>
 
-    <!-- Trust signals bar directly below hero -->
+    <!-- ─── Trust signals bar ─────────────────────────────────────────── -->
     <TrustBar />
 
-    <!-- Hero image — eager-loaded, LCP element -->
-    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14">
-      <SmartImage src={d.heroImage} alt={d.title} aspect="16/9" loading="eager" fetchpriority="high" />
-    </div>
+    <!-- ─── Two-column body: article (left) + sticky sidebar (right) ──── -->
+    <div class="page-body-grid">
 
-    <!-- Prose content -->
-    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
-      <div class="max-w-[740px] mx-auto">
+      <article class="page-body-article">
 
-        <div class="prose prose-neutral prose-lg max-w-none">
+        <!-- Hero image — eager LCP element -->
+        <SmartImage src={d.heroImage} alt={d.title} aspect="16/9" loading="eager" fetchpriority="high" />
+
+        <!-- Prose markdown content -->
+        <div class="prose prose-neutral prose-lg max-w-none mt-8">
           <Content />
         </div>
 
-        <!-- Areas We Serve -->
+        <!-- Areas We Serve — crawlable city badge links -->
         {d.areaServed && d.areaServed.length > 0 && (
           <section class="mt-12 pt-10 border-t border-neutral-100">
             <h2 class="text-xl font-bold text-[var(--color-text)] mb-4">Areas We Serve</h2>
@@ -124,35 +131,9 @@ const testimonials = d.testimonials ?? (siteConfig as any).testimonials ?? [];
           </section>
         )}
 
-      </div>
-    </div>
-
-    <!-- Section image band — only when sectionImage is bound -->
-    {d.sectionImage && (
-      <FeatureRow
-        heading={d.title}
-        body={d.shortDescription || d.description}
-        image={d.sectionImage}
-        imageAlt={d.title}
-        imageAspect="4/3"
-        ctaText="Get a Free Quote"
-        ctaHref="/contact"
-        bg="var(--rs-surface)"
-        reverse
-      />
-    )}
-
-    <!-- Feature grid (full-width, only renders if d.features has items) -->
-    <FeatureGrid items={d.features ?? []} />
-
-    <!-- Process timeline (full-width, only renders if d.steps has items) -->
-    <ProcessTimeline steps={d.steps ?? []} />
-
-    <!-- FAQ accordion -->
-    {hasFaq && (
-      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <div class="max-w-[740px] mx-auto">
-          <section id="faq" class="pt-10 border-t border-neutral-100">
+        <!-- FAQ accordion -->
+        {hasFaq && (
+          <section id="faq" class="mt-12 pt-10 border-t border-neutral-100 pb-4">
             <h2 class="text-2xl font-bold tracking-tight text-[var(--color-text)] mb-8">Frequently Asked Questions</h2>
             <div class="flex flex-col divide-y divide-neutral-100" id="service-faq-list">
               {d.faq.map((item: { question: string; answer: string }, i: number) => (
@@ -179,23 +160,43 @@ const testimonials = d.testimonials ?? (siteConfig as any).testimonials ?? [];
               ))}
             </div>
           </section>
-        </div>
-      </div>
+        )}
+
+      </article>
+
+      <!-- Sticky sidebar — flows below article on mobile -->
+      <aside class="page-body-sidebar" aria-label="Quick contact and navigation">
+        <PageSidebar
+          pageType="service"
+          currentSlug={service.slug}
+          serviceTitle={d.title}
+          services={sidebarServices}
+          locations={sidebarLocations}
+        />
+      </aside>
+
+    </div>
+
+    <!-- ─── Full-width sections below the two-column zone ────────────── -->
+
+    {d.sectionImage && (
+      <FeatureRow
+        heading={d.title}
+        body={d.shortDescription || d.description}
+        image={d.sectionImage}
+        imageAlt={d.title}
+        imageAspect="4/3"
+        ctaText="Get a Free Quote"
+        ctaHref="/contact"
+        bg="var(--rs-surface)"
+        reverse
+      />
     )}
 
-    <!-- Testimonials (full-width, only renders if data present) -->
+    <FeatureGrid items={d.features ?? []} />
+    <ProcessTimeline steps={d.steps ?? []} />
     <Testimonials testimonials={testimonials} />
-
-    <!-- CTA band (full-width, preset-driven) -->
     <CtaBand />
-
-    <!-- Business card + service area map -->
-    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-      <div class="max-w-[740px] mx-auto">
-        <BusinessCard />
-        <ServiceAreaMap areas={d.areaServed ?? []} />
-      </div>
-    </div>
 
   </main>
 </BaseLayout>

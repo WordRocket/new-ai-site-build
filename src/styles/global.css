@@ -804,6 +804,50 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
   margin: 1.5em 0;
 }
 
+/* ── Page body two-column layout ──────────────────────────────────────────
+   Used by services/[slug].astro and [slug].astro (location pages).
+   align-items:start is REQUIRED on the desktop grid — without it the grid
+   stretches the sidebar column to article height, breaking position:sticky.
+   ─────────────────────────────────────────────────────────────────────── */
+.page-body-grid {
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 1rem;
+  padding-top: 2.5rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+@media (min-width: 640px)  { .page-body-grid { padding-inline: 1.5rem; } }
+@media (min-width: 1024px) {
+  .page-body-grid {
+    grid-template-columns: minmax(0, 1fr) 340px;
+    align-items: start;        /* mandatory for sticky sidebar */
+    gap: 3rem;
+    padding-top: 3rem;
+    padding-inline: 2rem;
+  }
+}
+
+.page-body-article {
+  min-width: 0;                /* prevent grid blowout from wide prose content */
+}
+
+/* Sticky sidebar — only on desktop, stops naturally when grid row ends */
+@media (min-width: 1024px) {
+  .page-body-sidebar {
+    position: sticky;
+    /* 64px nav + 36px top-bar + 8px gap = 108px safe offset              */
+    /* After scroll, top-bar hides and nav is at 0, leaving ~44px of room  */
+    top: 108px;
+    max-height: calc(100vh - 116px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--rs-border) transparent;
+  }
+}
+
 /* ── Reduced motion — disable ALL transitions and animations ────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

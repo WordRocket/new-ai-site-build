@@ -55,8 +55,8 @@ const secondaryHref = resolveHref(bar.secondaryHref);
     padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
   }
 
-  /* Hide on tablet and up */
-  @media (min-width: 768px) {
+  /* Hide on desktop — sidebar replaces it at ≥1024px */
+  @media (min-width: 1024px) {
     .sticky-bar {
       display: none;
     }
@@ -111,7 +111,7 @@ const secondaryHref = resolveHref(bar.secondaryHref);
 
 <style is:global>
   /* Prevent the fixed bar from obscuring footer content on mobile */
-  @media (max-width: 767px) {
+  @media (max-width: 1023px) {
     body:has(.sticky-bar) {
       padding-bottom: 80px;
     }
