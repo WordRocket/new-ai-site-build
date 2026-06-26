@@ -666,11 +666,34 @@ const heroServiceOptions = serviceEntries.length > 0
       0 26px 60px -18px rgba(0,0,0,.62);
   }
 
-  /* ── Dark skin: text-shadow on H1/subhead/trust for busy photo areas ─── *
-   * No text-shadow in light skin — scrim opacity is sufficient.            */
+  /* ── Dark skin: local token overrides for cinematic context ────────────
+     --rs-text-muted in dark skin is #97a3b6 (mid-gray), designed for dark
+     UI surfaces, not photos. In cinematic mode the left column sits over a
+     dark scrim, so we need a brighter muted value. Overriding the custom
+     property here cascades automatically to every inline style="color:var(
+     --rs-text-muted)" descendant — no !important, no HTML changes needed.
+     --rs-border gets the same treatment: the default rgba(255,255,255,.08)
+     is nearly invisible over the scrim; .18 gives the stats divider weight. */
+  [data-skin="dark"] .cinematic-hero .hero-left-panel {
+    --rs-text-muted: rgba(246,248,253,.80);
+    --rs-border:     rgba(255,255,255,.18);
+  }
+
+  /* Trust cluster copy: color comes from scoped CSS (not inline style),
+     so it needs its own explicit override to pick up the brighter value.   */
+  [data-skin="dark"] .cinematic-hero .trust-cluster__text {
+    color: rgba(246,248,253,.78);
+  }
+
+  /* ── Dark skin: text-shadow — extended to all left-column text ─────────
+     Badge, cluster count/text, and icon labels added alongside h1/p/ul.   *
+   * No text-shadow in light skin — scrim opacity is sufficient.           */
   [data-skin="dark"] .cinematic-hero .hero-left-panel h1,
   [data-skin="dark"] .cinematic-hero .hero-left-panel p,
-  [data-skin="dark"] .cinematic-hero .hero-left-panel ul {
+  [data-skin="dark"] .cinematic-hero .hero-left-panel ul,
+  [data-skin="dark"] .cinematic-hero .hero-left-panel .u-badge,
+  [data-skin="dark"] .cinematic-hero .trust-cluster__count,
+  [data-skin="dark"] .cinematic-hero .trust-cluster__text {
     text-shadow: 0 2px 16px rgba(0,0,0,.48);
   }
 
