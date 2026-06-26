@@ -93,6 +93,10 @@ const heroStats = statsItems.slice(0, 3);
 
 const formEndpoint: string = ((siteConfig as any).formEndpoint ?? '').trim();
 const formConnected = formEndpoint !== '';
+// Hero background image — `heroImage` from home.md frontmatter takes precedence,
+// then falls back to the global siteConfig field.
+const heroImage = (hp?.heroImage || (siteConfig as any).heroImage || '') as string;
+const hasHeroImage = !!heroImage;
 const heroServiceOptions = serviceEntries.length > 0
   ? serviceEntries.map((e) => ({ value: e.slug, label: e.data.title }))
   : [{ value: 'general-inquiry', label: 'General Inquiry' }];
@@ -109,7 +113,29 @@ const heroServiceOptions = serviceEntries.length > 0
 {formConnected ? (
 
 <!-- ── HERO: form variant (endpoint configured) ─────────────────────── -->
-<section class="hero-split hero-split--form u-glow-bg" aria-label="Hero">
+<section
+  class={`hero-split hero-split--form u-glow-bg cinematic-hero${hasHeroImage ? ' cinematic-hero--img' : ''}`}
+  style={!hasHeroImage ? 'background: linear-gradient(135deg, color-mix(in srgb, var(--rs-accent) 18%, var(--rs-bg)) 0%, var(--rs-bg) 100%);' : ''}
+  aria-label="Hero"
+>
+
+  {/* Full-bleed background image — LCP-optimised, decorative */}
+  {hasHeroImage && (
+    <img
+      class="hero-cin-img"
+      src={heroImage}
+      alt=""
+      role="presentation"
+      aria-hidden="true"
+      loading="eager"
+      fetchpriority="high"
+      decoding="async"
+      width="1440"
+      height="900"
+    />
+  )}
+  {/* Skin-aware scrim: left→right gradient keeps text legible over any photo */}
+  <div class="hero-cin-scrim" aria-hidden="true"></div>
 
   <!-- Left: text (unchanged) -->
   <div class="hero-left-panel flex flex-col justify-center px-6 sm:px-10 lg:px-16 py-20 lg:py-0 relative z-10">
@@ -175,7 +201,7 @@ const heroServiceOptions = serviceEntries.length > 0
   </div>
 
   <!-- Right: lead capture form card -->
-  <div class="hero-form-panel">
+  <div class="hero-form-panel relative z-[2]">
     <div class="hero-form-card w-full">
       <p class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--rs-accent);">Get a Free Estimate</p>
       <LeadForm
@@ -196,7 +222,27 @@ const heroServiceOptions = serviceEntries.length > 0
 ) : (
 
 <!-- ── HERO: original variant (no endpoint) ──────────────────────────── -->
-<section class="hero-split u-glow-bg" aria-label="Hero">
+<section
+  class={`hero-split u-glow-bg cinematic-hero${hasHeroImage ? ' cinematic-hero--img' : ''}`}
+  style={!hasHeroImage ? 'background: linear-gradient(135deg, color-mix(in srgb, var(--rs-accent) 18%, var(--rs-bg)) 0%, var(--rs-bg) 100%);' : ''}
+  aria-label="Hero"
+>
+
+  {hasHeroImage && (
+    <img
+      class="hero-cin-img"
+      src={heroImage}
+      alt=""
+      role="presentation"
+      aria-hidden="true"
+      loading="eager"
+      fetchpriority="high"
+      decoding="async"
+      width="1440"
+      height="900"
+    />
+  )}
+  <div class="hero-cin-scrim" aria-hidden="true"></div>
 
   <!-- Left: text -->
   <div class="hero-left-panel flex flex-col justify-center px-6 sm:px-10 lg:px-16 py-20 lg:py-0 relative z-10">
@@ -531,6 +577,122 @@ const heroServiceOptions = serviceEntries.length > 0
 </BaseLayout>
 
 <style>
+  /* ── Cinematic hero — full-bleed background image treatment ─────────────
+
+     DOM stacking order (bottom → top):
+       0. section CSS background  (fallback gradient / dot-grid)
+       1. .hero-cin-img            z-index: 0  (absolute, cover)
+       2. .hero-cin-scrim          z-index: 1  (absolute, gradient overlay)
+       3. content columns          z-index: 2  (relative, all text/form)
+
+     The left→right scrim keeps left-side text legible over any photo.
+     When heroImage is absent, the <img> is not rendered; CSS fallback gradient
+     (applied as inline style on the section) fills the background.
+     ─────────────────────────────────────────────────────────────────────── */
+
+  .cinematic-hero {
+    overflow: hidden;
+    /* Creates a stacking context so absolute children are contained */
+    isolation: isolate;
+  }
+
+  /* ── Background image: covers the full hero, below all content ────── */
+  .hero-cin-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    z-index: 0;
+    pointer-events: none;
+    user-select: none;
+    /* Prevent any browser-default selection or drag behavior on the bg */
+    -webkit-user-drag: none;
+  }
+
+  /* ── Scrim: skin-aware gradient, left opaque → right transparent ──── */
+  .hero-cin-scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    /* Light skin default: near-opaque light wash on the left */
+    background: linear-gradient(
+      100deg,
+      rgba(246,248,253,.97) 0%,
+      rgba(246,248,253,.82) 38%,
+      rgba(246,248,253,.10) 100%
+    );
+  }
+  [data-skin="dark"] .hero-cin-scrim {
+    background: linear-gradient(
+      100deg,
+      rgba(8,12,26,.92) 0%,
+      rgba(8,12,26,.66) 40%,
+      rgba(8,12,26,.12) 100%
+    );
+  }
+
+  /* ── Content columns: above image + scrim ────────────────────────── */
+  .cinematic-hero .hero-left-panel,
+  .cinematic-hero .hero-form-panel,
+  .cinematic-hero .hero-right {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ── Dark skin: subtle text-shadow aids legibility over busy photos ─ */
+  /* (No text-shadow in light skin — scrim opacity is sufficient.)       */
+  [data-skin="dark"] .cinematic-hero .hero-left-panel h1,
+  [data-skin="dark"] .cinematic-hero .hero-left-panel p,
+  [data-skin="dark"] .cinematic-hero .hero-left-panel ul {
+    text-shadow: 0 1px 12px rgba(0,0,0,.25);
+  }
+
+  /* ── Form card: solid bg so the form is always fully legible ─────── */
+  /* The card background is already solid via .hero-form-card in global. */
+  /* Strengthen its shadow so it lifts off the image in both skins.      */
+  .cinematic-hero .hero-form-card {
+    box-shadow:
+      0 2px 6px rgba(15,20,40,.12),
+      0 26px 60px -18px rgba(15,20,40,.4);
+  }
+  [data-skin="dark"] .cinematic-hero .hero-form-card {
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,.09),
+      0 26px 60px -18px rgba(0,0,0,.6);
+  }
+
+  /* ── Non-form variant: hero-right becomes transparent over the image ─
+     When there IS a hero image the solid brand-gradient right panel
+     would fight the photo — suppress it, keep only the floating cards.  */
+  .cinematic-hero--img .hero-right {
+    background: transparent;
+  }
+  .cinematic-hero--img .hero-right-pattern,
+  .cinematic-hero--img .hero-right-icon {
+    display: none;
+  }
+
+  /* ── Mobile scrim: stronger opacity for stacked single-column view ── */
+  @media (max-width: 900px) {
+    .hero-cin-scrim {
+      background: linear-gradient(
+        180deg,
+        rgba(246,248,253,.97) 0%,
+        rgba(246,248,253,.94) 100%
+      );
+    }
+    [data-skin="dark"] .hero-cin-scrim {
+      background: linear-gradient(
+        180deg,
+        rgba(8,12,26,.93) 0%,
+        rgba(8,12,26,.90) 100%
+      );
+    }
+  }
+
   /* ── Avatar trust cluster ────────────────────────────────────────────── */
   .trust-cluster {
     display: flex;
