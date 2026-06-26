@@ -579,24 +579,27 @@ const heroServiceOptions = serviceEntries.length > 0
 <style>
   /* ── Cinematic hero — full-bleed background image treatment ─────────────
 
-     DOM stacking order (bottom → top):
-       0. section CSS background  (fallback gradient / dot-grid)
-       1. .hero-cin-img            z-index: 0  (absolute, cover)
-       2. .hero-cin-scrim          z-index: 1  (absolute, gradient overlay)
-       3. content columns          z-index: 2  (relative, all text/form)
+     LAYER ORDER (bottom → top):
+       section bg-color  — transparent; fallback via inline style when no photo
+       .hero-cin-img     z-index 0  — absolute, inset:0, full cover
+       .hero-cin-scrim   z-index 1  — absolute, left→right gradient overlay
+       content columns   z-index 2  — relative, text + form/graphic on top
 
-     The left→right scrim keeps left-side text legible over any photo.
-     When heroImage is absent, the <img> is not rendered; CSS fallback gradient
-     (applied as inline style on the section) fills the background.
+     CRITICAL: .cinematic-hero MUST have background:transparent so the
+     hero-split base background-color does not show through the photo.
+     .cinematic-hero .hero-form-panel MUST have background:transparent so the
+     global navy panel gradient does not block the right half of the image.
      ─────────────────────────────────────────────────────────────────────── */
 
   .cinematic-hero {
     overflow: hidden;
-    /* Creates a stacking context so absolute children are contained */
+    position: relative;          /* belt-and-suspenders; u-glow-bg also sets this */
     isolation: isolate;
+    /* Must override hero-split { background-color: var(--rs-bg) } */
+    background-color: transparent;
   }
 
-  /* ── Background image: covers the full hero, below all content ────── */
+  /* ── Layer 1: background image — full section, below everything ────── */
   .hero-cin-img {
     position: absolute;
     inset: 0;
@@ -607,34 +610,35 @@ const heroServiceOptions = serviceEntries.length > 0
     z-index: 0;
     pointer-events: none;
     user-select: none;
-    /* Prevent any browser-default selection or drag behavior on the bg */
     -webkit-user-drag: none;
   }
 
-  /* ── Scrim: skin-aware gradient, left opaque → right transparent ──── */
+  /* ── Layer 2: skin-aware scrim — left opaque → right transparent ───── *
+   *  Dark skin:  dense dark left cover, photo shows on the right.         *
+   *  Light skin: dense light left cover, photo shows on the right.        *
+   *  DEFAULT is light (matches data-skin="" / no skin set).               */
   .hero-cin-scrim {
     position: absolute;
     inset: 0;
     z-index: 1;
     pointer-events: none;
-    /* Light skin default: near-opaque light wash on the left */
     background: linear-gradient(
       100deg,
       rgba(246,248,253,.97) 0%,
       rgba(246,248,253,.82) 38%,
-      rgba(246,248,253,.10) 100%
+      rgba(246,248,253,.18) 100%
     );
   }
   [data-skin="dark"] .hero-cin-scrim {
     background: linear-gradient(
       100deg,
-      rgba(8,12,26,.92) 0%,
-      rgba(8,12,26,.66) 40%,
-      rgba(8,12,26,.12) 100%
+      rgba(8,12,26,.94) 0%,
+      rgba(8,12,26,.70) 42%,
+      rgba(8,12,26,.30) 100%
     );
   }
 
-  /* ── Content columns: above image + scrim ────────────────────────── */
+  /* ── Layer 3: content columns above scrim ────────────────────────────── */
   .cinematic-hero .hero-left-panel,
   .cinematic-hero .hero-form-panel,
   .cinematic-hero .hero-right {
@@ -642,40 +646,48 @@ const heroServiceOptions = serviceEntries.length > 0
     z-index: 2;
   }
 
-  /* ── Dark skin: subtle text-shadow aids legibility over busy photos ─ */
-  /* (No text-shadow in light skin — scrim opacity is sufficient.)       */
+  /* THE CRITICAL FIX: strip the global navy panel behind the form.
+     The card (.hero-form-card) keeps its own solid bg; only the column
+     WRAPPER that was blocking the right half of the photo is cleared.     */
+  .cinematic-hero .hero-form-panel {
+    background: transparent;
+    border-left: none;
+  }
+
+  /* ── Form card: strong floating shadow so it lifts off the photo ─────── */
+  .cinematic-hero .hero-form-card {
+    box-shadow:
+      0 2px 8px rgba(15,20,40,.14),
+      0 26px 60px -18px rgba(15,20,40,.42);
+  }
+  [data-skin="dark"] .cinematic-hero .hero-form-card {
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,.09),
+      0 26px 60px -18px rgba(0,0,0,.62);
+  }
+
+  /* ── Dark skin: text-shadow on H1/subhead/trust for busy photo areas ─── *
+   * No text-shadow in light skin — scrim opacity is sufficient.            */
   [data-skin="dark"] .cinematic-hero .hero-left-panel h1,
   [data-skin="dark"] .cinematic-hero .hero-left-panel p,
   [data-skin="dark"] .cinematic-hero .hero-left-panel ul {
     text-shadow: 0 1px 12px rgba(0,0,0,.25);
   }
 
-  /* ── Form card: solid bg so the form is always fully legible ─────── */
-  /* The card background is already solid via .hero-form-card in global. */
-  /* Strengthen its shadow so it lifts off the image in both skins.      */
-  .cinematic-hero .hero-form-card {
-    box-shadow:
-      0 2px 6px rgba(15,20,40,.12),
-      0 26px 60px -18px rgba(15,20,40,.4);
-  }
-  [data-skin="dark"] .cinematic-hero .hero-form-card {
-    box-shadow:
-      0 0 0 1px rgba(255,255,255,.09),
-      0 26px 60px -18px rgba(0,0,0,.6);
-  }
-
-  /* ── Non-form variant: hero-right becomes transparent over the image ─
-     When there IS a hero image the solid brand-gradient right panel
-     would fight the photo — suppress it, keep only the floating cards.  */
-  .cinematic-hero--img .hero-right {
+  /* ── Non-form variant: hero-right is always transparent in cinematic ──── *
+   * The solid brand-gradient right panel would block the photo.            *
+   * Floating cards (.hero-float-card) keep their own backgrounds.          */
+  .cinematic-hero .hero-right {
     background: transparent;
   }
-  .cinematic-hero--img .hero-right-pattern,
-  .cinematic-hero--img .hero-right-icon {
+  .cinematic-hero .hero-right-pattern,
+  .cinematic-hero .hero-right-icon {
     display: none;
   }
 
-  /* ── Mobile scrim: stronger opacity for stacked single-column view ── */
+  /* ── Mobile (≤900px): stronger full scrim — single-column stacked ──────
+     Targets both .hero-split and .hero-split--form (global already resets
+     the grid to 1fr at this breakpoint; this only overrides the scrim).    */
   @media (max-width: 900px) {
     .hero-cin-scrim {
       background: linear-gradient(
@@ -687,8 +699,8 @@ const heroServiceOptions = serviceEntries.length > 0
     [data-skin="dark"] .hero-cin-scrim {
       background: linear-gradient(
         180deg,
-        rgba(8,12,26,.93) 0%,
-        rgba(8,12,26,.90) 100%
+        rgba(8,12,26,.94) 0%,
+        rgba(8,12,26,.91) 100%
       );
     }
   }
