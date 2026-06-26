@@ -8,6 +8,7 @@ import { iconSvg, getServiceIcon } from '../lib/icons';
 import FeatureRow from '../components/sections/FeatureRow.astro';
 import { getFAQSchema } from '../lib/schema';
 import LeadForm from '../components/LeadForm.astro';
+import ServiceCard from '../components/ServiceCard.astro';
 
 const serviceEntries = await getCollection('services').catch(() => []);
 const homeEntry = await getEntry('pages', 'home').catch(() => null);
@@ -24,24 +25,30 @@ const primaryCta = siteConfig.phone ? `tel:${phoneDigits}` : '/contact';
 const preset = getPreset((siteConfig as any).businessType || 'other');
 const vars = { city: siteConfig.city, niche: nicheLabel };
 
+// Compute heroImage early so it can be used as the card image fallback below.
+const heroImage = (hp?.heroImage || (siteConfig as any).heroImage || '') as string;
+
 const placeholderServices = [
   {
     slug: null, num: '01',
     icon: iconSvg(getServiceIcon(nicheLabel), 22),
     title: `${nicheLabel.charAt(0).toUpperCase() + nicheLabel.slice(1)} Services`,
     description: `Professional ${nicheLabel} services tailored to your needs in ${siteConfig.city}, ${siteConfig.state}. Reliable results, every time.`,
+    image: heroImage,
   },
   {
     slug: null, num: '02',
     icon: iconSvg('check-circle', 22),
     title: 'Free Estimates',
     description: `Honest, transparent quotes before any work begins — no surprises, no hidden fees. Call us to book your free assessment.`,
+    image: heroImage,
   },
   {
     slug: null, num: '03',
     icon: iconSvg('clock', 22),
     title: 'Fast Response',
     description: `We respect your time. Prompt scheduling and reliable arrival — when you need us, we show up prepared and ready.`,
+    image: heroImage,
   },
 ];
 
@@ -52,6 +59,7 @@ const displayServices = serviceEntries.length > 0
       icon: iconSvg(getServiceIcon(e.data.title), 22),
       title: e.data.title,
       description: e.data.description ?? '',
+      image: e.data.heroImage || e.data.sectionImage || heroImage,
     }))
   : placeholderServices;
 
@@ -93,9 +101,6 @@ const heroStats = statsItems.slice(0, 3);
 
 const formEndpoint: string = ((siteConfig as any).formEndpoint ?? '').trim();
 const formConnected = formEndpoint !== '';
-// Hero background image — `heroImage` from home.md frontmatter takes precedence,
-// then falls back to the global siteConfig field.
-const heroImage = (hp?.heroImage || (siteConfig as any).heroImage || '') as string;
 const hasHeroImage = !!heroImage;
 // Derive skin here (same logic as BaseLayout) so the hero template can set
 // skin-aware attributes directly on elements — avoids relying on the
@@ -360,23 +365,15 @@ const heroServiceOptions = serviceEntries.length > 0
       <p class="text-[var(--color-text-muted)] text-lg max-w-2xl mx-auto">{interpolate(preset.servicesSubheading, vars)}</p>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {displayServices.map(({ slug, num, icon, title, description }) => (
-        <div class="reveal card-hover p-7 rounded-[var(--radius-md)] flex flex-col gap-4" style="background:var(--rs-surface);">
-          <div class="flex items-start justify-between">
-            <span class="inline-flex items-center justify-center w-11 h-11 rounded-lg text-[var(--color-brand)]" style="background:color-mix(in srgb, var(--rs-accent) 10%, transparent);">
-              <Fragment set:html={icon} />
-            </span>
-            <span class="text-2xl font-black opacity-[0.07] select-none" style="color:var(--color-text);">{num}</span>
-          </div>
-          <h3 class="text-base font-semibold text-[var(--color-text)]">{title}</h3>
-          <p class="text-sm leading-relaxed text-[var(--color-text-muted)] flex-1">{description}</p>
-          {slug && (
-            <a href={`/services/${slug}`} class="mt-auto text-sm font-semibold inline-flex items-center gap-1 group transition-colors" style="color:var(--color-brand);">
-              Learn More
-              <span class="transition-transform group-hover:translate-x-1">→</span>
-            </a>
-          )}
-        </div>
+      {displayServices.map(({ slug, icon, title, description, image }) => (
+        <ServiceCard
+          title={title}
+          description={description}
+          image={image || undefined}
+          href={slug ? `/services/${slug}` : '#'}
+          icon={icon}
+          class="reveal"
+        />
       ))}
     </div>
   </div>
