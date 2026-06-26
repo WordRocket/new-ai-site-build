@@ -97,6 +97,13 @@ const formConnected = formEndpoint !== '';
 // then falls back to the global siteConfig field.
 const heroImage = (hp?.heroImage || (siteConfig as any).heroImage || '') as string;
 const hasHeroImage = !!heroImage;
+// Derive skin here (same logic as BaseLayout) so the hero template can set
+// skin-aware attributes directly on elements — avoids relying on the
+// [data-skin="dark"] CSS ancestor selector which can fail in Astro scoped CSS.
+const skin: 'light' | 'dark' =
+  (siteConfig as any).skin === 'dark'  ? 'dark'  :
+  (siteConfig as any).skin === 'light' ? 'light' :
+  (siteConfig as any).darkMode         ? 'dark'  : 'light';
 const heroServiceOptions = serviceEntries.length > 0
   ? serviceEntries.map((e) => ({ value: e.slug, label: e.data.title }))
   : [{ value: 'general-inquiry', label: 'General Inquiry' }];
@@ -116,6 +123,7 @@ const heroServiceOptions = serviceEntries.length > 0
 <section
   class={`hero-split hero-split--form u-glow-bg cinematic-hero${hasHeroImage ? ' cinematic-hero--img' : ''}`}
   style={!hasHeroImage ? 'background: linear-gradient(135deg, color-mix(in srgb, var(--rs-accent) 18%, var(--rs-bg)) 0%, var(--rs-bg) 100%);' : ''}
+  data-hero-skin={skin}
   aria-label="Hero"
 >
 
@@ -135,7 +143,7 @@ const heroServiceOptions = serviceEntries.length > 0
     />
   )}
   {/* Skin-aware scrim: left→right gradient keeps text legible over any photo */}
-  <div class="hero-cin-scrim" aria-hidden="true"></div>
+  <div class="hero-cin-scrim" data-scrim-skin={skin} aria-hidden="true"></div>
 
   <!-- Left: text (unchanged) -->
   <div class="hero-left-panel flex flex-col justify-center px-6 sm:px-10 lg:px-16 py-20 lg:py-0 relative z-10">
@@ -225,6 +233,7 @@ const heroServiceOptions = serviceEntries.length > 0
 <section
   class={`hero-split u-glow-bg cinematic-hero${hasHeroImage ? ' cinematic-hero--img' : ''}`}
   style={!hasHeroImage ? 'background: linear-gradient(135deg, color-mix(in srgb, var(--rs-accent) 18%, var(--rs-bg)) 0%, var(--rs-bg) 100%);' : ''}
+  data-hero-skin={skin}
   aria-label="Hero"
 >
 
@@ -242,7 +251,7 @@ const heroServiceOptions = serviceEntries.length > 0
       height="900"
     />
   )}
-  <div class="hero-cin-scrim" aria-hidden="true"></div>
+  <div class="hero-cin-scrim" data-scrim-skin={skin} aria-hidden="true"></div>
 
   <!-- Left: text -->
   <div class="hero-left-panel flex flex-col justify-center px-6 sm:px-10 lg:px-16 py-20 lg:py-0 relative z-10">
@@ -629,7 +638,7 @@ const heroServiceOptions = serviceEntries.length > 0
       rgba(246,248,253,.18) 100%
     );
   }
-  [data-skin="dark"] .hero-cin-scrim {
+  .hero-cin-scrim[data-scrim-skin="dark"] {
     background: linear-gradient(
       100deg,
       rgba(8,12,26,.96) 0%,
@@ -660,7 +669,7 @@ const heroServiceOptions = serviceEntries.length > 0
       0 2px 8px rgba(15,20,40,.14),
       0 26px 60px -18px rgba(15,20,40,.42);
   }
-  [data-skin="dark"] .cinematic-hero .hero-form-card {
+  .cinematic-hero[data-hero-skin="dark"] .hero-form-card {
     box-shadow:
       0 0 0 1px rgba(255,255,255,.09),
       0 26px 60px -18px rgba(0,0,0,.62);
@@ -674,26 +683,26 @@ const heroServiceOptions = serviceEntries.length > 0
      --rs-text-muted)" descendant — no !important, no HTML changes needed.
      --rs-border gets the same treatment: the default rgba(255,255,255,.08)
      is nearly invisible over the scrim; .18 gives the stats divider weight. */
-  [data-skin="dark"] .cinematic-hero .hero-left-panel {
+  .cinematic-hero[data-hero-skin="dark"] .hero-left-panel {
     --rs-text-muted: rgba(246,248,253,.80);
     --rs-border:     rgba(255,255,255,.18);
   }
 
   /* Trust cluster copy: color comes from scoped CSS (not inline style),
      so it needs its own explicit override to pick up the brighter value.   */
-  [data-skin="dark"] .cinematic-hero .trust-cluster__text {
+  .cinematic-hero[data-hero-skin="dark"] .trust-cluster__text {
     color: rgba(246,248,253,.78);
   }
 
   /* ── Dark skin: text-shadow — extended to all left-column text ─────────
      Badge, cluster count/text, and icon labels added alongside h1/p/ul.   *
    * No text-shadow in light skin — scrim opacity is sufficient.           */
-  [data-skin="dark"] .cinematic-hero .hero-left-panel h1,
-  [data-skin="dark"] .cinematic-hero .hero-left-panel p,
-  [data-skin="dark"] .cinematic-hero .hero-left-panel ul,
-  [data-skin="dark"] .cinematic-hero .hero-left-panel .u-badge,
-  [data-skin="dark"] .cinematic-hero .trust-cluster__count,
-  [data-skin="dark"] .cinematic-hero .trust-cluster__text {
+  .cinematic-hero[data-hero-skin="dark"] .hero-left-panel h1,
+  .cinematic-hero[data-hero-skin="dark"] .hero-left-panel p,
+  .cinematic-hero[data-hero-skin="dark"] .hero-left-panel ul,
+  .cinematic-hero[data-hero-skin="dark"] .hero-left-panel .u-badge,
+  .cinematic-hero[data-hero-skin="dark"] .trust-cluster__count,
+  .cinematic-hero[data-hero-skin="dark"] .trust-cluster__text {
     text-shadow: 0 2px 16px rgba(0,0,0,.48);
   }
 
@@ -719,7 +728,7 @@ const heroServiceOptions = serviceEntries.length > 0
         rgba(246,248,253,.94) 100%
       );
     }
-    [data-skin="dark"] .hero-cin-scrim {
+    .hero-cin-scrim[data-scrim-skin="dark"] {
       background: linear-gradient(
         180deg,
         rgba(8,12,26,.94) 0%,
