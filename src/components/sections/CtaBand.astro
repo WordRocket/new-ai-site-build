@@ -2,6 +2,7 @@
 import siteConfig from '../../lib/site-config';
 import { getPreset, interpolate } from '../../lib/business-presets';
 import Icon from '../Icon.astro';
+import SmartImage from '../SmartImage.astro';
 
 interface Props {
   secondaryLabel?: string;
@@ -16,9 +17,24 @@ const btnHref = interpolate(band.buttonHref, {
   phone: phoneDigits,
   email: (siteConfig as any).email ?? '',
 });
+
+const ctaImage: string = ((siteConfig as any).ctaImage ?? '').trim();
+const hasImage = ctaImage.length > 0;
 ---
 
-<section class="cb" aria-labelledby="cb-heading">
+<section class="cb" aria-labelledby="cb-heading" data-bg={hasImage ? 'image' : undefined}>
+  {hasImage && (
+    <div class="cb__bg-img" aria-hidden="true">
+      <SmartImage
+        src={ctaImage}
+        alt=""
+        aspect="16/5"
+        loading="lazy"
+        style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"
+      />
+      <div class="cb__scrim"></div>
+    </div>
+  )}
   <div class="cb__inner">
     <div class="cb__icon" aria-hidden="true">
       <Icon name="zap" width={26} height={26} />
@@ -61,8 +77,60 @@ const btnHref = interpolate(band.buttonHref, {
     pointer-events: none;
   }
 
+  /* Image mode: suppress gradient backgrounds, let image+scrim take over */
+  .cb[data-bg="image"],
+  [data-skin="dark"] .cb[data-bg="image"] {
+    background: transparent;
+  }
+  [data-skin="dark"] .cb[data-bg="image"]::before {
+    display: none;
+  }
+
+  /* Background image container */
+  .cb__bg-img {
+    position: absolute; inset: 0; z-index: 0;
+  }
+  .cb__bg-img :global(picture),
+  .cb__bg-img :global(img) {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Dark scrim — solid enough for legibility against any photo */
+  .cb__scrim {
+    position: absolute; inset: 0; z-index: 1;
+    background: rgba(0, 0, 0, 0.60);
+  }
+
+  /* In image mode, force dark-skin text/button rules regardless of skin */
+  .cb[data-bg="image"] .cb__heading {
+    color: var(--rs-accent-contrast);
+  }
+  .cb[data-bg="image"] .cb__sub {
+    color: rgba(255, 255, 255, 0.72);
+  }
+  .cb[data-bg="image"] .cb__icon {
+    background: rgba(255,255,255,.12);
+    color: color-mix(in srgb, var(--rs-brand) 30%, white);
+  }
+  .cb[data-bg="image"] .cb__primary {
+    background: #ffffff;
+    color: oklch(from var(--rs-brand) clamp(0, l, 0.4) c h);
+    border-color: #ffffff;
+    box-shadow: 0 4px 14px rgba(0,0,0,.2);
+  }
+  .cb[data-bg="image"] .cb__ghost {
+    color: var(--rs-on-brand);
+    border-color: color-mix(in srgb, var(--rs-on-brand) 55%, transparent);
+  }
+  .cb[data-bg="image"] .cb__ghost:hover {
+    background: color-mix(in srgb, var(--rs-on-brand) 12%, transparent);
+  }
+
   .cb__inner {
-    position: relative; z-index: 1;
+    position: relative; z-index: 2;
     max-width: 640px; margin: 0 auto;
     text-align: center;
     display: flex; flex-direction: column;
