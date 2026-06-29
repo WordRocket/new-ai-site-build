@@ -510,6 +510,67 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
 .section-dark .stat-value { color: var(--color-brand-light); }
 .section-dark .stat-label { color: #94a3b8; }
 
+/* ── FAQ accordion — native <details>/<summary> ────────────────────────── */
+.rs-faq-item {
+  border-bottom: 1px solid var(--rs-border);
+}
+.rs-faq-item:first-child {
+  border-top: 1px solid var(--rs-border);
+}
+
+.rs-faq-item summary.rs-faq-q {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: inherit;
+}
+.rs-faq-item summary.rs-faq-q::-webkit-details-marker { display: none; }
+
+.rs-faq-chevron {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--rs-text-muted);
+}
+details[open] .rs-faq-chevron {
+  transform: rotate(180deg);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .rs-faq-chevron { transition: transform 0.2s ease; }
+}
+
+/* Grid-rows expand — structural (applied always so content shows without motion) */
+.rs-faq-a {
+  display: grid;
+  grid-template-rows: 0fr;
+}
+details[open] .rs-faq-a {
+  grid-template-rows: 1fr;
+}
+.rs-faq-a > div {
+  overflow: hidden;
+  min-height: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .rs-faq-a { transition: grid-template-rows 0.25s ease; }
+}
+
+.rs-faq-a > div > p {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--rs-text-muted);
+  margin: 0;
+  padding-bottom: 1rem;
+}
+.section-dark .rs-faq-a > div > p {
+  color: rgba(255, 255, 255, 0.62);
+}
+
 /* ── Page hero (inner pages) ───────────────────────────────────────────── */
 .page-hero {
   background: linear-gradient(135deg, var(--color-dark-navy) 0%, var(--color-brand-dark) 100%);
