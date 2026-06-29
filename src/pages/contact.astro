@@ -54,6 +54,10 @@ const preset = getPreset((siteConfig as any).businessType || 'other');
 
 const openingHours: Array<{ days: string; hours: string }> = (siteConfig as any).openingHours || [];
 const formEndpoint: string = ((siteConfig as any).formEndpoint ?? '').trim();
+
+const mapQueryParts = [siteConfig.address, siteConfig.city, siteConfig.state, siteConfig.zip].filter(Boolean);
+const mapQuery = mapQueryParts.length > 0 ? encodeURIComponent(mapQueryParts.join(', ')) : '';
+const mapSrc = mapQuery ? `https://maps.google.com/maps?q=${mapQuery}&output=embed` : '';
 ---
 
 <BaseLayout
@@ -156,15 +160,25 @@ const formEndpoint: string = ((siteConfig as any).formEndpoint ?? '').trim();
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
               View on Google Maps
             </a>
+          ) : mapSrc ? (
+            <div
+              class="rounded-[var(--radius-lg)] overflow-hidden"
+              style="background:var(--rs-surface-2); border:1px solid var(--rs-border); height:200px;"
+            >
+              <iframe
+                src={mapSrc}
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                style="border:0; width:100%; height:100%;"
+                title={`Map showing ${siteConfig.name} service area`}
+              ></iframe>
+            </div>
           ) : (
             <div
               class="rounded-[var(--radius-lg)] overflow-hidden flex items-center justify-center gap-2"
               style="background:var(--rs-surface-2); border:1px solid var(--rs-border); height:200px; color:var(--rs-text-muted);"
-              aria-label="Map placeholder"
-              role="img"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
-              <span class="text-sm">Map</span>
+              <span class="text-sm">Service area map coming soon</span>
             </div>
           )}
         </aside>
