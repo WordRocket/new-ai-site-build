@@ -148,21 +148,22 @@ const hasImage = ctaImage.length > 0;
     margin-top: .5rem;
   }
 
-  /* Primary button */
+  /* Primary button — solid brand fill matching .btn-primary sitewide */
   .cb__primary {
-    background: var(--rs-accent);
-    color: var(--rs-accent-contrast);
-    border: 2px solid var(--rs-accent);
-    box-shadow: 0 4px 14px color-mix(in srgb, var(--rs-accent) 32%, transparent);
+    background: linear-gradient(135deg, var(--rs-brand) 0%, color-mix(in srgb, var(--rs-brand) 80%, #fff) 100%);
+    color: var(--rs-on-brand);
+    border: 2px solid transparent;
+    box-shadow: 0 4px 14px color-mix(in srgb, var(--rs-brand) 32%, transparent);
   }
   .cb__primary:hover {
-    box-shadow: 0 6px 20px color-mix(in srgb, var(--rs-accent) 44%, transparent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px color-mix(in srgb, var(--rs-brand) 44%, transparent);
   }
   [data-skin="dark"] .cb__primary {
-    background: #ffffff;
-    color: oklch(from var(--rs-brand) clamp(0, l, 0.4) c h);
-    border-color: #ffffff;
-    box-shadow: 0 4px 14px rgba(0,0,0,.2);
+    background: linear-gradient(135deg, var(--rs-brand) 0%, color-mix(in srgb, var(--rs-brand) 80%, #fff) 100%);
+    color: var(--rs-on-brand);
+    border-color: transparent;
+    box-shadow: 0 4px 14px color-mix(in srgb, var(--rs-brand) 32%, transparent);
   }
 
   /* Ghost button */
@@ -206,10 +207,10 @@ const hasImage = ctaImage.length > 0;
     color: rgba(255, 255, 255, 0.82);
   }
   .cb[data-bg="image"] .cb__primary {
-    background: #ffffff;
-    color: oklch(from var(--rs-brand) clamp(0, l, 0.4) c h);
-    border-color: #ffffff;
-    box-shadow: 0 4px 14px rgba(0,0,0,.2);
+    background: linear-gradient(135deg, var(--rs-brand) 0%, color-mix(in srgb, var(--rs-brand) 80%, #fff) 100%);
+    color: var(--rs-on-brand);
+    border-color: transparent;
+    box-shadow: 0 4px 14px rgba(0,0,0,.25);
   }
   .cb[data-bg="image"] .cb__ghost {
     color: #ffffff;
