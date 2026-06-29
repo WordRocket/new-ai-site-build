@@ -530,9 +530,14 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
 /* ── FAQ accordion — native <details>/<summary> ────────────────────────── */
 .rs-faq-item {
   border-bottom: 1px solid var(--rs-border);
+  border-left: 3px solid transparent;
+  transition: border-color 0.15s ease;
 }
 .rs-faq-item:first-child {
   border-top: 1px solid var(--rs-border);
+}
+details[open].rs-faq-item {
+  border-left-color: var(--rs-brand);
 }
 
 .rs-faq-item summary.rs-faq-q {
@@ -546,19 +551,24 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
   font-size: 1rem;
   font-weight: 600;
   color: inherit;
+  transition: color 0.15s ease;
 }
 .rs-faq-item summary.rs-faq-q::-webkit-details-marker { display: none; }
+summary.rs-faq-q:hover { color: var(--rs-brand-text); }
+summary.rs-faq-q:hover .rs-faq-chevron { color: var(--rs-brand-text); }
 
 .rs-faq-chevron {
   flex-shrink: 0;
   margin-top: 2px;
   color: var(--rs-text-muted);
+  transition: color 0.15s ease;
 }
 details[open] .rs-faq-chevron {
   transform: rotate(180deg);
+  color: var(--rs-brand-text);
 }
 @media (prefers-reduced-motion: no-preference) {
-  .rs-faq-chevron { transition: transform 0.2s ease; }
+  .rs-faq-chevron { transition: transform 0.2s ease, color 0.15s ease; }
 }
 
 /* Grid-rows expand — structural (applied always so content shows without motion) */
