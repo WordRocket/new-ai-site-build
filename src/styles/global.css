@@ -8,9 +8,9 @@
 
 /* ── Design Tokens ─────────────────────────────────────────────────────── */
 :root {
-  --color-brand:        #2563eb;
-  --color-brand-light:  #3b82f6;
-  --color-brand-dark:   #1e40af;
+  --color-brand:        var(--rs-brand);
+  --color-brand-light:  var(--rs-brand-subtle);
+  --color-brand-dark:   var(--rs-brand-text);
   --color-dark-navy:    #0f172a;
   --color-neutral-50:   #fafafa;
   --color-neutral-100:  #f4f4f5;
