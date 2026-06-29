@@ -2,6 +2,7 @@
 import siteConfig, { formatPhone } from '../lib/site-config';
 import { getPreset } from '../lib/business-presets';
 import { iconSvg } from '../lib/icons';
+import SmartImage from './SmartImage.astro';
 
 interface ServiceItem {
   slug: string;
@@ -32,6 +33,8 @@ const phoneDigits = siteConfig.phone ? siteConfig.phone.replace(/\D/g, '') : '';
 const showPhone = !!siteConfig.phone;
 const openingHours = (siteConfig as any).openingHours as string[] | undefined;
 const showHours = Array.isArray(openingHours) && openingHours.length > 0;
+const sidebarImage: string = ((siteConfig as any).sidebarImage ?? '').trim();
+const hasSidebarImage = sidebarImage.length > 0;
 
 // ── Block visibility booleans ─────────────────────────────────────────────
 // Each is a single clear boolean; extend to an explicit user toggle here later.
@@ -69,23 +72,37 @@ const cityServicesHeading = city ? `Services in ${city}` : 'Our Services';
 <div class="sb-wrap">
 
   <!-- ① CTA card — always shown, visual anchor of the sidebar -->
-  <div class="sb-card sb-cta-card">
-    <p class="sb-eyebrow">Prefer to talk?</p>
-    {showPhone && (
-      <a href={`tel:${phoneDigits}`} class="sb-phone" aria-label={`Call ${siteConfig.name}`}>
-        {formatPhone(siteConfig.phone)}
+  <div class="sb-card sb-cta-card" data-has-image={hasSidebarImage ? 'true' : undefined}>
+    {hasSidebarImage && (
+      <div class="sb-cta-bg" aria-hidden="true">
+        <SmartImage
+          src={sidebarImage}
+          alt=""
+          aspect="4/3"
+          loading="lazy"
+          style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"
+        />
+        <div class="sb-cta-scrim"></div>
+      </div>
+    )}
+    <div class="sb-cta-content">
+      <p class="sb-eyebrow">Prefer to talk?</p>
+      {showPhone && (
+        <a href={`tel:${phoneDigits}`} class="sb-phone" aria-label={`Call ${siteConfig.name}`}>
+          {formatPhone(siteConfig.phone)}
+        </a>
+      )}
+      <a href="/contact" class="sb-cta-btn">
+        Get a Free Quote
       </a>
-    )}
-    <a href="/contact" class="sb-cta-btn">
-      Get a Free Quote
-    </a>
-    {showHours && (
-      <ul class="sb-hours" aria-label="Business hours">
-        {openingHours!.map((h: string) => (
-          <li>{h}</li>
-        ))}
-      </ul>
-    )}
+      {showHours && (
+        <ul class="sb-hours" aria-label="Business hours">
+          {openingHours!.map((h: string) => (
+            <li>{h}</li>
+          ))}
+        </ul>
+      )}
+    </div>
   </div>
 
   <!-- ② Trust badges — hidden on mobile (TrustBar handles mobile trust signals) -->
@@ -189,12 +206,58 @@ const cityServicesHeading = city ? `Services in ${city}` : 'Our Services';
      Uses --rs-brand-tint + --rs-brand-tint-border (both defined in :root and
      overridden in [data-skin="dark"]) so it adapts to every skin.             */
   .sb-cta-card {
-    padding: 1.5rem;
+    position: relative;
     background: var(--rs-brand-subtle);
     border: 1px solid var(--rs-brand-tint-border);
     display: flex;
     flex-direction: column;
+  }
+
+  /* Image-mode: suppress tinted background, image+scrim takes over */
+  .sb-cta-card[data-has-image] {
+    background: none;
+    border-color: transparent;
+  }
+
+  /* Background image layer — sits behind all content */
+  .sb-cta-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    overflow: hidden;
+  }
+
+  /* Dark scrim for legibility — consistent with CtaBand image mode */
+  .sb-cta-scrim {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1;
+  }
+
+  /* Content sits above image+scrim */
+  .sb-cta-content {
+    position: relative;
+    z-index: 2;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
     gap: 0.875rem;
+  }
+
+  /* Image mode: force text colors to white for legibility against any image */
+  .sb-cta-card[data-has-image] .sb-eyebrow {
+    color: rgba(255, 255, 255, 0.75);
+  }
+  .sb-cta-card[data-has-image] .sb-phone {
+    color: #fff;
+  }
+  .sb-cta-card[data-has-image] .sb-hours li {
+    color: rgba(255, 255, 255, 0.7);
+  }
+  .sb-cta-card[data-has-image] .sb-hours {
+    border-top-color: rgba(255, 255, 255, 0.2);
   }
 
   .sb-eyebrow {
