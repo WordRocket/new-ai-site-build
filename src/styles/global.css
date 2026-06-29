@@ -100,6 +100,9 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
   --rs-brand-subtle: color-mix(in srgb, var(--rs-brand) 12%, var(--rs-surface));
   --rs-brand-ring: color-mix(in srgb, var(--rs-brand) 40%, transparent);
   --rs-brand-text: color-mix(in srgb, var(--rs-brand) 88%, #000);
+  /* Hero banner: brand hue, lightness clamped dark — readable for any brand */
+  --rs-hero-from: oklch(from var(--rs-brand) 0.20 c h);
+  --rs-hero-to:   oklch(from var(--rs-brand) 0.26 c h);
   --rs-grad-from: var(--rs-brand);
   --rs-grad-to: color-mix(in oklab, var(--rs-brand) 55%, #ffffff);
   --rs-glass-bg: rgba(255,255,255,.7); --rs-glow: transparent;
@@ -587,7 +590,7 @@ details[open] .rs-faq-a {
 
 /* ── Page hero (inner pages) ───────────────────────────────────────────── */
 .page-hero {
-  background: linear-gradient(135deg, var(--color-dark-navy) 0%, var(--color-brand-dark) 100%);
+  background: linear-gradient(135deg, var(--rs-hero-from) 0%, var(--rs-hero-to) 100%);
   min-height: 45vh;
   display: flex;
   align-items: center;
