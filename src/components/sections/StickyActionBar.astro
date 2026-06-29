@@ -76,7 +76,7 @@ const secondaryHref = resolveHref(bar.secondaryHref);
   }
 
   .sticky-bar__btn:focus-visible {
-    outline: 3px solid var(--color-brand);
+    outline: 3px solid var(--rs-brand-ring);
     outline-offset: 2px;
   }
 
@@ -87,19 +87,19 @@ const secondaryHref = resolveHref(bar.secondaryHref);
 
   .sticky-bar__btn--primary {
     background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-light) 100%);
-    color: white;
+    color: var(--rs-on-brand);
     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
   }
 
   .sticky-bar__btn--secondary {
     background: transparent;
-    color: var(--color-brand);
+    color: var(--rs-brand-text);
     border: 2px solid var(--color-brand);
   }
 
   .sticky-bar__btn--secondary:hover {
     background: var(--color-brand);
-    color: white;
+    color: var(--rs-on-brand);
   }
 
   @media (prefers-reduced-motion: reduce) {

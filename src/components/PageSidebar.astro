@@ -190,7 +190,7 @@ const cityServicesHeading = city ? `Services in ${city}` : 'Our Services';
      overridden in [data-skin="dark"]) so it adapts to every skin.             */
   .sb-cta-card {
     padding: 1.5rem;
-    background: color-mix(in srgb, var(--rs-brand) 7%, var(--rs-surface));
+    background: var(--rs-brand-subtle);
     border: 1px solid var(--rs-brand-tint-border);
     display: flex;
     flex-direction: column;
@@ -213,7 +213,7 @@ const cityServicesHeading = city ? `Services in ${city}` : 'Our Services';
     font-size: 1.625rem;
     font-weight: 800;
     line-height: 1.1;
-    color: var(--rs-accent);
+    color: var(--rs-brand-text);
     text-decoration: none;
     letter-spacing: -0.02em;
     transition: opacity 0.15s ease;
@@ -229,7 +229,7 @@ const cityServicesHeading = city ? `Services in ${city}` : 'Our Services';
     padding: 0.625rem 1rem;
     border-radius: var(--radius-md, 8px);
     background: linear-gradient(135deg, var(--rs-accent) 0%, color-mix(in srgb, var(--rs-accent) 78%, #fff) 100%);
-    color: #fff;
+    color: var(--rs-on-brand);
     font-size: 0.9375rem;
     font-weight: 700;
     text-decoration: none;
@@ -282,7 +282,7 @@ const cityServicesHeading = city ? `Services in ${city}` : 'Our Services';
 
   .sb-trust-icon {
     flex-shrink: 0;
-    color: var(--rs-accent);
+    color: var(--rs-brand-text);
     display: flex;
     align-items: center;
   }
@@ -337,11 +337,11 @@ const cityServicesHeading = city ? `Services in ${city}` : 'Our Services';
     transition: color 0.15s ease, padding-left 0.15s ease;
   }
   .sb-link:hover {
-    color: var(--rs-accent);
+    color: var(--rs-brand-text);
     padding-left: 0.25rem;
   }
   .sb-link--active {
-    color: var(--rs-accent);
+    color: var(--rs-brand-text);
     font-weight: 600;
   }
 

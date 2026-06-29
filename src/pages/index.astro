@@ -195,7 +195,7 @@ const heroServiceOptions = serviceEntries.length > 0
     <ul class="flex flex-col sm:flex-row flex-wrap gap-x-6 gap-y-2 text-sm mb-8" style="color:var(--rs-text-muted);">
       {preset.trustSignals.map(({ icon: iconName, label }) => (
         <li class="flex items-center gap-1.5">
-          <Icon name={iconName} width={16} height={16} style="color:var(--rs-accent); flex-shrink:0;" aria-hidden="true" />
+          <Icon name={iconName} width={16} height={16} style="color:var(--rs-brand-text); flex-shrink:0;" aria-hidden="true" />
           {label}
         </li>
       ))}
@@ -303,7 +303,7 @@ const heroServiceOptions = serviceEntries.length > 0
     <ul class="flex flex-col sm:flex-row flex-wrap gap-x-6 gap-y-2 text-sm mb-8" style="color:var(--rs-text-muted);">
       {preset.trustSignals.map(({ icon: iconName, label }) => (
         <li class="flex items-center gap-1.5">
-          <Icon name={iconName} width={16} height={16} style="color:var(--rs-accent); flex-shrink:0;" aria-hidden="true" />
+          <Icon name={iconName} width={16} height={16} style="color:var(--rs-brand-text); flex-shrink:0;" aria-hidden="true" />
           {label}
         </li>
       ))}
@@ -389,7 +389,7 @@ const heroServiceOptions = serviceEntries.length > 0
   <section class="section-pad" style="background:var(--rs-bg);" aria-labelledby="testimonial-heading">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
       <div class="reveal rounded-[var(--radius-lg)] p-10 sm:p-14" style="background:color-mix(in srgb, var(--rs-accent) 10%, var(--rs-surface)); box-shadow:var(--rs-shadow-card);">
-        <p class="text-7xl font-black leading-none mb-4" style="color:var(--color-brand); opacity:0.3;" aria-hidden="true">"</p>
+        <p class="text-7xl font-black leading-none mb-4" style="color:var(--rs-brand-text); opacity:0.3;" aria-hidden="true">"</p>
         <blockquote id="testimonial-heading" class="text-lg sm:text-xl italic leading-relaxed text-[var(--color-text)] mb-6">
           {testimonialText}
         </blockquote>
@@ -448,11 +448,11 @@ const heroServiceOptions = serviceEntries.length > 0
     </p>
     <div class="flex flex-wrap items-center justify-center gap-3 mb-8">
       <span class="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium" style="background:var(--rs-surface); border:1px solid var(--rs-border); color:var(--rs-text);">
-        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--rs-brand-text)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
         {siteConfig.city}, {siteConfig.state}
       </span>
     </div>
-    <a href={siteConfig.phone ? `tel:${phoneDigits}` : '/contact'} class="text-sm font-semibold transition-colors hover:opacity-80" style="color:var(--color-brand);">
+    <a href={siteConfig.phone ? `tel:${phoneDigits}` : '/contact'} class="text-sm font-semibold transition-colors hover:opacity-80" style="color:var(--rs-brand-text);">
       Don't see your area? Call us →
     </a>
   </div>
@@ -513,12 +513,12 @@ const heroServiceOptions = serviceEntries.length > 0
         </p>
         {siteConfig.phone
           ? (
-            <a href={`tel:${phoneDigits}`} class="btn-primary justify-center sm:justify-start text-white font-bold text-lg px-8 py-4 rounded-[var(--radius-md)] w-full sm:w-auto">
+            <a href={`tel:${phoneDigits}`} class="btn-primary justify-center sm:justify-start font-bold text-lg px-8 py-4 rounded-[var(--radius-md)] w-full sm:w-auto">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.36a2 2 0 0 1 1.99-2.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.06 6.06l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
               {siteConfig.phone}
             </a>
           ) : (
-            <a href="/contact" class="btn-primary justify-center sm:justify-start text-white font-bold text-lg px-8 py-4 rounded-[var(--radius-md)] w-full sm:w-auto">
+            <a href="/contact" class="btn-primary justify-center sm:justify-start font-bold text-lg px-8 py-4 rounded-[var(--radius-md)] w-full sm:w-auto">
               {preset.contactCta}
             </a>
           )
@@ -533,8 +533,8 @@ const heroServiceOptions = serviceEntries.length > 0
         <div class="flex flex-col gap-5 w-full max-w-xs">
           {siteConfig.address && (
             <div class="flex items-start gap-3">
-              <span class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(37,99,235,0.15);">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand-light)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center" style="background:var(--rs-brand-subtle);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--rs-brand-text)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
               </span>
               <div>
                 <p class="text-xs font-semibold uppercase tracking-wider mb-0.5" style="color:#475569;">Address</p>
@@ -544,23 +544,23 @@ const heroServiceOptions = serviceEntries.length > 0
           )}
           {siteConfig.phone && (
             <div class="flex items-start gap-3">
-              <span class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(37,99,235,0.15);">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand-light)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.36a2 2 0 0 1 1.99-2.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.06 6.06l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <span class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center" style="background:var(--rs-brand-subtle);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--rs-brand-text)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.36a2 2 0 0 1 1.99-2.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.06 6.06l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
               </span>
               <div>
                 <p class="text-xs font-semibold uppercase tracking-wider mb-0.5" style="color:#475569;">Phone</p>
-                <a href={`tel:${phoneDigits}`} class="text-sm text-white hover:text-[var(--color-brand-light)] transition-colors">{siteConfig.phone}</a>
+                <a href={`tel:${phoneDigits}`} class="text-sm text-white hover:text-[var(--rs-brand-text)] transition-colors">{siteConfig.phone}</a>
               </div>
             </div>
           )}
           {siteConfig.email && (
             <div class="flex items-start gap-3">
-              <span class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(37,99,235,0.15);">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand-light)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              <span class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center" style="background:var(--rs-brand-subtle);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--rs-brand-text)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
               </span>
               <div>
                 <p class="text-xs font-semibold uppercase tracking-wider mb-0.5" style="color:#475569;">Email</p>
-                <a href={`mailto:${siteConfig.email}`} class="text-sm text-white hover:text-[var(--color-brand-light)] transition-colors">{siteConfig.email}</a>
+                <a href={`mailto:${siteConfig.email}`} class="text-sm text-white hover:text-[var(--rs-brand-text)] transition-colors">{siteConfig.email}</a>
               </div>
             </div>
           )}
@@ -748,8 +748,8 @@ const heroServiceOptions = serviceEntries.length > 0
     display: flex;
     align-items: center;
     justify-content: center;
-    /* icon always white since bg is always a brand-hue */
-    color: #ffffff;
+    /* icon always adapts to brand fill */
+    color: var(--rs-on-brand);
     flex-shrink: 0;
   }
   .trust-avatar + .trust-avatar { margin-left: -0.6rem; }

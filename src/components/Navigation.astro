@@ -72,8 +72,8 @@ const servicesActive = pathname.startsWith('/services');
             class={[
               'nav-dd__trigger px-3 py-2 text-sm font-medium transition-colors relative inline-flex items-center gap-1',
               servicesActive
-                ? 'text-[var(--color-brand)] font-semibold nav-active'
-                : 'text-[var(--color-text)] hover:text-[var(--color-brand)]',
+                ? 'text-[var(--rs-brand-text)] font-semibold nav-active'
+                : 'text-[var(--color-text)] hover:text-[var(--rs-brand-text)]',
             ].join(' ')}
             aria-current={servicesActive ? 'page' : undefined}
           >
@@ -138,14 +138,14 @@ const servicesActive = pathname.startsWith('/services');
     <!-- CTA + phone + hamburger -->
     <div class="flex items-center gap-3">
       {siteConfig.phone && (
-        <a href={`tel:${phoneDigits}`} class="hidden lg:flex items-center gap-1.5 text-sm font-semibold transition-colors hover:text-[var(--color-brand)]" style="color:var(--color-text);">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.36a2 2 0 0 1 1.99-2.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.06 6.06l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        <a href={`tel:${phoneDigits}`} class="hidden lg:flex items-center gap-1.5 text-sm font-semibold transition-colors hover:text-[var(--rs-brand-text)]" style="color:var(--color-text);">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--rs-brand-text)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.36a2 2 0 0 1 1.99-2.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.06 6.06l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
           {formatPhone(siteConfig.phone)}
         </a>
       )}
       <a
         href="/contact"
-        class="hidden md:inline-flex btn-primary items-center px-4 py-2 rounded-[var(--radius-md)] text-sm font-semibold text-white"
+        class="hidden md:inline-flex btn-primary items-center px-4 py-2 rounded-[var(--radius-md)] text-sm font-semibold"
       >
         Get in Touch
       </a>
@@ -183,8 +183,8 @@ const servicesActive = pathname.startsWith('/services');
               class={[
                 'mob-svc__label px-3 py-2 rounded-md text-sm font-medium transition-colors flex-1',
                 servicesActive
-                  ? 'text-[var(--color-brand)] font-semibold bg-blue-50'
-                  : 'text-[var(--color-text)] hover:text-[var(--color-brand)] hover:bg-neutral-100',
+                  ? 'text-[var(--rs-brand-text)] font-semibold bg-blue-50'
+                  : 'text-[var(--color-text)] hover:text-[var(--rs-brand-text)] hover:bg-neutral-100',
               ].join(' ')}
               aria-current={servicesActive ? 'page' : undefined}
             >
@@ -209,8 +209,8 @@ const servicesActive = pathname.startsWith('/services');
                   class={[
                     'block pl-6 pr-3 py-2 rounded-md text-sm font-medium transition-colors',
                     pathname === s.href
-                      ? 'text-[var(--color-brand)] font-semibold bg-blue-50'
-                      : 'text-[var(--color-text-muted)] hover:text-[var(--color-brand)] hover:bg-neutral-100',
+                      ? 'text-[var(--rs-brand-text)] font-semibold bg-blue-50'
+                      : 'text-[var(--color-text-muted)] hover:text-[var(--rs-brand-text)] hover:bg-neutral-100',
                   ].join(' ')}
                   aria-current={pathname === s.href ? 'page' : undefined}
                 >
@@ -226,8 +226,8 @@ const servicesActive = pathname.startsWith('/services');
           class={[
             'px-3 py-2 rounded-md text-sm font-medium transition-colors',
             servicesActive
-              ? 'text-[var(--color-brand)] font-semibold bg-blue-50'
-              : 'text-[var(--color-text)] hover:text-[var(--color-brand)] hover:bg-neutral-100',
+              ? 'text-[var(--rs-brand-text)] font-semibold bg-blue-50'
+              : 'text-[var(--color-text)] hover:text-[var(--rs-brand-text)] hover:bg-neutral-100',
           ].join(' ')}
           aria-current={servicesActive ? 'page' : undefined}
         >
@@ -241,8 +241,8 @@ const servicesActive = pathname.startsWith('/services');
           class={[
             'px-3 py-2 rounded-md text-sm font-medium transition-colors',
             isActive(href)
-              ? 'text-[var(--color-brand)] font-semibold bg-blue-50'
-              : 'text-[var(--color-text)] hover:text-[var(--color-brand)] hover:bg-neutral-100',
+              ? 'text-[var(--rs-brand-text)] font-semibold bg-blue-50'
+              : 'text-[var(--color-text)] hover:text-[var(--rs-brand-text)] hover:bg-neutral-100',
           ].join(' ')}
           aria-current={isActive(href) ? 'page' : undefined}
         >
@@ -250,14 +250,14 @@ const servicesActive = pathname.startsWith('/services');
         </a>
       ))}
       {siteConfig.phone && (
-        <a href={`tel:${phoneDigits}`} class="mt-1 px-3 py-2 rounded-md text-sm font-semibold flex items-center gap-2" style="color:var(--color-brand);">
+        <a href={`tel:${phoneDigits}`} class="mt-1 px-3 py-2 rounded-md text-sm font-semibold flex items-center gap-2" style="color:var(--rs-brand-text);">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.36a2 2 0 0 1 1.99-2.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.06 6.06l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
           {formatPhone(siteConfig.phone)}
         </a>
       )}
       <a
         href="/contact"
-        class="mt-2 btn-primary px-4 py-2 rounded-[var(--radius-md)] text-sm font-semibold text-white text-center"
+        class="mt-2 btn-primary px-4 py-2 rounded-[var(--radius-md)] text-sm font-semibold text-center"
       >
         Get in Touch
       </a>
@@ -325,11 +325,11 @@ const servicesActive = pathname.startsWith('/services');
   .nav-dd__item:hover,
   .nav-dd__item:focus-visible {
     background: color-mix(in srgb, var(--color-brand) 8%, transparent);
-    color: var(--color-brand);
+    color: var(--rs-brand-text);
     outline: none;
   }
   .nav-dd__item--active {
-    color: var(--color-brand);
+    color: var(--rs-brand-text);
     font-weight: 600;
   }
 

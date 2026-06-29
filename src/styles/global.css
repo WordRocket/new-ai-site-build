@@ -94,7 +94,12 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
   /* LIGHT skin (default) */
   --rs-bg: #ffffff; --rs-surface: #f8f9fb; --rs-surface-2: #f1f5f9;
   --rs-border: #e6e8ec; --rs-text: #0f172a; --rs-text-muted: #51607a;
-  --rs-accent: var(--rs-brand); --rs-accent-contrast: #ffffff;
+  --rs-accent: var(--rs-brand); --rs-accent-contrast: var(--rs-on-brand);
+  /* Derived brand tokens — adapt to any --rs-brand hue automatically */
+  --rs-on-brand: oklch(from var(--rs-brand) clamp(0,(0.62 - l)*1000,1) 0 0);
+  --rs-brand-subtle: color-mix(in srgb, var(--rs-brand) 12%, var(--rs-surface));
+  --rs-brand-ring: color-mix(in srgb, var(--rs-brand) 40%, transparent);
+  --rs-brand-text: color-mix(in srgb, var(--rs-brand) 88%, #000);
   --rs-grad-from: var(--rs-brand);
   --rs-grad-to: color-mix(in oklab, var(--rs-brand) 55%, #ffffff);
   --rs-glass-bg: rgba(255,255,255,.7); --rs-glow: transparent;
@@ -104,6 +109,7 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
 [data-skin="dark"] {
   --rs-bg: #0a0e17; --rs-surface: #111726; --rs-surface-2: #161d2e;
   --rs-border: rgba(255,255,255,.08); --rs-text: #f6f8fc; --rs-text-muted: #97a3b6;
+  --rs-brand-text: color-mix(in srgb, var(--rs-brand) 78%, #fff);
   --rs-grad-to: color-mix(in oklab, var(--rs-brand) 50%, #c7d2fe);
   --rs-glass-bg: rgba(255,255,255,.04);
   --rs-glow: color-mix(in srgb, var(--rs-brand) 28%, transparent);
@@ -245,7 +251,7 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
 .card-hover {
   position: relative;
   transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
-  border: 1px solid rgba(37,99,235,0.12) !important;
+  border: 1px solid color-mix(in srgb, var(--rs-brand) 12%, transparent) !important;
   overflow: hidden;
 }
 .card-hover::before {
@@ -256,12 +262,13 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
   background: linear-gradient(90deg, var(--color-brand), var(--color-brand-light));
   transition: height 0.3s cubic-bezier(0.4,0,0.2,1);
 }
-.card-hover:hover { transform: translateY(-4px); border-color: rgba(37,99,235,0.3) !important; box-shadow: var(--shadow-md) !important; }
+.card-hover:hover { transform: translateY(-4px); border-color: color-mix(in srgb, var(--rs-brand) 30%, transparent) !important; box-shadow: var(--shadow-md) !important; }
 .card-hover:hover::before { height: 6px; }
 
 /* ── Primary Button ────────────────────────────────────────────────────── */
 .btn-primary {
   background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-light) 100%);
+  color: var(--rs-on-brand);
   box-shadow: 0 4px 15px rgba(37,99,235,0.3);
   transition: all 0.2s ease;
   min-height: 48px;
@@ -272,14 +279,14 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
 
 .btn-secondary {
   border: 2px solid var(--color-brand);
-  color: var(--color-brand);
+  color: var(--rs-brand-text);
   background: transparent;
   transition: all 0.2s ease;
   min-height: 48px;
   display: inline-flex;
   align-items: center;
 }
-.btn-secondary:hover { background: var(--color-brand); color: #fff; }
+.btn-secondary:hover { background: var(--color-brand); color: var(--rs-on-brand); }
 
 /* ── Trust Bar Shimmer ─────────────────────────────────────────────────── */
 @keyframes shimmer { 0%,100% { opacity:0.6; } 50% { opacity:1; } }
@@ -295,7 +302,7 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
 
 /* ── Social icon hover ─────────────────────────────────────────────────── */
 .social-icon-link { transition: all 0.2s ease; }
-.social-icon-link:hover { background-color: var(--color-brand) !important; color: #fff !important; }
+.social-icon-link:hover { background-color: var(--color-brand) !important; color: var(--rs-on-brand) !important; }
 
 /* ── Nav ───────────────────────────────────────────────────────────────── */
 #site-nav { top: 36px; }
@@ -383,7 +390,7 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
 }
 .lf-input:focus {
   border-color: var(--rs-accent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--rs-accent) 16%, transparent);
+  box-shadow: 0 0 0 3px var(--rs-brand-ring);
 }
 .lf-select {
   appearance: none;
@@ -440,7 +447,7 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
 }
 .hero-form-card .lf-input:focus {
   border-color: var(--rs-accent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--rs-accent) 16%, transparent);
+  box-shadow: 0 0 0 3px var(--rs-brand-ring);
 }
 
 /* Dark-skin card: elevated dark surface — integrated, premium, not white */
@@ -651,15 +658,15 @@ details[open] .rs-faq-a {
 
 /* Links */
 .prose a {
-  color: var(--color-brand);
+  color: var(--rs-brand-text);
   text-decoration: underline;
-  text-decoration-color: rgba(37,99,235,0.35);
+  text-decoration-color: color-mix(in srgb, var(--rs-brand) 35%, transparent);
   text-underline-offset: 3px;
   transition: text-decoration-color 0.15s ease, color 0.15s ease;
 }
 .prose a:hover {
-  color: var(--color-brand-dark);
-  text-decoration-color: var(--color-brand-dark);
+  color: var(--rs-brand-text);
+  text-decoration-color: var(--rs-brand-text);
 }
 
 /* ── Lists — brand-colored markers ─────────────────────────────────────── */
@@ -682,7 +689,7 @@ details[open] .rs-faq-a {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background-color: var(--color-brand);
+  background-color: var(--rs-brand-text);
   flex-shrink: 0;
 }
 
@@ -704,7 +711,7 @@ details[open] .rs-faq-a {
   position: absolute;
   left: 0;
   font-weight: 600;
-  color: var(--color-brand);
+  color: var(--rs-brand-text);
   font-size: 0.9em;
   top: 0.05em;
 }
@@ -744,28 +751,28 @@ details[open] .rs-faq-a {
 
 /* Header row */
 .prose thead tr {
-  background-color: rgba(37,99,235,0.08);
+  background-color: color-mix(in srgb, var(--rs-brand) 8%, var(--rs-surface));
 }
 .prose thead th {
-  color: var(--color-brand-dark);
+  color: var(--rs-brand-text);
   font-weight: 700;
   font-size: 0.8125rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   padding: 0.75em 1em;
-  border-bottom: 2px solid rgba(37,99,235,0.2);
+  border-bottom: 2px solid color-mix(in srgb, var(--rs-brand) 20%, transparent);
   text-align: left;
   white-space: nowrap;
 }
 
 /* Body rows */
-.prose tbody tr:nth-child(odd)  { background-color: #ffffff; }
-.prose tbody tr:nth-child(even) { background-color: rgba(37,99,235,0.03); }
-.prose tbody tr:hover           { background-color: rgba(37,99,235,0.06); transition: background-color 0.15s ease; }
+.prose tbody tr:nth-child(odd)  { background-color: var(--rs-surface); }
+.prose tbody tr:nth-child(even) { background-color: color-mix(in srgb, var(--rs-brand) 3%, var(--rs-surface)); }
+.prose tbody tr:hover           { background-color: color-mix(in srgb, var(--rs-brand) 6%, var(--rs-surface)); transition: background-color 0.15s ease; }
 
 .prose tbody td {
   padding: 0.65em 1em;
-  border-bottom: 1px solid rgba(0,0,0,0.06);
+  border-bottom: 1px solid var(--rs-border);
   vertical-align: top;
   line-height: 1.55;
 }
@@ -790,8 +797,8 @@ details[open] .rs-faq-a {
 /* The JS-free approach: use :has() to detect paragraphs starting with the trigger text */
 
 .prose blockquote:has(p > strong:first-child) {
-  --callout-color: var(--color-brand);
-  --callout-bg: rgba(37,99,235,0.05);
+  --callout-color: var(--rs-brand-text);
+  --callout-bg: color-mix(in srgb, var(--rs-brand) 5%, transparent);
   border-left: 4px solid var(--callout-color);
   background: var(--callout-bg);
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
