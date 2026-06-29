@@ -16,7 +16,6 @@ const hasServiceDropdown = serviceLinks.length > 0;
 
 // Services item is handled separately; remaining flat links
 const navLinks = [
-  { label: 'Home',    href: '/' },
   { label: 'Blog',    href: '/blog' },
   { label: 'About',   href: '/about' },
   ...(faqEntry ? [{ label: 'FAQ', href: '/faq' }] : []),
@@ -63,6 +62,23 @@ const servicesActive = pathname.startsWith('/services');
 
     <!-- Desktop nav -->
     <nav class="hidden md:flex items-center gap-0.5" aria-label="Main navigation">
+
+      <!-- Home -->
+      <a
+        href="/"
+        class={[
+          'px-3 py-2 text-sm font-medium transition-colors relative',
+          pathname === '/'
+            ? 'text-[var(--color-brand)] font-semibold nav-active'
+            : 'text-[var(--color-text)] hover:text-[var(--color-brand)]',
+        ].join(' ')}
+        aria-current={pathname === '/' ? 'page' : undefined}
+      >
+        Home
+        {pathname === '/' && (
+          <span class="absolute bottom-0 left-3 right-3 h-0.5 rounded-full" style="background:var(--rs-brand);"></span>
+        )}
+      </a>
 
       <!-- Services: dropdown when service pages exist, plain link otherwise -->
       {hasServiceDropdown ? (
@@ -173,6 +189,20 @@ const servicesActive = pathname.startsWith('/services');
     aria-hidden="true"
   >
     <nav class="max-w-7xl mx-auto px-4 py-3 flex flex-col gap-1" aria-label="Mobile navigation">
+
+      <!-- Home -->
+      <a
+        href="/"
+        class={[
+          'px-3 py-2 rounded-md text-sm font-medium transition-colors',
+          pathname === '/'
+            ? 'text-[var(--rs-brand-text)] font-semibold bg-blue-50'
+            : 'text-[var(--color-text)] hover:text-[var(--rs-brand-text)] hover:bg-neutral-100',
+        ].join(' ')}
+        aria-current={pathname === '/' ? 'page' : undefined}
+      >
+        Home
+      </a>
 
       <!-- Services: expandable group when service pages exist, plain link otherwise -->
       {hasServiceDropdown ? (
