@@ -879,6 +879,31 @@ details[open] .rs-faq-a {
   font-size: inherit;
 }
 
+/* ── Key Takeaways callout — ul immediately after an H2 ─────────────────── */
+/* Targets the "Key Takeaways" / "Quick Answer" pattern from blog posts:
+   an unordered list that immediately follows an H2, visually distinguished
+   from regular prose lists so it reads as a summary callout box.           */
+.prose h2 + ul {
+  list-style: none;
+  padding: 1rem 1.25rem 1rem 1.5rem;
+  margin: 0 0 1.4em;
+  background: color-mix(in srgb, var(--rs-brand) 8%, transparent);
+  border-left: 3px solid var(--rs-brand);
+  border-radius: 0 var(--radius-md, 12px) var(--radius-md, 12px) 0;
+}
+.prose h2 + ul > li {
+  padding-left: 1.25rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--rs-text);
+}
+.prose h2 + ul > li::before {
+  background: var(--rs-brand-text);
+  top: 0.65em;
+  width: 5px;
+  height: 5px;
+}
+
 /* ── Images ─────────────────────────────────────────────────────────────── */
 .prose img {
   border-radius: var(--radius-md);

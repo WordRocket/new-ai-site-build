@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import PostLayout from '../../layouts/PostLayout.astro';
 import TrustBar from '../../components/sections/TrustBar.astro';
+import BlogSidebar from '../../components/BlogSidebar.astro';
 import siteConfig from '../../lib/site-config';
 import {
   getBlogPostSchema,
@@ -16,12 +17,12 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props;
-const { Content } = await post.render();
+const { Content, headings: astroHeadings } = await post.render();
 const d = post.data;
 
 // Reading time: ~200 wpm average
 const wordCount = (post.body ?? '').split(/\s+/).filter(Boolean).length;
-const readingTime = Math.max(1, Math.round(wordCount / 200));
+const readingTime = Math.max(1, Math.ceil(wordCount / 200));
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', {
@@ -44,28 +45,34 @@ const blogPostSchema = getBlogPostSchema({
   image: d.featuredImage ?? `${siteUrl}/favicon.svg`,
   url: postUrl,
 });
-
 const breadcrumbSchema = getBreadcrumbSchema([
   { name: 'Home', url: siteUrl },
   { name: 'Blog', url: `${siteUrl}/blog` },
   { name: d.title, url: postUrl },
 ]);
-
 const orgSchema = getOrganizationSchema({
   name: siteConfig.name,
   url: siteUrl,
   logo: `${siteUrl}/favicon.svg`,
   ...(siteConfig.description ? { description: siteConfig.description } : {}),
 });
-
 const hasFaq = d.faq && d.faq.length > 0;
 const faqSchema = hasFaq ? getFAQSchema(d.faq) : null;
-
-// schemaJsonld (string) takes priority — Railway writes pre-serialized JSON here.
-// schema_jsonld (unknown/object) is the older fallback.
-// If neither is present, fall back to auto-generated schemas.
 const autoSchemas: object[] = [blogPostSchema, breadcrumbSchema, orgSchema, ...(faqSchema ? [faqSchema] : [])];
 const schemas: object[] = d.schemaJsonld ? [] : (d.schema_jsonld ? [d.schema_jsonld as object] : autoSchemas);
+
+// H2 headings for TOC — Astro provides rendered headings with depth + slug
+const h2Headings = (astroHeadings ?? [])
+  .filter((h: { depth: number; text: string; slug: string }) => h.depth === 2)
+  .map((h: { depth: number; text: string; slug: string }) => ({ text: h.text, slug: h.slug }));
+
+// Related posts: other blog posts sorted by date desc, limit 3
+const allPosts = await getCollection('blog');
+const relatedPosts = allPosts
+  .filter((p) => p.slug !== post.slug)
+  .sort((a, b) => new Date(b.data.datePublished).getTime() - new Date(a.data.datePublished).getTime())
+  .slice(0, 3)
+  .map((p) => ({ slug: p.slug, title: p.data.title, datePublished: p.data.datePublished }));
 ---
 
 <PostLayout
@@ -114,22 +121,22 @@ const schemas: object[] = d.schemaJsonld ? [] : (d.schema_jsonld ? [d.schema_jso
       </div>
     </div>
 
-    <!-- Trust signals bar — useful context under every post hero -->
+    <!-- Trust signals bar -->
     <TrustBar />
 
-    {d.featuredImage && (
-      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 -mt-8 mb-2 relative z-10">
-        <div class="max-w-[740px] mx-auto rounded-[var(--radius-lg)] overflow-hidden aspect-video" style="box-shadow:var(--shadow-md);">
-          <img src={d.featuredImage} alt={d.featuredImageAlt ?? d.title} class="w-full h-full object-cover" loading="eager" decoding="async" />
-        </div>
-      </div>
-    )}
+    <!-- ─── Two-column body: article (left) + sidebar (right) ── -->
+    <div class="page-body-grid">
 
-    <article class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-      <div class="max-w-[740px] mx-auto">
+      <article class="page-body-article">
+
+        {d.featuredImage && (
+          <div class="rounded-[var(--radius-lg)] overflow-hidden aspect-video mb-8" style="box-shadow:var(--shadow-md);">
+            <img src={d.featuredImage} alt={d.featuredImageAlt ?? d.title} class="w-full h-full object-cover" loading="eager" decoding="async" />
+          </div>
+        )}
 
         <!-- Author block -->
-        <div class="flex items-start gap-4 p-5 rounded-[var(--radius-md)] mb-10" style="background:var(--color-neutral-50, #f9fafb); border:1px solid var(--rs-border);">
+        <div class="flex items-start gap-4 p-5 rounded-[var(--radius-md)] mb-10" style="background:var(--rs-surface-2); border:1px solid var(--rs-border);">
           <div class="flex-shrink-0 w-11 h-11 rounded-full flex items-center justify-center text-sm font-bold" style="background-color:var(--rs-brand); color:var(--rs-on-brand);">
             {d.author.charAt(0).toUpperCase()}
           </div>
@@ -159,7 +166,7 @@ const schemas: object[] = d.schemaJsonld ? [] : (d.schema_jsonld ? [d.schema_jso
           <div class="flex flex-wrap items-center gap-2 mt-10 pt-8" style="border-top:1px solid var(--rs-border);">
             <span class="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)] mr-1">Tags:</span>
             {d.tags.map((tag) => (
-              <span class="px-3 py-1 rounded-full text-xs font-medium text-[var(--color-text-muted)]" style="background:var(--rs-surface-2); border:1px solid var(--rs-border);">
+              <span class="px-3 py-1 rounded-full text-xs font-medium" style="background:color-mix(in srgb, var(--rs-brand) 10%, transparent); color:var(--rs-brand-text); border:1px solid color-mix(in srgb, var(--rs-brand) 20%, transparent);">
                 {tag}
               </span>
             ))}
@@ -185,7 +192,7 @@ const schemas: object[] = d.schemaJsonld ? [] : (d.schema_jsonld ? [d.schema_jso
         )}
 
         <!-- Author bio card -->
-        <div class="mt-14 p-6 rounded-[var(--radius-lg)] flex items-start gap-5" style="background:var(--color-neutral-50, #f9fafb); border:1px solid var(--rs-border);">
+        <div class="mt-14 p-6 rounded-[var(--radius-lg)] flex items-start gap-5" style="background:var(--rs-surface-2); border:1px solid var(--rs-border);">
           <div class="flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold" style="background-color:var(--rs-brand); color:var(--rs-on-brand);">
             {d.author.charAt(0).toUpperCase()}
           </div>
@@ -199,8 +206,21 @@ const schemas: object[] = d.schemaJsonld ? [] : (d.schema_jsonld ? [d.schema_jso
           </div>
         </div>
 
-      </div>
-    </article>
+      </article>
+
+      <!-- Sidebar — flows below article on mobile -->
+      <aside class="page-body-sidebar" aria-label="Article navigation and quick contact">
+        <BlogSidebar
+          currentSlug={post.slug}
+          readingTime={readingTime}
+          datePublished={d.datePublished}
+          tags={d.tags}
+          headings={h2Headings}
+          relatedPosts={relatedPosts}
+        />
+      </aside>
+
+    </div>
 
   </main>
 </PostLayout>
