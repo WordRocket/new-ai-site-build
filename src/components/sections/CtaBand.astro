@@ -101,32 +101,12 @@ const hasImage = ctaImage.length > 0;
   /* Dark scrim — solid enough for legibility against any photo */
   .cb__scrim {
     position: absolute; inset: 0; z-index: 1;
-    background: rgba(0, 0, 0, 0.60);
-  }
-
-  /* In image mode, force dark-skin text/button rules regardless of skin */
-  .cb[data-bg="image"] .cb__heading {
-    color: var(--rs-accent-contrast);
-  }
-  .cb[data-bg="image"] .cb__sub {
-    color: rgba(255, 255, 255, 0.72);
-  }
-  .cb[data-bg="image"] .cb__icon {
-    background: rgba(255,255,255,.12);
-    color: color-mix(in srgb, var(--rs-brand) 30%, white);
-  }
-  .cb[data-bg="image"] .cb__primary {
-    background: #ffffff;
-    color: oklch(from var(--rs-brand) clamp(0, l, 0.4) c h);
-    border-color: #ffffff;
-    box-shadow: 0 4px 14px rgba(0,0,0,.2);
-  }
-  .cb[data-bg="image"] .cb__ghost {
-    color: var(--rs-on-brand);
-    border-color: color-mix(in srgb, var(--rs-on-brand) 55%, transparent);
-  }
-  .cb[data-bg="image"] .cb__ghost:hover {
-    background: color-mix(in srgb, var(--rs-on-brand) 12%, transparent);
+    background: linear-gradient(
+      160deg,
+      rgba(0, 0, 0, 0.72) 0%,
+      rgba(0, 0, 0, 0.62) 60%,
+      rgba(0, 0, 0, 0.68) 100%
+    );
   }
 
   .cb__inner {
@@ -206,6 +186,37 @@ const hasImage = ctaImage.length > 0;
   .cb__ghost:focus-visible {
     outline: 3px solid var(--rs-accent);
     outline-offset: 3px;
+  }
+
+  /* ── Image mode overrides — declared LAST so source order beats equal-
+     specificity skin rules on both light and dark skins. The Astro scoped
+     attribute adds one attribute selector to every rule; [data-skin] rules
+     compiled form is [data-skin="dark"] [data-astro-cid] .cb__heading
+     (2 attrs + 1 class). The image-mode rules below are
+     .cb[data-bg="image"] [data-astro-cid] .cb__heading (1 attr + 2 classes),
+     equal specificity — source order (last wins) is what makes these win. ── */
+  .cb[data-bg="image"] .cb__icon {
+    background: rgba(255,255,255,.12);
+    color: color-mix(in srgb, var(--rs-brand) 30%, white);
+  }
+  .cb[data-bg="image"] .cb__heading {
+    color: #ffffff;
+  }
+  .cb[data-bg="image"] .cb__sub {
+    color: rgba(255, 255, 255, 0.82);
+  }
+  .cb[data-bg="image"] .cb__primary {
+    background: #ffffff;
+    color: oklch(from var(--rs-brand) clamp(0, l, 0.4) c h);
+    border-color: #ffffff;
+    box-shadow: 0 4px 14px rgba(0,0,0,.2);
+  }
+  .cb[data-bg="image"] .cb__ghost {
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.55);
+  }
+  .cb[data-bg="image"] .cb__ghost:hover {
+    background: rgba(255, 255, 255, 0.12);
   }
 
   @media (max-width: 640px) { .cb { padding: 64px 1rem; } }
