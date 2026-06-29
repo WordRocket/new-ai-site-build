@@ -144,8 +144,8 @@ const whyUs = [
 
       <!-- Our Story — Option B: single-column, image between heading and prose -->
       <section>
-        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--color-text)] mb-6">Our Story</h2>
-        <div class="flex flex-col gap-6">
+        <div class="max-w-[740px] mx-auto flex flex-col gap-6">
+          <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--color-text)]">Our Story</h2>
           <div class="rounded-[var(--radius-lg)] overflow-hidden" style="max-width:640px;">
             <SmartImage
               src={ap?.heroImage ?? ''}
@@ -154,9 +154,9 @@ const whyUs = [
               loading="lazy"
             />
           </div>
-          <div class="flex flex-col gap-4 text-[var(--color-text-muted)] leading-relaxed max-w-3xl">
+          <div class="flex flex-col gap-4 text-[var(--color-text-muted)] leading-relaxed">
             {AboutContent ? (
-              <div class="prose prose-neutral max-w-none">
+              <div class="prose prose-neutral prose-lg max-w-none">
                 <AboutContent />
               </div>
             ) : (
