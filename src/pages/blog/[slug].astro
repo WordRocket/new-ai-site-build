@@ -2,7 +2,6 @@
 import { getCollection } from 'astro:content';
 import PostLayout from '../../layouts/PostLayout.astro';
 import TrustBar from '../../components/sections/TrustBar.astro';
-import CtaBand from '../../components/sections/CtaBand.astro';
 import siteConfig from '../../lib/site-config';
 import {
   getBlogPostSchema,
@@ -202,9 +201,6 @@ const schemas: object[] = d.schemaJsonld ? [] : (d.schema_jsonld ? [d.schema_jso
 
       </div>
     </article>
-
-    <!-- CTA band (full-width, preset-driven) -->
-    <CtaBand />
 
   </main>
 </PostLayout>
