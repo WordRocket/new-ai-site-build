@@ -73,8 +73,8 @@ const sidebarLocations = allLocations.map(l => ({
 
     <!-- ─── Hero band ──────────────────────────────────────────────────── -->
     <div class="page-hero">
-      <div class="relative z-10 max-w-[1200px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-14">
-        <nav aria-label="Breadcrumb" class="mb-5">
+      <div class="relative z-10 max-w-[1200px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <nav aria-label="Breadcrumb" class="mb-2">
           <ol class="flex items-center gap-2 text-sm flex-wrap" style="color:rgba(255,255,255,0.6);">
             <li><a href="/" class="hover:text-white transition-colors">Home</a></li>
             <li aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></li>
@@ -83,8 +83,8 @@ const sidebarLocations = allLocations.map(l => ({
             <li class="text-white font-medium">{d.title}</li>
           </ol>
         </nav>
-        <h1 class="text-white font-extrabold tracking-tight mb-5">{d.title}</h1>
-        <p class="text-lg mb-8 max-w-xl" style="color:rgba(255,255,255,0.75);">{d.description}</p>
+        <h1 class="text-white font-extrabold tracking-tight mb-2">{d.title}</h1>
+        <p class="text-lg mb-4 max-w-xl" style="color:rgba(255,255,255,0.75);">{d.description}</p>
         {d.phone && (
           <a href={`tel:${(d.phone as string).replace(/\D/g,'')}`} class="btn-primary inline-flex items-center gap-2 px-7 py-3 rounded-[var(--radius-md)] text-base font-semibold text-white">
             Call for a Free Quote
