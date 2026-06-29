@@ -262,7 +262,7 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 4px;
-  background: linear-gradient(90deg, var(--color-brand), var(--color-brand-light));
+  background: linear-gradient(90deg, var(--rs-brand), color-mix(in srgb, var(--rs-brand) 80%, #fff));
   transition: height 0.3s cubic-bezier(0.4,0,0.2,1);
 }
 .card-hover:hover { transform: translateY(-4px); border-color: color-mix(in srgb, var(--rs-brand) 30%, transparent) !important; box-shadow: var(--shadow-md) !important; }
@@ -270,18 +270,18 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
 
 /* ── Primary Button ────────────────────────────────────────────────────── */
 .btn-primary {
-  background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-light) 100%);
+  background: linear-gradient(135deg, var(--rs-brand) 0%, color-mix(in srgb, var(--rs-brand) 80%, #fff) 100%);
   color: var(--rs-on-brand);
-  box-shadow: 0 4px 15px rgba(37,99,235,0.3);
+  box-shadow: 0 4px 15px color-mix(in srgb, var(--rs-brand) 30%, transparent);
   transition: all 0.2s ease;
   min-height: 48px;
   display: inline-flex;
   align-items: center;
 }
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(37,99,235,0.4); opacity: 1 !important; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px color-mix(in srgb, var(--rs-brand) 40%, transparent); opacity: 1 !important; }
 
 .btn-secondary {
-  border: 2px solid var(--color-brand);
+  border: 2px solid var(--rs-brand);
   color: var(--rs-brand-text);
   background: transparent;
   transition: all 0.2s ease;
@@ -289,7 +289,7 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
   display: inline-flex;
   align-items: center;
 }
-.btn-secondary:hover { background: var(--color-brand); color: var(--rs-on-brand); }
+.btn-secondary:hover { background: var(--rs-brand); color: var(--rs-on-brand); }
 
 /* ── Trust Bar Shimmer ─────────────────────────────────────────────────── */
 @keyframes shimmer { 0%,100% { opacity:0.6; } 50% { opacity:1; } }
@@ -301,11 +301,11 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
 .trust-icon:nth-child(5) { animation-delay:1.2s; }
 
 /* ── Footer gradient line ──────────────────────────────────────────────── */
-.footer-gradient-line { height: 1px; background: linear-gradient(90deg, transparent, var(--color-brand), transparent); }
+.footer-gradient-line { height: 1px; background: linear-gradient(90deg, transparent, var(--rs-brand), transparent); }
 
 /* ── Social icon hover ─────────────────────────────────────────────────── */
 .social-icon-link { transition: all 0.2s ease; }
-.social-icon-link:hover { background-color: var(--color-brand) !important; color: var(--rs-on-brand) !important; }
+.social-icon-link:hover { background-color: var(--rs-brand) !important; color: var(--rs-on-brand) !important; }
 
 /* ── Nav ───────────────────────────────────────────────────────────────── */
 #site-nav { top: 36px; }
@@ -343,7 +343,7 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
 
 .hero-right {
   position: relative;
-  background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-dark) 100%);
+  background: linear-gradient(135deg, var(--rs-brand) 0%, color-mix(in srgb, var(--rs-brand) 70%, #0f172a) 100%);
   overflow: hidden;
 }
 .hero-right-pattern {

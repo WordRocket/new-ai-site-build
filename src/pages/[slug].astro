@@ -195,8 +195,8 @@ const sidebarLocations = allLocations.map(l => ({
                 { label: 'Transparent reporting & communication' },
                 { label: 'No long-term contracts required' },
               ].map((point) => (
-                <div class="flex items-start gap-3 p-4 rounded-[var(--radius-md)]" style="background:var(--color-neutral-50,#f9fafb); border:1px solid #e4e4e7;">
-                  <span class="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold text-white" style="background-color:var(--color-brand);" aria-hidden="true">✓</span>
+                <div class="flex items-start gap-3 p-4 rounded-[var(--radius-md)]" style="background:var(--rs-surface-2); border:1px solid var(--rs-border);">
+                  <span class="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold" style="background-color:var(--rs-brand); color:var(--rs-on-brand);" aria-hidden="true">✓</span>
                   <span class="text-sm text-[var(--color-text)] font-medium">{point.label}</span>
                 </div>
               ))}

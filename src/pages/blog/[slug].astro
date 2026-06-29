@@ -131,7 +131,7 @@ const schemas: object[] = d.schemaJsonld ? [] : (d.schema_jsonld ? [d.schema_jso
 
         <!-- Author block -->
         <div class="flex items-start gap-4 p-5 rounded-[var(--radius-md)] mb-10" style="background:var(--color-neutral-50, #f9fafb); border:1px solid var(--rs-border);">
-          <div class="flex-shrink-0 w-11 h-11 rounded-full flex items-center justify-center text-white text-sm font-bold" style="background-color:var(--color-brand);">
+          <div class="flex-shrink-0 w-11 h-11 rounded-full flex items-center justify-center text-sm font-bold" style="background-color:var(--rs-brand); color:var(--rs-on-brand);">
             {d.author.charAt(0).toUpperCase()}
           </div>
           <div class="flex flex-col gap-1 min-w-0">
@@ -186,8 +186,8 @@ const schemas: object[] = d.schemaJsonld ? [] : (d.schema_jsonld ? [d.schema_jso
         )}
 
         <!-- Author bio card -->
-        <div class="mt-14 p-6 rounded-[var(--radius-lg)] flex items-start gap-5" style="background:var(--color-neutral-50, #f9fafb); border:1px solid #e4e4e7;">
-          <div class="flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center text-white text-xl font-bold" style="background-color:var(--color-brand);">
+        <div class="mt-14 p-6 rounded-[var(--radius-lg)] flex items-start gap-5" style="background:var(--color-neutral-50, #f9fafb); border:1px solid var(--rs-border);">
+          <div class="flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold" style="background-color:var(--rs-brand); color:var(--rs-on-brand);">
             {d.author.charAt(0).toUpperCase()}
           </div>
           <div class="flex flex-col gap-1">
