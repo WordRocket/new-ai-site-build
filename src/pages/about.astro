@@ -142,38 +142,37 @@ const whyUs = [
         </section>
       )}
 
-      <!-- Our Story -->
+      <!-- Our Story — Option B: single-column, image between heading and prose -->
       <section>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div>
-            <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--color-text)] mb-4">Our Story</h2>
-            <div class="flex flex-col gap-4 text-[var(--color-text-muted)] leading-relaxed">
-              {AboutContent ? (
-                <div class="prose prose-neutral max-w-none">
-                  <AboutContent />
-                </div>
-              ) : (
-                <>
-                  <p>
-                    {siteConfig.name} is a locally owned {nicheLabel} business serving {siteConfig.city} and the surrounding area. We are committed to providing quality service with honest pricing and professional results.
-                  </p>
-                  <p>
-                    Our team takes pride in every job we complete — from the smallest task to the largest project. We treat every customer's home or business with the respect and care it deserves.
-                  </p>
-                  <p>
-                    When you choose {siteConfig.name}, you're choosing a team that stands behind its work and is dedicated to your complete satisfaction.
-                  </p>
-                </>
-              )}
-            </div>
+        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--color-text)] mb-6">Our Story</h2>
+        <div class="flex flex-col gap-6">
+          <div class="rounded-[var(--radius-lg)] overflow-hidden" style="max-width:640px;">
+            <SmartImage
+              src={ap?.heroImage ?? ''}
+              alt={`${siteConfig.name} team`}
+              aspect="16/9"
+              loading="lazy"
+            />
           </div>
-          <!-- Story image: bound from page record, falls back to SmartImage placeholder -->
-          <SmartImage
-            src={ap?.heroImage ?? ''}
-            alt={`${siteConfig.name} team`}
-            aspect="16/9"
-            loading="lazy"
-          />
+          <div class="flex flex-col gap-4 text-[var(--color-text-muted)] leading-relaxed max-w-3xl">
+            {AboutContent ? (
+              <div class="prose prose-neutral max-w-none">
+                <AboutContent />
+              </div>
+            ) : (
+              <>
+                <p>
+                  {siteConfig.name} is a locally owned {nicheLabel} business serving {siteConfig.city} and the surrounding area. We are committed to providing quality service with honest pricing and professional results.
+                </p>
+                <p>
+                  Our team takes pride in every job we complete — from the smallest task to the largest project. We treat every customer's home or business with the respect and care it deserves.
+                </p>
+                <p>
+                  When you choose {siteConfig.name}, you're choosing a team that stands behind its work and is dedicated to your complete satisfaction.
+                </p>
+              </>
+            )}
+          </div>
         </div>
       </section>
 
