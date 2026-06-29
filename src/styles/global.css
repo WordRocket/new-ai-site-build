@@ -125,6 +125,13 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
 [data-skin="dark"] .bg-white {
   background-color: var(--rs-surface) !important;
 }
+/* Mobile nav: active highlight and hover states use Tailwind hardcoded classes */
+[data-skin="dark"] .bg-blue-50 {
+  background-color: color-mix(in srgb, var(--rs-brand) 12%, transparent) !important;
+}
+[data-skin="dark"] .hover\:bg-neutral-100:hover {
+  background-color: var(--rs-surface-2) !important;
+}
 /* Nav: default and scrolled states */
 [data-skin="dark"] #site-nav {
   background-color: var(--rs-surface) !important;

@@ -78,7 +78,7 @@ const btnHref = interpolate(band.buttonHref, {
   }
   [data-skin="dark"] .cb__icon {
     background: rgba(255,255,255,.12);
-    color: #bfdbfe;
+    color: color-mix(in srgb, var(--rs-brand) 30%, white);
   }
 
   .cb__heading {
@@ -86,7 +86,7 @@ const btnHref = interpolate(band.buttonHref, {
     font-weight: 800; letter-spacing: -.025em; line-height: 1.15; margin: 0;
     color: var(--rs-text);
   }
-  [data-skin="dark"] .cb__heading { color: #ffffff; }
+  [data-skin="dark"] .cb__heading { color: var(--rs-accent-contrast); }
 
   .cb__sub {
     font-size: 1.0625rem; line-height: 1.6; margin: 0; max-width: 480px;
