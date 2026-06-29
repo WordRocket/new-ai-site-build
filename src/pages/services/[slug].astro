@@ -10,6 +10,7 @@ import FeatureRow from '../../components/sections/FeatureRow.astro';
 import Testimonials from '../../components/sections/Testimonials.astro';
 import CtaBand from '../../components/sections/CtaBand.astro';
 import siteConfig from '../../lib/site-config';
+import ReviewBanner from '../../components/ReviewBanner.astro';
 import {
   getServiceSchema,
   getFAQSchema,
@@ -51,6 +52,23 @@ const hasFaq = d.faq && d.faq.length > 0;
 const faqSchema = hasFaq ? getFAQSchema(d.faq) : null;
 const schemas = [serviceSchema, breadcrumbSchema, orgSchema, ...(faqSchema ? [faqSchema] : [])];
 const testimonials = d.testimonials ?? (siteConfig as any).testimonials ?? [];
+
+// Resolve single-testimonial fallback (mirrors Testimonials.astro logic)
+const rawTestimonials = (() => {
+  if (testimonials.length > 0) return testimonials;
+  const text = (siteConfig as any).testimonial_text as string | undefined;
+  if (!text?.trim()) return [];
+  return [{
+    quote: text,
+    name: ((siteConfig as any).testimonial_author as string) ?? 'Happy Customer',
+    role: ((siteConfig as any).testimonial_neighborhood as string) ?? siteConfig.city,
+  }];
+})().filter((t: any) => t.quote?.trim());
+
+// Deterministic selection: sum of slug char codes mod array length
+const reviewTestimonial = rawTestimonials.length > 0
+  ? rawTestimonials[service.slug.split('').reduce((acc: number, c: string) => acc + c.charCodeAt(0), 0) % rawTestimonials.length]
+  : null;
 
 // Sidebar data
 const allServices  = await getCollection('services').catch(() => []);
@@ -129,6 +147,15 @@ const sidebarLocations = allLocations.map(l => ({
               })}
             </div>
           </section>
+        )}
+
+        <!-- Customer review — shown above FAQ when testimonials exist -->
+        {reviewTestimonial && (
+          <ReviewBanner
+            quote={reviewTestimonial.quote}
+            author={reviewTestimonial.name}
+            location={reviewTestimonial.role}
+          />
         )}
 
         <!-- FAQ accordion -->
