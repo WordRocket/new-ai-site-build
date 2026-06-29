@@ -112,7 +112,7 @@ const btnHref = interpolate(band.buttonHref, {
   }
   [data-skin="dark"] .cb__primary {
     background: #ffffff;
-    color: var(--rs-brand);
+    color: oklch(from var(--rs-brand) clamp(0, l, 0.4) c h);
     border-color: #ffffff;
     box-shadow: 0 4px 14px rgba(0,0,0,.2);
   }
@@ -127,11 +127,11 @@ const btnHref = interpolate(band.buttonHref, {
     background: color-mix(in srgb, var(--rs-accent) 8%, transparent);
   }
   [data-skin="dark"] .cb__ghost {
-    color: rgba(255,255,255,.9);
-    border-color: rgba(255,255,255,.4);
+    color: var(--rs-on-brand);
+    border-color: color-mix(in srgb, var(--rs-on-brand) 55%, transparent);
   }
   [data-skin="dark"] .cb__ghost:hover {
-    background: rgba(255,255,255,.1);
+    background: color-mix(in srgb, var(--rs-on-brand) 12%, transparent);
   }
 
   .cb__primary:focus-visible,

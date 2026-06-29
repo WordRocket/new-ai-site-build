@@ -67,7 +67,7 @@ const formEndpoint: string = ((siteConfig as any).formEndpoint ?? '').trim();
     <nav aria-label="Breadcrumb" class="border-b" style="background:var(--rs-surface); border-color:var(--rs-border);">
       <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-3">
         <ol class="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
-          <li><a href="/" class="hover:text-[var(--color-brand)] transition-colors">Home</a></li>
+          <li><a href="/" class="hover:text-[var(--rs-brand-text)] transition-colors">Home</a></li>
           <li aria-hidden="true">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
           </li>
@@ -112,7 +112,7 @@ const formEndpoint: string = ((siteConfig as any).formEndpoint ?? '').trim();
 
             <address class="not-italic flex flex-col gap-4 text-sm text-[var(--color-text-muted)]">
               <div class="flex items-start gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 flex-shrink-0" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--rs-brand-text)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 flex-shrink-0" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
                 <div>
                   <p class="font-medium text-[var(--color-text)]">Office Address</p>
                   <p>{siteConfig.address}</p>
@@ -120,12 +120,12 @@ const formEndpoint: string = ((siteConfig as any).formEndpoint ?? '').trim();
                 </div>
               </div>
               <div class="flex items-center gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.5 12.72 19.79 19.79 0 0 1 1.08 4.1 2 2 0 0 1 3.05 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                <a href={`tel:${siteConfig.phone.replace(/\D/g, '')}`} class="hover:text-[var(--color-brand)] transition-colors">{siteConfig.phone}</a>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--rs-brand-text)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.5 12.72 19.79 19.79 0 0 1 1.08 4.1 2 2 0 0 1 3.05 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                <a href={`tel:${siteConfig.phone.replace(/\D/g, '')}`} class="hover:text-[var(--rs-brand-text)] transition-colors">{siteConfig.phone}</a>
               </div>
               <div class="flex items-center gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-                <a href={`mailto:${siteConfig.email}`} class="hover:text-[var(--color-brand)] transition-colors">{siteConfig.email}</a>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--rs-brand-text)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                <a href={`mailto:${siteConfig.email}`} class="hover:text-[var(--rs-brand-text)] transition-colors">{siteConfig.email}</a>
               </div>
             </address>
 
@@ -149,8 +149,8 @@ const formEndpoint: string = ((siteConfig as any).formEndpoint ?? '').trim();
               href={siteConfig.gbpUrl}
               target="_blank"
               rel="noopener noreferrer"
-              class="rounded-[var(--radius-lg)] overflow-hidden flex items-center justify-center gap-2 text-[var(--color-brand)] font-medium text-sm hover:opacity-80 transition-opacity"
-              style="background:var(--rs-surface-2); border:1px solid var(--rs-border); height:200px;"
+              class="rounded-[var(--radius-lg)] overflow-hidden flex items-center justify-center gap-2 font-medium text-sm hover:opacity-80 transition-opacity"
+              style="background:var(--rs-surface-2); border:1px solid var(--rs-border); height:200px; color:var(--rs-brand-text);"
               aria-label="View on Google Maps"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>

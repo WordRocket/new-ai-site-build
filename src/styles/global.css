@@ -839,14 +839,14 @@ details[open] .rs-faq-a {
 /* ── Horizontal rule ────────────────────────────────────────────────────── */
 .prose hr {
   border: none;
-  border-top: 1px solid #e4e4e7;
+  border-top: 1px solid var(--rs-border);
   margin: 2.5em 0;
 }
 
 /* ── Code ───────────────────────────────────────────────────────────────── */
 .prose code {
-  background: rgba(37,99,235,0.07);
-  color: var(--color-brand-dark);
+  background: color-mix(in srgb, var(--rs-brand) 7%, var(--rs-surface));
+  color: var(--rs-brand-text);
   padding: 0.15em 0.4em;
   border-radius: 4px;
   font-size: 0.875em;
