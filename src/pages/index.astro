@@ -6,6 +6,8 @@ import { getPreset, interpolate } from '../lib/business-presets';
 import Icon from '../components/Icon.astro';
 import { iconSvg, getServiceIcon } from '../lib/icons';
 import FeatureRow from '../components/sections/FeatureRow.astro';
+import FeatureGrid from '../components/sections/FeatureGrid.astro';
+import ProcessTimeline from '../components/sections/ProcessTimeline.astro';
 import { getFAQSchema } from '../lib/schema';
 import LeadForm from '../components/LeadForm.astro';
 import ServiceCard from '../components/ServiceCard.astro';
@@ -426,7 +428,7 @@ const heroServiceOptions = serviceEntries.length > 0
 />
 
 <FeatureRow
-  eyebrow="How It Works"
+  eyebrow={`The ${siteConfig.name} Difference`}
   heading={`Professional ${nicheLabel.charAt(0).toUpperCase() + nicheLabel.slice(1)} You Can Count On`}
   body={`When you choose ${siteConfig.name}, you get more than a service — you get a team committed to exceptional results. From the first call to the final job, we're with you every step of the way.`}
   checks={features.slice(1).map((f) => ({ text: f.title }))}
@@ -438,6 +440,36 @@ const heroServiceOptions = serviceEntries.length > 0
   statValue={siteConfig.yearsInBusiness ? `${siteConfig.yearsInBusiness}+` : undefined}
   statLabel={siteConfig.yearsInBusiness ? 'Years Experience' : undefined}
   reverse
+/>
+
+<!-- wave: neutral → neutral (section separator) -->
+<div class="wave-divider" style="background:var(--color-neutral-50);" aria-hidden="true">
+  <svg viewBox="0 0 1440 48" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,24 C360,0 1080,48 1440,24 L1440,48 L0,48 Z" fill="var(--color-neutral-50)"/></svg>
+</div>
+
+<!-- ─── WHAT YOU GET — feature card grid ─────────────────────────────── -->
+<FeatureGrid
+  eyebrow="What You Get"
+  heading={`Every Job, Every Time`}
+  items={[
+    { icon: 'clock',         title: 'Same-Day Service Available',   desc: 'Urgent situations happen — we respond fast and show up when it matters most.' },
+    { icon: 'shield-check',  title: 'Licensed & Fully Insured',     desc: 'Full coverage for your complete peace of mind. We stand behind every job we do.' },
+    { icon: 'dollar-sign',   title: 'Upfront Transparent Pricing',  desc: 'Clear quotes before work begins — no hidden costs or surprises, ever.' },
+    { icon: 'star',          title: 'Satisfaction Guaranteed',       desc: "We don't consider the job done until you're completely happy with the results." },
+    { icon: 'users',         title: 'Experienced Local Team',        desc: `Skilled professionals who know ${siteConfig.city} and the unique needs of this community.` },
+    { icon: 'file-text',     title: 'Free Estimates',                desc: 'Honest, obligation-free quotes so you can make informed decisions without pressure.' },
+  ]}
+/>
+
+<!-- ─── HOW IT WORKS — process timeline ─────────────────────────────── -->
+<ProcessTimeline
+  steps={[
+    { title: 'Book & Schedule',      desc: 'Reach us by phone or the contact form. We confirm your appointment quickly and work around your schedule.' },
+    { title: 'On-Site Assessment',   desc: 'Our team arrives on time, evaluates the job, and walks you through exactly what needs to be done and why.' },
+    { title: 'Service Delivery',     desc: 'We carry out the work with care, using quality materials and proven techniques — no shortcuts, no guesswork.' },
+    { title: 'Quality Check',        desc: 'Before we pack up, we inspect the finished work against our standards and address anything that needs attention.' },
+    { title: 'Final Walkthrough',    desc: "We walk you through the completed job so you're fully satisfied and know exactly what was done." },
+  ]}
 />
 
 <!-- wave: neutral → neutral (section separator) -->
