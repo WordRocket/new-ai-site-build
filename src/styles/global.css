@@ -100,9 +100,7 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
   --rs-brand-subtle: color-mix(in srgb, var(--rs-brand) 12%, var(--rs-surface));
   --rs-brand-ring: color-mix(in srgb, var(--rs-brand) 40%, transparent);
   --rs-brand-text: color-mix(in srgb, var(--rs-brand) 88%, #000);
-  /* Hero banner: brand hue, lightness clamped dark — readable for any brand */
-  --rs-hero-from: oklch(from var(--rs-brand) 0.20 c h);
-  --rs-hero-to:   oklch(from var(--rs-brand) 0.26 c h);
+  /* Hero banner tokens no longer needed — banner uses brand directly + scrim */
   --rs-grad-from: var(--rs-brand);
   --rs-grad-to: color-mix(in oklab, var(--rs-brand) 55%, #ffffff);
   --rs-glass-bg: rgba(255,255,255,.7); --rs-glow: transparent;
@@ -595,7 +593,7 @@ details[open] .rs-faq-a {
 
 /* ── Page hero (inner pages) ───────────────────────────────────────────── */
 .page-hero {
-  background: linear-gradient(135deg, var(--rs-hero-from) 0%, var(--rs-hero-to) 100%);
+  background: var(--rs-brand);
   min-height: 28vh;
   display: flex;
   align-items: center;
@@ -604,6 +602,7 @@ details[open] .rs-faq-a {
 }
 .page-hero h1, .page-hero h2, .page-hero h3 { color: white; }
 .page-hero h1 { font-size: clamp(1.75rem, 3.5vw, 2.75rem); }
+/* Subtle grid pattern — sits below scrim */
 .page-hero::before {
   content: '';
   position: absolute; inset: 0;
@@ -611,7 +610,17 @@ details[open] .rs-faq-a {
     linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
   background-size: 40px 40px;
+  z-index: 0;
 }
+/* Dark scrim — guarantees white text legibility for any brand color */
+.page-hero::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: rgba(0, 0, 0, 0.42);
+  z-index: 1;
+}
+/* Hero content must sit above both pattern and scrim */
+.page-hero > * { position: relative; z-index: 2; }
 
 /* ── Wave divider ──────────────────────────────────────────────────────── */
 .wave-divider { display: block; width: 100%; overflow: hidden; line-height: 0; margin-bottom: -1px; }
