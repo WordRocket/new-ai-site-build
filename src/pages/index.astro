@@ -503,12 +503,12 @@ const heroServiceOptions = serviceEntries.length > 0
 <!-- ─── CTA / CONTACT SECTION ────────────────────────────────────────── -->
 <section class="section-pad" style="background:var(--rs-bg);" aria-labelledby="cta-heading">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="u-reveal rounded-[var(--radius-lg)] overflow-hidden grid grid-cols-1 lg:grid-cols-2" style="background:var(--color-dark-navy); box-shadow:var(--shadow-md);">
+    <div class="u-reveal hp-cta-card rounded-[var(--radius-lg)] overflow-hidden grid grid-cols-1 lg:grid-cols-2" style="box-shadow:var(--shadow-md);">
 
       <!-- Left: CTA text -->
       <div class="p-10 sm:p-14 flex flex-col justify-center gap-6">
-        <h2 id="cta-heading" class="text-white reveal">Ready to Book? Let's Talk.</h2>
-        <p class="text-lg leading-relaxed" style="color:#94a3b8;">
+        <h2 id="cta-heading" class="hp-cta-heading">Ready to Book? Let's Talk.</h2>
+        <p class="text-lg leading-relaxed hp-cta-sub">
           Contact {siteConfig.name} today for a free estimate. {preset.contactSubtext}
         </p>
         {siteConfig.phone
@@ -529,7 +529,7 @@ const heroServiceOptions = serviceEntries.length > 0
       </div>
 
       <!-- Right: contact summary card -->
-      <div class="p-10 sm:p-14 flex items-center justify-center" style="background:#0a101e;">
+      <div class="hp-cta-card__right p-10 sm:p-14 flex items-center justify-center">
         <div class="flex flex-col gap-5 w-full max-w-xs">
           {siteConfig.address && (
             <div class="flex items-start gap-3">
@@ -537,8 +537,8 @@ const heroServiceOptions = serviceEntries.length > 0
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--rs-accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
               </span>
               <div>
-                <p class="text-xs font-semibold uppercase tracking-wider mb-0.5" style="color:#475569;">Address</p>
-                <p class="text-sm text-white">{siteConfig.address}, {siteConfig.city}, {siteConfig.state}</p>
+                <p class="text-xs font-semibold uppercase tracking-wider mb-0.5 hp-cta-label">Address</p>
+                <p class="text-sm hp-cta-value">{siteConfig.address}, {siteConfig.city}, {siteConfig.state}</p>
               </div>
             </div>
           )}
@@ -548,8 +548,8 @@ const heroServiceOptions = serviceEntries.length > 0
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--rs-accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.36a2 2 0 0 1 1.99-2.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.06 6.06l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
               </span>
               <div>
-                <p class="text-xs font-semibold uppercase tracking-wider mb-0.5" style="color:#475569;">Phone</p>
-                <a href={`tel:${phoneDigits}`} class="text-sm text-white hover:text-[var(--rs-accent)] transition-colors">{siteConfig.phone}</a>
+                <p class="text-xs font-semibold uppercase tracking-wider mb-0.5 hp-cta-label">Phone</p>
+                <a href={`tel:${phoneDigits}`} class="text-sm hp-cta-value hover:text-[var(--rs-accent)] transition-colors">{siteConfig.phone}</a>
               </div>
             </div>
           )}
@@ -559,8 +559,8 @@ const heroServiceOptions = serviceEntries.length > 0
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--rs-accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
               </span>
               <div>
-                <p class="text-xs font-semibold uppercase tracking-wider mb-0.5" style="color:#475569;">Email</p>
-                <a href={`mailto:${siteConfig.email}`} class="text-sm text-white hover:text-[var(--rs-accent)] transition-colors">{siteConfig.email}</a>
+                <p class="text-xs font-semibold uppercase tracking-wider mb-0.5 hp-cta-label">Email</p>
+                <a href={`mailto:${siteConfig.email}`} class="text-sm hp-cta-value hover:text-[var(--rs-accent)] transition-colors">{siteConfig.email}</a>
               </div>
             </div>
           )}
@@ -778,6 +778,23 @@ const heroServiceOptions = serviceEntries.length > 0
     line-height: 1.2;
     color: var(--rs-text-muted, var(--color-text-muted));
   }
+
+  /* ── Homepage CTA card — skin-reactive ───────────────────────────────── */
+  /* Dark skin (default treatment — matches original) */
+  .hp-cta-card           { background: var(--color-dark-navy); }
+  .hp-cta-card__right    { background: #0a101e; }
+  .hp-cta-heading        { color: #ffffff; }
+  .hp-cta-sub            { color: #94a3b8; }
+  .hp-cta-label          { color: #475569; }
+  .hp-cta-value          { color: #ffffff; }
+
+  /* Light skin: flip to neutral surface with dark text */
+  [data-skin="light"] .hp-cta-card        { background: var(--rs-surface-2); }
+  [data-skin="light"] .hp-cta-card__right { background: var(--rs-surface); }
+  [data-skin="light"] .hp-cta-heading     { color: var(--rs-text); }
+  [data-skin="light"] .hp-cta-sub         { color: var(--rs-text-muted); }
+  [data-skin="light"] .hp-cta-label       { color: var(--rs-text-muted); }
+  [data-skin="light"] .hp-cta-value       { color: var(--rs-text); }
 </style>
 
 <script>
