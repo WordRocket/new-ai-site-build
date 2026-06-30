@@ -2,26 +2,30 @@
 /**
  * Reusable background-image layer for sections.
  * Usage:
- *   <SectionBgImage src={imageUrl} scrim="heavy" />             // FAQ: texture mode
- *   <SectionBgImage src={imageUrl} scrim="branded" />            // CTA: photographic mode
- *   <SectionBgImage src={imageUrl} scrim="heavy" hideOnLight />  // suppress on light skin
+ *   <SectionBgImage src={imageUrl} scrim="heavy" />            // FAQ dark: moody texture
+ *   <SectionBgImage src={imageUrl} scrim="branded" />           // CTA: photographic mode
+ *   <SectionBgImage src={imageUrl} scrim="heavy" lightScrim />  // FAQ light: white overlay
+ *   <SectionBgImage src={imageUrl} scrim="heavy" hideOnLight /> // hidden on light skin
  *
  * The parent section must have: position:relative; overflow:hidden;
  * Content inside the section must have: position:relative; z-index:2;
  */
 interface Props {
   src: string;
-  /** 'heavy'   = strong dark scrim (FAQ: ambient texture, not a visible photo)
-   *  'branded' = lighter dark + brand-tinted gradient (CTA: photographic feel) */
+  /** 'heavy'   = strong dark scrim (dark skin FAQ / texture)
+   *  'branded' = lighter dark + brand-tinted gradient (CTA) */
   scrim?: 'heavy' | 'branded';
-  /** When true, the entire component is hidden on [data-skin="light"] pages */
+  /** When true, on light-skin pages the scrim switches to a soft white overlay
+   *  so the photo shows through gently rather than being fully obscured. */
+  lightScrim?: boolean;
+  /** When true, the entire component is hidden on light-skin pages. */
   hideOnLight?: boolean;
 }
 
-const { src, scrim = 'heavy', hideOnLight = false } = Astro.props;
+const { src, scrim = 'heavy', lightScrim = false, hideOnLight = false } = Astro.props;
 ---
 
-<div class:list={['sbg', { 'sbg--hide-light': hideOnLight }]} aria-hidden="true">
+<div class:list={['sbg', { 'sbg--hide-light': hideOnLight, 'sbg--light-scrim': lightScrim }]} aria-hidden="true">
   <img
     class="sbg__img"
     src={src}
@@ -53,8 +57,7 @@ const { src, scrim = 'heavy', hideOnLight = false } = Astro.props;
     display: block;
   }
 
-  /* Heavy scrim — FAQ texture mode.
-     Bright test photos should still read as dark moody texture, not a photo. */
+  /* Heavy scrim — dark skin FAQ texture mode */
   .sbg__scrim--heavy {
     position: absolute;
     inset: 0;
@@ -67,10 +70,7 @@ const { src, scrim = 'heavy', hideOnLight = false } = Astro.props;
       );
   }
 
-  /* Branded scrim — CTA photographic mode.
-     Left: moderate dark scrim (image has presence, text is legible).
-     Right: heavier dark + brand tint (reads as distinct info panel zone).
-     Smooth left-to-right gradient blend — no hard seam. */
+  /* Branded scrim — CTA photographic mode */
   .sbg__scrim--branded {
     position: absolute;
     inset: 0;
@@ -84,9 +84,13 @@ const { src, scrim = 'heavy', hideOnLight = false } = Astro.props;
       );
   }
 
-  /* hideOnLight prop: suppress the entire component on light-skin pages.
-     Uses :global so the [data-skin] selector on <html> is reachable from
-     within this component's scoped style block. */
+  /* lightScrim: on light-skin pages swap heavy dark scrim for a soft white overlay
+     so the photo bleeds through as subtle background texture, not a full backdrop. */
+  :global([data-skin="light"]) .sbg--light-scrim .sbg__scrim {
+    background: rgba(245, 249, 255, 0.82) !important;
+  }
+
+  /* hideOnLight: suppress the entire component on light-skin pages */
   :global([data-skin="light"]) .sbg--hide-light {
     display: none;
   }
