@@ -518,20 +518,22 @@ const heroServiceOptions = serviceEntries.length > 0
   </section>
 )}
 
-<!-- wave: neutral → dark -->
-<div class="wave-divider" style="background:var(--color-neutral-50);" aria-hidden="true">
+<!-- wave: neutral → dark (hidden on light skin — FAQ becomes light too) -->
+<div class="wave-divider faq-wave-top" aria-hidden="true">
   <svg viewBox="0 0 1440 48" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,24 C360,48 1080,0 1440,24 L1440,48 L0,48 Z" fill="var(--color-dark-navy)"/></svg>
 </div>
 
 <!-- ─── FAQ ─────────────────────────────────────────────────────────────── -->
 <section class="section-pad section-dark faq-section" aria-labelledby="faq-heading" data-bg={hasCtaImage ? 'image' : undefined}>
   {hasCtaImage && <SectionBgImage src={ctaImage} scrim="heavy" />}
+  {hasCtaImage && <div class="faq-photo-accent" aria-hidden="true" style={`background-image:url('${ctaImage}')`}></div>}
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 faq-section__inner">
-    <div class="text-center mb-14">
-      <h2 id="faq-heading" class="reveal text-white mb-4">Frequently Asked Questions</h2>
-      <p class="text-lg max-w-2xl mx-auto" style="color:#94a3b8;">Everything you need to know before getting started.</p>
+    <div class="faq-header mb-14">
+      <h2 id="faq-heading" class="reveal faq-heading-dark mb-4">Frequently Asked Questions</h2>
+      <h2 id="faq-heading-light" class="reveal faq-heading-light mb-4" aria-hidden="true">Frequently Asked <span class="faq-heading-accent">Questions</span></h2>
+      <p class="faq-subhead text-lg max-w-2xl" style="color:#94a3b8;">Everything you need to know before getting started.</p>
     </div>
-    <div class="max-w-3xl mx-auto flex flex-col" id="faq-list">
+    <div class="max-w-3xl faq-list-wrap mx-auto flex flex-col" id="faq-list">
       {faqs.map(({ question, answer }, i) => (
         <details class="rs-faq-item reveal">
           <summary class="rs-faq-q">
@@ -949,6 +951,7 @@ const heroServiceOptions = serviceEntries.length > 0
   @media (max-width: 640px) {
     .hp-cta-section { padding: 60px 0; }
   }
+  /* ── FAQ section ────────────────────────────────────────────────────── */
   .faq-section {
     position: relative;
     overflow: hidden;
@@ -957,32 +960,149 @@ const heroServiceOptions = serviceEntries.length > 0
     position: relative;
     z-index: 2;
   }
-  /* Image mode: suppress flat bg so photo+scrim take over */
-  .faq-section[data-bg="image"],
-  [data-skin="light"] .faq-section[data-bg="image"] {
+
+  /* Wave above FAQ: hidden on light skin (FAQ becomes light, no dark band needed) */
+  .faq-wave-top {
+    background: var(--color-neutral-50);
+  }
+  [data-skin="light"] .faq-wave-top {
+    display: none;
+  }
+
+  /* Dark skin default heading (centered white) */
+  .faq-heading-dark {
+    color: #ffffff;
+    text-align: center;
+  }
+  .faq-subhead {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .faq-header {
+    text-align: center;
+  }
+  .faq-list-wrap {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Light-skin heading: hide the dark version, show the two-tone version */
+  .faq-heading-light { display: none; }
+  .faq-heading-accent { color: var(--rs-brand-text); }
+
+  /* ── LIGHT SKIN OVERRIDES ──────────────────────────────────────────── */
+  [data-skin="light"] .faq-section {
+    /* Override section-dark which sets a dark bg */
+    background: var(--rs-bg) !important;
+  }
+  /* Suppress scrim+photo full-bleed in light skin — handled by accent div */
+  [data-skin="light"] .faq-section .sbg__img,
+  [data-skin="light"] .faq-section .sbg__scrim {
+    display: none;
+  }
+
+  /* Photo accent: right-side decorative element, light skin only */
+  .faq-photo-accent {
+    display: none; /* hidden by default (dark skin uses SectionBgImage instead) */
+  }
+  [data-skin="light"] .faq-photo-accent {
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 48%;
+    background-size: cover;
+    background-position: center;
+    /* Fade to transparent toward the left and bottom — texture, not backdrop */
+    -webkit-mask-image: linear-gradient(
+      to left,
+      rgba(0,0,0,0.13) 0%,
+      rgba(0,0,0,0.10) 30%,
+      transparent 70%
+    );
+    mask-image: linear-gradient(
+      to left,
+      rgba(0,0,0,0.13) 0%,
+      rgba(0,0,0,0.10) 30%,
+      transparent 70%
+    );
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* Left-aligned header block on light skin */
+  [data-skin="light"] .faq-header {
+    text-align: left;
+  }
+  [data-skin="light"] .faq-subhead {
+    margin-left: 0;
+    margin-right: 0;
+    color: var(--rs-text-muted) !important;
+  }
+  [data-skin="light"] .faq-list-wrap {
+    margin-left: 0;
+    margin-right: 0;
+    max-width: none;
+  }
+
+  /* Swap headings */
+  [data-skin="light"] .faq-heading-dark { display: none; }
+  [data-skin="light"] .faq-heading-light {
+    display: block;
+    color: var(--rs-text);
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    text-align: left;
+  }
+
+  /* Image mode dark skin: suppress flat bg, apply text-shadows, solid FAQ cards */
+  .faq-section[data-bg="image"]:not([data-skin]) .faq-section,
+  :not([data-skin="light"]) .faq-section[data-bg="image"] {
     background: transparent;
   }
-  /* Heading: text-shadow so it holds up against any photo, any region */
-  .faq-section[data-bg="image"] #faq-heading,
-  .faq-section[data-bg="image"] #faq-heading ~ p {
+  /* Target: dark skin image mode — the section itself */
+  [data-skin="dark"] .faq-section[data-bg="image"] {
+    background: transparent !important;
+  }
+  /* No-skin (default dark) image mode */
+  .faq-section[data-bg="image"] {
+    background: transparent;
+  }
+  /* Heading text-shadow (dark skin image mode only) */
+  :not([data-skin="light"]) .faq-section[data-bg="image"] #faq-heading,
+  :not([data-skin="light"]) .faq-section[data-bg="image"] .faq-header p {
     text-shadow: 0 2px 14px rgba(0, 0, 0, 0.72), 0 1px 4px rgba(0, 0, 0, 0.55);
   }
-  /* FAQ cards get a solid surface so legibility never depends on the photo */
-  .faq-section[data-bg="image"] .rs-faq-item {
+  /* FAQ cards: solid surface on dark skin image mode */
+  :not([data-skin="light"]) .faq-section[data-bg="image"] .rs-faq-item {
     background: var(--rs-surface);
     border-radius: 8px;
     padding: 0 1rem;
     margin-bottom: 6px;
     border-bottom: none;
   }
-  .faq-section[data-bg="image"] .rs-faq-item:first-child {
+  :not([data-skin="light"]) .faq-section[data-bg="image"] .rs-faq-item:first-child {
     border-top: none;
   }
-  .faq-section[data-bg="image"] .rs-faq-q {
+  :not([data-skin="light"]) .faq-section[data-bg="image"] .rs-faq-q {
     color: var(--rs-text);
   }
-  /* Answer text: use primary text token (not muted) for stronger contrast */
-  .faq-section[data-bg="image"] .rs-faq-a > div > p {
+  :not([data-skin="light"]) .faq-section[data-bg="image"] .rs-faq-a > div > p {
+    color: var(--rs-text);
+  }
+
+  /* Light skin FAQ cards: clean surface, dark text, full-strength answer text */
+  [data-skin="light"] .faq-section .rs-faq-item {
+    background: var(--rs-surface);
+    border-color: var(--rs-border);
+  }
+  [data-skin="light"] .faq-section .rs-faq-q {
+    color: var(--rs-text);
+  }
+  [data-skin="light"] .faq-section .rs-faq-a > div > p {
     color: var(--rs-text);
   }
 
