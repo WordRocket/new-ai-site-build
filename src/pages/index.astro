@@ -720,9 +720,34 @@ const heroServiceOptions = serviceEntries.length > 0
     color: rgba(246,248,253,.78);
   }
 
+  /* ── Light skin: cinematic context overrides ────────────────────────────
+     The light scrim (rgba 246,248,253 ~82%) creates a near-white surface.
+     --rs-text-muted on light skin resolves to a mid-gray (~#64748b) which
+     reads fine on flat UI surfaces but loses contrast against photo content
+     bleeding through at the right edge of the scrim gradient.
+     Solution: push muted token to near-black for the hero panel only, and
+     add a subtle bright text-shadow on p/ul so text separates cleanly from
+     any photo tone — works for both light and dark source images.           */
+  .cinematic-hero:not([data-hero-skin="dark"]) .hero-left-panel {
+    --rs-text-muted: #1e293b;
+  }
+  .cinematic-hero:not([data-hero-skin="dark"]) .hero-left-panel p,
+  .cinematic-hero:not([data-hero-skin="dark"]) .hero-left-panel ul,
+  .cinematic-hero:not([data-hero-skin="dark"]) .trust-cluster__count,
+  .cinematic-hero:not([data-hero-skin="dark"]) .trust-cluster__text {
+    text-shadow: 0 1px 6px rgba(255,255,255,.70), 0 0 2px rgba(255,255,255,.50);
+  }
+  /* Match the explicit color rules that bypass the custom property cascade */
+  .cinematic-hero:not([data-hero-skin="dark"]) .trust-cluster__count {
+    color: #0f172a;
+  }
+  .cinematic-hero:not([data-hero-skin="dark"]) .trust-cluster__text {
+    color: #1e293b;
+  }
+
   /* ── Dark skin: text-shadow — extended to all left-column text ─────────
      Badge, cluster count/text, and icon labels added alongside h1/p/ul.   *
-   * No text-shadow in light skin — scrim opacity is sufficient.           */
+   * Light skin uses its own text-shadow block above.                       */
   .cinematic-hero[data-hero-skin="dark"] .hero-left-panel h1,
   .cinematic-hero[data-hero-skin="dark"] .hero-left-panel p,
   .cinematic-hero[data-hero-skin="dark"] .hero-left-panel ul,
