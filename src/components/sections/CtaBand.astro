@@ -2,7 +2,7 @@
 import siteConfig from '../../lib/site-config';
 import { getPreset, interpolate } from '../../lib/business-presets';
 import Icon from '../Icon.astro';
-import SmartImage from '../SmartImage.astro';
+import SectionBgImage from '../SectionBgImage.astro';
 
 interface Props {
   secondaryLabel?: string;
@@ -23,18 +23,7 @@ const hasImage = ctaImage.length > 0;
 ---
 
 <section class="cb" aria-labelledby="cb-heading" data-bg={hasImage ? 'image' : undefined}>
-  {hasImage && (
-    <div class="cb__bg-img" aria-hidden="true">
-      <SmartImage
-        src={ctaImage}
-        alt=""
-        aspect="16/5"
-        loading="lazy"
-        style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"
-      />
-      <div class="cb__scrim"></div>
-    </div>
-  )}
+  {hasImage && <SectionBgImage src={ctaImage} scrim="branded" />}
   <div class="cb__inner">
     <div class="cb__icon" aria-hidden="true">
       <Icon name="zap" width={26} height={26} />
@@ -86,28 +75,7 @@ const hasImage = ctaImage.length > 0;
     display: none;
   }
 
-  /* Background image container */
-  .cb__bg-img {
-    position: absolute; inset: 0; z-index: 0;
-  }
-  .cb__bg-img :global(picture),
-  .cb__bg-img :global(img) {
-    position: absolute; inset: 0;
-    width: 100%; height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-
-  /* Dark scrim — solid enough for legibility against any photo */
-  .cb__scrim {
-    position: absolute; inset: 0; z-index: 1;
-    background: linear-gradient(
-      160deg,
-      rgba(0, 0, 0, 0.72) 0%,
-      rgba(0, 0, 0, 0.62) 60%,
-      rgba(0, 0, 0, 0.68) 100%
-    );
-  }
+  /* Background image container and scrim handled by SectionBgImage.astro */
 
   .cb__inner {
     position: relative; z-index: 2;

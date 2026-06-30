@@ -11,6 +11,7 @@ import ProcessTimeline from '../components/sections/ProcessTimeline.astro';
 import { getFAQSchema } from '../lib/schema';
 import LeadForm from '../components/LeadForm.astro';
 import ServiceCard from '../components/ServiceCard.astro';
+import SectionBgImage from '../components/SectionBgImage.astro';
 
 const serviceEntries = await getCollection('services').catch(() => []);
 const locationEntries = await getCollection('locations').catch(() => []);
@@ -111,6 +112,8 @@ const heroStats = statsItems.slice(0, 3);
 
 const formEndpoint: string = ((siteConfig as any).formEndpoint ?? '').trim();
 const formConnected = formEndpoint !== '';
+const ctaImage: string = ((siteConfig as any).ctaImage ?? '').trim();
+const hasCtaImage = ctaImage.length > 0;
 const hasHeroImage = !!heroImage;
 // Derive skin here (same logic as BaseLayout) so the hero template can set
 // skin-aware attributes directly on elements — avoids relying on the
@@ -521,8 +524,9 @@ const heroServiceOptions = serviceEntries.length > 0
 </div>
 
 <!-- ─── FAQ ─────────────────────────────────────────────────────────────── -->
-<section class="section-pad section-dark" aria-labelledby="faq-heading">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<section class="section-pad section-dark faq-section" aria-labelledby="faq-heading" data-bg={hasCtaImage ? 'image' : undefined}>
+  {hasCtaImage && <SectionBgImage src={ctaImage} scrim="heavy" />}
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 faq-section__inner">
     <div class="text-center mb-14">
       <h2 id="faq-heading" class="reveal text-white mb-4">Frequently Asked Questions</h2>
       <p class="text-lg max-w-2xl mx-auto" style="color:#94a3b8;">Everything you need to know before getting started.</p>
@@ -549,7 +553,8 @@ const heroServiceOptions = serviceEntries.length > 0
 <!-- ─── CTA / CONTACT SECTION ────────────────────────────────────────── -->
 <section class="section-pad" style="background:var(--rs-bg);" aria-labelledby="cta-heading">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="u-reveal hp-cta-card rounded-[var(--radius-lg)] overflow-hidden grid grid-cols-1 lg:grid-cols-2" style="box-shadow:var(--shadow-md);">
+    <div class="u-reveal hp-cta-card rounded-[var(--radius-lg)] overflow-hidden grid grid-cols-1 lg:grid-cols-2" style="box-shadow:var(--shadow-md);" data-bg={hasCtaImage ? 'image' : undefined}>
+      {hasCtaImage && <SectionBgImage src={ctaImage} scrim="branded" />}
 
       <!-- Left: CTA text -->
       <div class="p-10 sm:p-14 flex flex-col justify-center gap-6">
@@ -841,6 +846,71 @@ const heroServiceOptions = serviceEntries.length > 0
   [data-skin="light"] .hp-cta-sub         { color: var(--rs-text-muted); }
   [data-skin="light"] .hp-cta-label       { color: var(--rs-text-muted); }
   [data-skin="light"] .hp-cta-value       { color: var(--rs-text); }
+
+  /* ── FAQ section: background image support ───────────────────────────── */
+  .faq-section {
+    position: relative;
+    overflow: hidden;
+  }
+  .faq-section__inner {
+    position: relative;
+    z-index: 2;
+  }
+  /* Image mode: suppress flat bg so photo+scrim take over */
+  .faq-section[data-bg="image"],
+  [data-skin="light"] .faq-section[data-bg="image"] {
+    background: transparent;
+  }
+  /* FAQ cards get a solid surface so legibility never depends on the photo */
+  .faq-section[data-bg="image"] .rs-faq-item {
+    background: var(--rs-surface);
+    border-radius: 8px;
+    padding: 0 1rem;
+    margin-bottom: 6px;
+    border-bottom: none;
+  }
+  .faq-section[data-bg="image"] .rs-faq-item:first-child {
+    border-top: none;
+  }
+  .faq-section[data-bg="image"] .rs-faq-q {
+    color: var(--rs-text);
+  }
+  .faq-section[data-bg="image"] .rs-faq-a > div > p {
+    color: var(--rs-text-muted);
+  }
+
+  /* ── CTA card: full-bleed image support ──────────────────────────────── */
+  .hp-cta-card {
+    position: relative;
+    overflow: hidden;
+  }
+  /* Content layers above the bg image */
+  .hp-cta-card > * {
+    position: relative;
+    z-index: 2;
+  }
+  /* Image mode: suppress both flat bg colors so photo spans full card */
+  .hp-cta-card[data-bg="image"],
+  [data-skin="light"] .hp-cta-card[data-bg="image"] {
+    background: transparent;
+  }
+  .hp-cta-card[data-bg="image"] .hp-cta-card__right,
+  [data-skin="light"] .hp-cta-card[data-bg="image"] .hp-cta-card__right {
+    background: transparent;
+  }
+  /* Image mode: all text forces white for legibility */
+  .hp-cta-card[data-bg="image"] .hp-cta-heading { color: #ffffff; }
+  .hp-cta-card[data-bg="image"] .hp-cta-sub     { color: rgba(255,255,255,0.80); }
+  .hp-cta-card[data-bg="image"] .hp-cta-label   { color: rgba(255,255,255,0.55); }
+  .hp-cta-card[data-bg="image"] .hp-cta-value   { color: #ffffff; }
+  /* Icon badge backgrounds lighten for visibility over photo */
+  .hp-cta-card[data-bg="image"] span[style*="color-mix"] {
+    background: rgba(255,255,255,0.12) !important;
+  }
+  /* SVG icon strokes inherit white from parent */
+  .hp-cta-card[data-bg="image"] svg[stroke="var(--rs-accent)"] {
+    stroke: rgba(255,255,255,0.80);
+  }
 </style>
 
 <script>

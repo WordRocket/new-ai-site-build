@@ -1,0 +1,88 @@
+---
+/**
+ * Reusable background-image layer for sections.
+ * Usage:
+ *   <SectionBgImage src={imageUrl} scrim="heavy" />   // FAQ: texture mode
+ *   <SectionBgImage src={imageUrl} scrim="branded" />  // CTA: photographic mode
+ *
+ * The parent section must have: position:relative; overflow:hidden;
+ * Content inside the section must have: position:relative; z-index:2;
+ *
+ * To split fields later (faqImage / ctaImage), just change the `src` prop
+ * at each call site — no logic changes needed here.
+ */
+interface Props {
+  src: string;
+  /** 'heavy'   = strong dark scrim (FAQ: ambient texture, not a visible photo)
+   *  'branded' = lighter dark + brand-tinted gradient (CTA: photographic feel) */
+  scrim?: 'heavy' | 'branded';
+}
+
+const { src, scrim = 'heavy' } = Astro.props;
+---
+
+<div class="sbg" aria-hidden="true">
+  <img
+    class="sbg__img"
+    src={src}
+    alt=""
+    role="presentation"
+    loading="lazy"
+    decoding="async"
+    width="1440"
+    height="900"
+  />
+  <div class={`sbg__scrim sbg__scrim--${scrim}`}></div>
+</div>
+
+<style>
+  .sbg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .sbg__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  /* Heavy scrim — FAQ texture mode.
+     Bright test photos should still read as dark moody texture, not a photo. */
+  .sbg__scrim--heavy {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(
+        160deg,
+        rgba(4, 8, 20, 0.92) 0%,
+        rgba(4, 8, 20, 0.87) 50%,
+        rgba(4, 8, 20, 0.92) 100%
+      );
+  }
+
+  /* Branded scrim — CTA photographic mode.
+     Dark navy base + subtle brand tint; lighter than heavy so photo reads. */
+  .sbg__scrim--branded {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(
+        135deg,
+        rgba(4, 10, 30, 0.82) 0%,
+        rgba(4, 10, 30, 0.68) 50%,
+        rgba(4, 10, 30, 0.76) 100%
+      ),
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--rs-brand) 12%, transparent) 0%,
+        transparent 100%
+      );
+  }
+</style>

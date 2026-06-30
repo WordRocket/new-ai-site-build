@@ -28,7 +28,7 @@
   "businessType": "local-service",
   "heroImage": "",
   "aboutImage": "",
-  "ctaImage": "",
+  "ctaImage": "/image.png",
   "sidebarImage": "",
   "testimonial_text": "",
   "testimonial_author": "",
