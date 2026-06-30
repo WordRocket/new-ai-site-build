@@ -545,80 +545,78 @@ const heroServiceOptions = serviceEntries.length > 0
   </div>
 </section>
 
-<!-- wave: dark → white -->
-<div class="wave-divider" style="background:var(--color-dark-navy);" aria-hidden="true">
+<!-- wave: dark → CTA section bg (full-bleed, so wave must match section bg) -->
+<div class="wave-divider cta-wave-top" aria-hidden="true">
   <svg viewBox="0 0 1440 48" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,24 C360,0 1080,48 1440,24 L1440,48 L0,48 Z" fill="white"/></svg>
 </div>
 
-<!-- ─── CTA / CONTACT SECTION ────────────────────────────────────────── -->
-<section class="section-pad" style="background:var(--rs-bg);" aria-labelledby="cta-heading">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="u-reveal hp-cta-card rounded-[var(--radius-lg)] overflow-hidden grid grid-cols-1 lg:grid-cols-2" style="box-shadow:var(--shadow-md);" data-bg={hasCtaImage ? 'image' : undefined}>
-      {hasCtaImage && <SectionBgImage src={ctaImage} scrim="branded" />}
+<!-- ─── CTA / CONTACT SECTION — full-bleed ───────────────────────────── -->
+<section class="hp-cta-section" aria-labelledby="cta-heading" data-bg={hasCtaImage ? 'image' : undefined}>
+  {hasCtaImage && <SectionBgImage src={ctaImage} scrim="branded" />}
+  <div class="u-reveal hp-cta-inner">
 
-      <!-- Left: CTA text -->
-      <div class="p-10 sm:p-14 flex flex-col justify-center gap-6">
-        <h2 id="cta-heading" class="hp-cta-heading">Ready to Book? Let's Talk.</h2>
-        <p class="text-lg leading-relaxed hp-cta-sub">
-          Contact {siteConfig.name} today for a free estimate. {preset.contactSubtext}
-        </p>
-        {siteConfig.phone
-          ? (
-            <a href={`tel:${phoneDigits}`} class="btn-primary justify-center sm:justify-start font-bold text-lg px-8 py-4 rounded-[var(--radius-md)] w-full sm:w-auto">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.36a2 2 0 0 1 1.99-2.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.06 6.06l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-              {formatPhone(siteConfig.phone)}
-            </a>
-          ) : (
-            <a href="/contact" class="btn-primary justify-center sm:justify-start font-bold text-lg px-8 py-4 rounded-[var(--radius-md)] w-full sm:w-auto">
-              {preset.contactCta}
-            </a>
-          )
-        }
+    <!-- Left: CTA text -->
+    <div class="hp-cta-left">
+      <h2 id="cta-heading" class="hp-cta-heading">Ready to Book? Let's Talk.</h2>
+      <p class="text-lg leading-relaxed hp-cta-sub">
+        Contact {siteConfig.name} today for a free estimate. {preset.contactSubtext}
+      </p>
+      {siteConfig.phone
+        ? (
+          <a href={`tel:${phoneDigits}`} class="btn-primary justify-center sm:justify-start font-bold text-lg px-8 py-4 rounded-[var(--radius-md)] w-full sm:w-auto">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.36a2 2 0 0 1 1.99-2.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.06 6.06l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            {formatPhone(siteConfig.phone)}
+          </a>
+        ) : (
+          <a href="/contact" class="btn-primary justify-center sm:justify-start font-bold text-lg px-8 py-4 rounded-[var(--radius-md)] w-full sm:w-auto">
+            {preset.contactCta}
+          </a>
+        )
+      }
+      {siteConfig.email && (
+        <a href={`mailto:${siteConfig.email}`} class="text-sm font-medium transition-colors hover:opacity-80 hp-cta-sub">{siteConfig.email}</a>
+      )}
+    </div>
+
+    <!-- Right: contact info panel -->
+    <div class="hp-cta-right">
+      <div class="flex flex-col gap-5 w-full max-w-xs">
+        {siteConfig.address && (
+          <div class="flex items-start gap-3">
+            <span class="hp-cta-icon-badge flex-shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </span>
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-wider mb-0.5 hp-cta-label">Address</p>
+              <p class="text-sm hp-cta-value">{siteConfig.address}, {siteConfig.city}, {siteConfig.state}</p>
+            </div>
+          </div>
+        )}
+        {siteConfig.phone && (
+          <div class="flex items-start gap-3">
+            <span class="hp-cta-icon-badge flex-shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.36a2 2 0 0 1 1.99-2.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.06 6.06l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </span>
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-wider mb-0.5 hp-cta-label">Phone</p>
+              <a href={`tel:${phoneDigits}`} class="text-sm hp-cta-value hover:opacity-80 transition-opacity">{siteConfig.phone}</a>
+            </div>
+          </div>
+        )}
         {siteConfig.email && (
-          <a href={`mailto:${siteConfig.email}`} class="text-sm font-medium transition-colors hover:text-[var(--rs-accent)] hp-cta-sub">{siteConfig.email}</a>
+          <div class="flex items-start gap-3">
+            <span class="hp-cta-icon-badge flex-shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            </span>
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-wider mb-0.5 hp-cta-label">Email</p>
+              <a href={`mailto:${siteConfig.email}`} class="text-sm hp-cta-value hover:opacity-80 transition-opacity">{siteConfig.email}</a>
+            </div>
+          </div>
         )}
       </div>
-
-      <!-- Right: contact summary card -->
-      <div class="hp-cta-card__right p-10 sm:p-14 flex items-center justify-center">
-        <div class="flex flex-col gap-5 w-full max-w-xs">
-          {siteConfig.address && (
-            <div class="flex items-start gap-3">
-              <span class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center" style="background:color-mix(in srgb, var(--rs-brand) 18%, transparent);">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--rs-accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              </span>
-              <div>
-                <p class="text-xs font-semibold uppercase tracking-wider mb-0.5 hp-cta-label">Address</p>
-                <p class="text-sm hp-cta-value">{siteConfig.address}, {siteConfig.city}, {siteConfig.state}</p>
-              </div>
-            </div>
-          )}
-          {siteConfig.phone && (
-            <div class="flex items-start gap-3">
-              <span class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center" style="background:color-mix(in srgb, var(--rs-brand) 18%, transparent);">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--rs-accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.36a2 2 0 0 1 1.99-2.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.06 6.06l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-              </span>
-              <div>
-                <p class="text-xs font-semibold uppercase tracking-wider mb-0.5 hp-cta-label">Phone</p>
-                <a href={`tel:${phoneDigits}`} class="text-sm hp-cta-value hover:text-[var(--rs-accent)] transition-colors">{siteConfig.phone}</a>
-              </div>
-            </div>
-          )}
-          {siteConfig.email && (
-            <div class="flex items-start gap-3">
-              <span class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center" style="background:color-mix(in srgb, var(--rs-brand) 18%, transparent);">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--rs-accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-              </span>
-              <div>
-                <p class="text-xs font-semibold uppercase tracking-wider mb-0.5 hp-cta-label">Email</p>
-                <a href={`mailto:${siteConfig.email}`} class="text-sm hp-cta-value hover:text-[var(--rs-accent)] transition-colors">{siteConfig.email}</a>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
     </div>
+
   </div>
 </section>
 
@@ -830,24 +828,127 @@ const heroServiceOptions = serviceEntries.length > 0
     color: var(--rs-text-muted, var(--color-text-muted));
   }
 
-  /* ── Homepage CTA card — skin-reactive ───────────────────────────────── */
-  /* Dark skin (default treatment — matches original) */
-  .hp-cta-card           { background: var(--color-dark-navy); }
-  .hp-cta-card__right    { background: #0a101e; }
-  .hp-cta-heading        { color: #ffffff; }
-  .hp-cta-sub            { color: #94a3b8; }
-  .hp-cta-label          { color: #475569; }
-  .hp-cta-value          { color: #ffffff; }
+  /* ── Homepage CTA section — full-bleed, skin-reactive ───────────────── */
 
-  /* Light skin: flip to neutral surface with dark text */
-  [data-skin="light"] .hp-cta-card        { background: var(--rs-surface-2); }
-  [data-skin="light"] .hp-cta-card__right { background: var(--rs-surface); }
-  [data-skin="light"] .hp-cta-heading     { color: var(--rs-text); }
-  [data-skin="light"] .hp-cta-sub         { color: var(--rs-text-muted); }
-  [data-skin="light"] .hp-cta-label       { color: var(--rs-text-muted); }
-  [data-skin="light"] .hp-cta-value       { color: var(--rs-text); }
+  /* Wave above the section: the wave path fill matches the section bg so
+     there's no white gap between wave and full-bleed section edge. */
+  .cta-wave-top {
+    background: var(--color-dark-navy);
+  }
+  .cta-wave-top svg path {
+    fill: var(--color-dark-navy);
+  }
+  [data-skin="light"] .cta-wave-top svg path {
+    fill: var(--rs-surface-2);
+  }
 
-  /* ── FAQ section: background image support ───────────────────────────── */
+  /* The section itself IS the full-bleed background — no wrapper card */
+  .hp-cta-section {
+    position: relative;
+    overflow: hidden;
+    padding: 80px 0;
+    /* No-image fallback: dark navy (matches original card) */
+    background: var(--color-dark-navy);
+  }
+  [data-skin="light"] .hp-cta-section {
+    background: var(--rs-surface-2);
+  }
+
+  /* Image mode: suppress flat bg so photo+scrim take over */
+  .hp-cta-section[data-bg="image"],
+  [data-skin="light"] .hp-cta-section[data-bg="image"] {
+    background: transparent;
+  }
+
+  /* Inner: centered max-width content grid — background stays full-bleed */
+  .hp-cta-inner {
+    position: relative;
+    z-index: 2;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+  @media (min-width: 1024px) {
+    .hp-cta-inner {
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      padding: 0 2rem;
+    }
+  }
+
+  /* Left column */
+  .hp-cta-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 0;
+  }
+  @media (min-width: 1024px) {
+    .hp-cta-left { padding: 2rem 4rem 2rem 2rem; }
+  }
+
+  /* Right column */
+  .hp-cta-right {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+  @media (min-width: 1024px) {
+    .hp-cta-right {
+      padding: 2rem 2rem 2rem 4rem;
+      border-left: 1px solid rgba(255,255,255,0.10);
+    }
+  }
+  [data-skin="light"] .hp-cta-right {
+    border-left-color: var(--rs-border);
+  }
+
+  /* Text colors — dark default */
+  .hp-cta-heading { color: #ffffff; font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; margin: 0; }
+  .hp-cta-sub     { color: #94a3b8; margin: 0; }
+  .hp-cta-label   { color: #475569; }
+  .hp-cta-value   { color: #ffffff; }
+
+  /* Light skin — no image */
+  [data-skin="light"] .hp-cta-heading { color: var(--rs-text); }
+  [data-skin="light"] .hp-cta-sub     { color: var(--rs-text-muted); }
+  [data-skin="light"] .hp-cta-label   { color: var(--rs-text-muted); }
+  [data-skin="light"] .hp-cta-value   { color: var(--rs-text); }
+
+  /* Image mode: force white text on both skins (scrim ensures legibility) */
+  .hp-cta-section[data-bg="image"] .hp-cta-heading { color: #ffffff; }
+  .hp-cta-section[data-bg="image"] .hp-cta-sub     { color: rgba(255,255,255,0.82); }
+  .hp-cta-section[data-bg="image"] .hp-cta-label   { color: rgba(255,255,255,0.55); }
+  .hp-cta-section[data-bg="image"] .hp-cta-value   { color: #ffffff; }
+
+  /* Contact icon badges */
+  .hp-cta-icon-badge {
+    width: 36px; height: 36px;
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    /* No-image: semi-transparent brand fill */
+    background: color-mix(in srgb, var(--rs-brand) 22%, transparent);
+    color: var(--rs-accent);
+    border: 1px solid color-mix(in srgb, var(--rs-brand) 35%, transparent);
+  }
+  /* Image mode: frosted look so badges read as deliberate UI on the photo */
+  .hp-cta-section[data-bg="image"] .hp-cta-icon-badge {
+    background: rgba(255,255,255,0.15);
+    color: #ffffff;
+    border: 1px solid rgba(255,255,255,0.28);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  @media (max-width: 640px) {
+    .hp-cta-section { padding: 60px 0; }
+  }
   .faq-section {
     position: relative;
     overflow: hidden;
@@ -885,38 +986,6 @@ const heroServiceOptions = serviceEntries.length > 0
     color: var(--rs-text);
   }
 
-  /* ── CTA card: full-bleed image support ──────────────────────────────── */
-  .hp-cta-card {
-    position: relative;
-    overflow: hidden;
-  }
-  /* Content layers above the bg image */
-  .hp-cta-card > * {
-    position: relative;
-    z-index: 2;
-  }
-  /* Image mode: suppress both flat bg colors so photo spans full card */
-  .hp-cta-card[data-bg="image"],
-  [data-skin="light"] .hp-cta-card[data-bg="image"] {
-    background: transparent;
-  }
-  .hp-cta-card[data-bg="image"] .hp-cta-card__right,
-  [data-skin="light"] .hp-cta-card[data-bg="image"] .hp-cta-card__right {
-    background: transparent;
-  }
-  /* Image mode: all text forces white for legibility */
-  .hp-cta-card[data-bg="image"] .hp-cta-heading { color: #ffffff; }
-  .hp-cta-card[data-bg="image"] .hp-cta-sub     { color: rgba(255,255,255,0.80); }
-  .hp-cta-card[data-bg="image"] .hp-cta-label   { color: rgba(255,255,255,0.55); }
-  .hp-cta-card[data-bg="image"] .hp-cta-value   { color: #ffffff; }
-  /* Icon badge backgrounds lighten for visibility over photo */
-  .hp-cta-card[data-bg="image"] span[style*="color-mix"] {
-    background: rgba(255,255,255,0.12) !important;
-  }
-  /* SVG icon strokes inherit white from parent */
-  .hp-cta-card[data-bg="image"] svg[stroke="var(--rs-accent)"] {
-    stroke: rgba(255,255,255,0.80);
-  }
 </style>
 
 <script>

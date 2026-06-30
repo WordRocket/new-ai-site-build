@@ -68,21 +68,19 @@ const { src, scrim = 'heavy' } = Astro.props;
   }
 
   /* Branded scrim — CTA photographic mode.
-     Dark navy base + subtle brand tint; lighter than heavy so photo reads. */
+     Left: moderate dark scrim (image has presence, text is legible).
+     Right: heavier dark + brand tint (reads as distinct info panel zone).
+     Smooth left-to-right gradient blend — no hard seam. */
   .sbg__scrim--branded {
     position: absolute;
     inset: 0;
     background:
       linear-gradient(
-        135deg,
-        rgba(4, 10, 30, 0.82) 0%,
-        rgba(4, 10, 30, 0.68) 50%,
-        rgba(4, 10, 30, 0.76) 100%
-      ),
-      linear-gradient(
-        180deg,
-        color-mix(in srgb, var(--rs-brand) 12%, transparent) 0%,
-        transparent 100%
+        105deg,
+        rgba(4, 10, 28, 0.72) 0%,
+        rgba(4, 10, 28, 0.68) 40%,
+        color-mix(in srgb, var(--rs-brand) 10%, rgba(4, 10, 28, 0.82)) 65%,
+        color-mix(in srgb, var(--rs-brand) 14%, rgba(2, 6, 20, 0.88)) 100%
       );
   }
 </style>
