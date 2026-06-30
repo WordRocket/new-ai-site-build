@@ -22,6 +22,8 @@ interface Props {
   /** Floating stat badge overlaid on the image (bottom-left corner). */
   statValue?: string;
   statLabel?: string;
+  /** Wrap content in a card panel (border-radius + shadow) for visual weight. */
+  card?: boolean;
 }
 
 const {
@@ -38,62 +40,108 @@ const {
   bg = 'var(--rs-bg, #ffffff)',
   statValue,
   statLabel,
+  card = false,
 } = Astro.props;
 
 const showBadge = statValue && statLabel;
 ---
 
 <section class="fr-section u-reveal" style={`background:${bg};`}>
-  <div class:list={['fr-inner', reverse && 'fr-inner--rev']}>
-
-    <!-- Image column -->
-    <div class="fr-media">
-      <!-- fr-media-pos is position:relative without overflow:hidden so the badge isn't clipped -->
-      <div class="fr-media-pos">
-        <!-- fr-media-wrap clips the image to border-radius -->
-        <div class="fr-media-wrap">
-          <SmartImage src={image} alt={imageAlt || heading} aspect={imageAspect} />
-        </div>
-
-        {showBadge && (
-          <div class="fr-badge">
-            <span class="fr-badge__value">{statValue}</span>
-            <span class="fr-badge__label">{statLabel}</span>
+  {card ? (
+    <div class="fr-card-wrap">
+      <div class:list={['fr-inner', reverse && 'fr-inner--rev']}>
+        <!-- Image column -->
+        <div class="fr-media">
+          <div class="fr-media-pos">
+            <div class="fr-media-wrap">
+              <SmartImage src={image} alt={imageAlt || heading} aspect={imageAspect} />
+            </div>
+            {showBadge && (
+              <div class="fr-badge">
+                <span class="fr-badge__value">{statValue}</span>
+                <span class="fr-badge__label">{statLabel}</span>
+              </div>
+            )}
           </div>
-        )}
+        </div>
+        <!-- Text column -->
+        <div class="fr-text">
+          {eyebrow && <span class="u-eyebrow fr-eyebrow">{eyebrow}</span>}
+          <h2 class="fr-heading">{heading}</h2>
+          <p class="fr-body">{body}</p>
+          {checks.length > 0 && (
+            <ul class="fr-checks" role="list">
+              {checks.map(({ text }) => (
+                <li class="fr-check-item">
+                  <span class="fr-check-icon" aria-hidden="true">
+                    <Icon name="check-circle" width={18} height={18} />
+                  </span>
+                  {text}
+                </li>
+              ))}
+            </ul>
+          )}
+          {ctaText && ctaHref && (
+            <a href={ctaHref} class="u-btn u-btn-primary fr-cta">
+              {ctaText}
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </a>
+          )}
+        </div>
       </div>
     </div>
+  ) : (
+    <div class:list={['fr-inner', reverse && 'fr-inner--rev']}>
 
-    <!-- Text column -->
-    <div class="fr-text">
-      {eyebrow && <span class="u-eyebrow fr-eyebrow">{eyebrow}</span>}
+      <!-- Image column -->
+      <div class="fr-media">
+        <!-- fr-media-pos is position:relative without overflow:hidden so the badge isn't clipped -->
+        <div class="fr-media-pos">
+          <!-- fr-media-wrap clips the image to border-radius -->
+          <div class="fr-media-wrap">
+            <SmartImage src={image} alt={imageAlt || heading} aspect={imageAspect} />
+          </div>
 
-      <h2 class="fr-heading">{heading}</h2>
+          {showBadge && (
+            <div class="fr-badge">
+              <span class="fr-badge__value">{statValue}</span>
+              <span class="fr-badge__label">{statLabel}</span>
+            </div>
+          )}
+        </div>
+      </div>
 
-      <p class="fr-body">{body}</p>
+      <!-- Text column -->
+      <div class="fr-text">
+        {eyebrow && <span class="u-eyebrow fr-eyebrow">{eyebrow}</span>}
 
-      {checks.length > 0 && (
-        <ul class="fr-checks" role="list">
-          {checks.map(({ text }) => (
-            <li class="fr-check-item">
-              <span class="fr-check-icon" aria-hidden="true">
-                <Icon name="check-circle" width={18} height={18} />
-              </span>
-              {text}
-            </li>
-          ))}
-        </ul>
-      )}
+        <h2 class="fr-heading">{heading}</h2>
 
-      {ctaText && ctaHref && (
-        <a href={ctaHref} class="u-btn u-btn-primary fr-cta">
-          {ctaText}
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-        </a>
-      )}
+        <p class="fr-body">{body}</p>
+
+        {checks.length > 0 && (
+          <ul class="fr-checks" role="list">
+            {checks.map(({ text }) => (
+              <li class="fr-check-item">
+                <span class="fr-check-icon" aria-hidden="true">
+                  <Icon name="check-circle" width={18} height={18} />
+                </span>
+                {text}
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {ctaText && ctaHref && (
+          <a href={ctaHref} class="u-btn u-btn-primary fr-cta">
+            {ctaText}
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+        )}
+      </div>
+
     </div>
-
-  </div>
+  )}
 </section>
 
 <style>
@@ -102,6 +150,32 @@ const showBadge = statValue && statLabel;
   }
   @media (max-width: 768px) {
     .fr-section { padding: 64px 0; }
+  }
+
+  /* ── Card-wrap panel treatment ──────────────────────────────────────── */
+  .fr-card-wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  .fr-card-wrap .fr-inner {
+    background: var(--rs-surface-2, var(--rs-surface));
+    border-radius: var(--rs-radius-lg, 20px);
+    border: 1px solid var(--rs-border);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    padding: 3rem 3.5rem;
+    max-width: none;
+    margin: 0;
+  }
+  @media (max-width: 900px) {
+    .fr-card-wrap .fr-inner {
+      padding: 2.25rem 1.75rem;
+    }
+  }
+  @media (max-width: 480px) {
+    .fr-card-wrap .fr-inner {
+      padding: 1.75rem 1.25rem;
+    }
   }
 
   .fr-inner {

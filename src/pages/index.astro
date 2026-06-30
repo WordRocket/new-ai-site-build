@@ -377,7 +377,7 @@ const heroServiceOptions = serviceEntries.length > 0
       <h2 id="services-heading" class="reveal text-[var(--color-text)] mb-4">{interpolate(preset.servicesHeading, vars)}</h2>
       <p class="text-[var(--color-text-muted)] text-lg max-w-2xl mx-auto">{interpolate(preset.servicesSubheading, vars)}</p>
     </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
       {displayServices.map(({ slug, icon, title, description, image }) => (
         <ServiceCard
           title={title}
@@ -423,6 +423,7 @@ const heroServiceOptions = serviceEntries.length > 0
   image={hp?.heroImage || siteConfig.heroImage}
   imageAlt={`${siteConfig.name} professional service`}
   bg="var(--rs-bg)"
+  card
 />
 
 <FeatureRow
@@ -434,10 +435,11 @@ const heroServiceOptions = serviceEntries.length > 0
   ctaHref="/services"
   image={hp?.aboutImage || siteConfig.aboutImage}
   imageAlt={`${siteConfig.name} professional team`}
-  bg="var(--rs-surface)"
+  bg="var(--rs-bg)"
   statValue={siteConfig.yearsInBusiness ? `${siteConfig.yearsInBusiness}+` : undefined}
   statLabel={siteConfig.yearsInBusiness ? 'Years Experience' : undefined}
   reverse
+  card
 />
 
 <!-- ─── WHAT YOU GET — feature card grid ─────────────────────────────── -->
@@ -504,7 +506,7 @@ const heroServiceOptions = serviceEntries.length > 0
 )}
 
 <!-- ─── FAQ ─────────────────────────────────────────────────────────────── -->
-<section class="section-pad section-dark" aria-labelledby="faq-heading">
+<section class="section-pad section-faq-pad section-dark" aria-labelledby="faq-heading">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center mb-14">
       <h2 id="faq-heading" class="reveal text-white mb-4">Frequently Asked Questions</h2>
@@ -612,6 +614,10 @@ const heroServiceOptions = serviceEntries.length > 0
 </BaseLayout>
 
 <style>
+  /* ── FAQ section — increased vertical presence ────────────────────────── */
+  .section-faq-pad { padding-top: 160px; padding-bottom: 160px; }
+  @media (max-width: 768px) { .section-faq-pad { padding-top: 96px; padding-bottom: 96px; } }
+
   /* ── Cinematic hero — full-bleed background image treatment ─────────────
 
      LAYER ORDER (bottom → top):
