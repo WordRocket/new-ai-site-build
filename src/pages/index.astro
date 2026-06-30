@@ -525,7 +525,7 @@ const heroServiceOptions = serviceEntries.length > 0
 
 <!-- ─── FAQ ─────────────────────────────────────────────────────────────── -->
 <section class="section-pad section-dark faq-section" aria-labelledby="faq-heading" data-bg={hasCtaImage ? 'image' : undefined}>
-  {hasCtaImage && <SectionBgImage src={ctaImage} scrim="heavy" />}
+  {hasCtaImage && <SectionBgImage src={ctaImage} scrim="heavy" hideOnLight />}
   {hasCtaImage && <div class="faq-photo-accent" aria-hidden="true" style={`background-image:url('${ctaImage}')`}></div>}
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 faq-section__inner">
     <div class="faq-header mb-14">
@@ -992,18 +992,13 @@ const heroServiceOptions = serviceEntries.length > 0
 
   /* ── LIGHT SKIN OVERRIDES ──────────────────────────────────────────── */
   [data-skin="light"] .faq-section {
-    /* Override section-dark which sets a dark bg */
     background: var(--rs-bg) !important;
   }
-  /* Suppress scrim+photo full-bleed in light skin — handled by accent div */
-  [data-skin="light"] .faq-section .sbg__img,
-  [data-skin="light"] .faq-section .sbg__scrim {
-    display: none;
-  }
 
-  /* Photo accent: right-side decorative element, light skin only */
+  /* Photo accent: right-side decorative element, light skin only.
+     Default hidden; SectionBgImage suppression handled in that component. */
   .faq-photo-accent {
-    display: none; /* hidden by default (dark skin uses SectionBgImage instead) */
+    display: none;
   }
   [data-skin="light"] .faq-photo-accent {
     display: block;
@@ -1014,27 +1009,14 @@ const heroServiceOptions = serviceEntries.length > 0
     width: 48%;
     background-size: cover;
     background-position: center;
-    /* Fade to transparent toward the left and bottom — texture, not backdrop */
-    -webkit-mask-image: linear-gradient(
-      to left,
-      rgba(0,0,0,0.13) 0%,
-      rgba(0,0,0,0.10) 30%,
-      transparent 70%
-    );
-    mask-image: linear-gradient(
-      to left,
-      rgba(0,0,0,0.13) 0%,
-      rgba(0,0,0,0.10) 30%,
-      transparent 70%
-    );
+    -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,0.13) 0%, rgba(0,0,0,0.10) 30%, transparent 70%);
+    mask-image: linear-gradient(to left, rgba(0,0,0,0.13) 0%, rgba(0,0,0,0.10) 30%, transparent 70%);
     z-index: 1;
     pointer-events: none;
   }
 
   /* Left-aligned header block on light skin */
-  [data-skin="light"] .faq-header {
-    text-align: left;
-  }
+  [data-skin="light"] .faq-header { text-align: left; }
   [data-skin="light"] .faq-subhead {
     margin-left: 0;
     margin-right: 0;
@@ -1058,53 +1040,44 @@ const heroServiceOptions = serviceEntries.length > 0
     text-align: left;
   }
 
-  /* Image mode dark skin: suppress flat bg, apply text-shadows, solid FAQ cards */
-  .faq-section[data-bg="image"]:not([data-skin]) .faq-section,
-  :not([data-skin="light"]) .faq-section[data-bg="image"] {
-    background: transparent;
-  }
-  /* Target: dark skin image mode — the section itself */
-  [data-skin="dark"] .faq-section[data-bg="image"] {
-    background: transparent !important;
-  }
-  /* No-skin (default dark) image mode */
+  /* Dark skin image mode: suppress flat bg so SectionBgImage photo fills section */
   .faq-section[data-bg="image"] {
     background: transparent;
   }
-  /* Heading text-shadow (dark skin image mode only) */
-  :not([data-skin="light"]) .faq-section[data-bg="image"] #faq-heading,
-  :not([data-skin="light"]) .faq-section[data-bg="image"] .faq-header p {
+  /* Light skin overrides that back to white regardless of data-bg */
+  [data-skin="light"] .faq-section[data-bg="image"] {
+    background: var(--rs-bg) !important;
+  }
+
+  /* Dark skin image mode: heading text-shadow for legibility over photo */
+  .faq-section[data-bg="image"] #faq-heading,
+  .faq-section[data-bg="image"] .faq-header p {
     text-shadow: 0 2px 14px rgba(0, 0, 0, 0.72), 0 1px 4px rgba(0, 0, 0, 0.55);
   }
-  /* FAQ cards: solid surface on dark skin image mode */
-  :not([data-skin="light"]) .faq-section[data-bg="image"] .rs-faq-item {
+  [data-skin="light"] .faq-section #faq-heading,
+  [data-skin="light"] .faq-section .faq-header p {
+    text-shadow: none;
+  }
+
+  /* Dark skin image mode: solid FAQ cards */
+  .faq-section[data-bg="image"] .rs-faq-item {
     background: var(--rs-surface);
     border-radius: 8px;
     padding: 0 1rem;
     margin-bottom: 6px;
     border-bottom: none;
   }
-  :not([data-skin="light"]) .faq-section[data-bg="image"] .rs-faq-item:first-child {
-    border-top: none;
-  }
-  :not([data-skin="light"]) .faq-section[data-bg="image"] .rs-faq-q {
-    color: var(--rs-text);
-  }
-  :not([data-skin="light"]) .faq-section[data-bg="image"] .rs-faq-a > div > p {
-    color: var(--rs-text);
-  }
+  .faq-section[data-bg="image"] .rs-faq-item:first-child { border-top: none; }
+  .faq-section[data-bg="image"] .rs-faq-q { color: var(--rs-text); }
+  .faq-section[data-bg="image"] .rs-faq-a > div > p { color: var(--rs-text); }
 
   /* Light skin FAQ cards: clean surface, dark text, full-strength answer text */
   [data-skin="light"] .faq-section .rs-faq-item {
     background: var(--rs-surface);
     border-color: var(--rs-border);
   }
-  [data-skin="light"] .faq-section .rs-faq-q {
-    color: var(--rs-text);
-  }
-  [data-skin="light"] .faq-section .rs-faq-a > div > p {
-    color: var(--rs-text);
-  }
+  [data-skin="light"] .faq-section .rs-faq-q { color: var(--rs-text); }
+  [data-skin="light"] .faq-section .rs-faq-a > div > p { color: var(--rs-text); }
 
 </style>
 

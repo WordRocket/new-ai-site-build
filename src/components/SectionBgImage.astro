@@ -2,26 +2,26 @@
 /**
  * Reusable background-image layer for sections.
  * Usage:
- *   <SectionBgImage src={imageUrl} scrim="heavy" />   // FAQ: texture mode
- *   <SectionBgImage src={imageUrl} scrim="branded" />  // CTA: photographic mode
+ *   <SectionBgImage src={imageUrl} scrim="heavy" />             // FAQ: texture mode
+ *   <SectionBgImage src={imageUrl} scrim="branded" />            // CTA: photographic mode
+ *   <SectionBgImage src={imageUrl} scrim="heavy" hideOnLight />  // suppress on light skin
  *
  * The parent section must have: position:relative; overflow:hidden;
  * Content inside the section must have: position:relative; z-index:2;
- *
- * To split fields later (faqImage / ctaImage), just change the `src` prop
- * at each call site — no logic changes needed here.
  */
 interface Props {
   src: string;
   /** 'heavy'   = strong dark scrim (FAQ: ambient texture, not a visible photo)
    *  'branded' = lighter dark + brand-tinted gradient (CTA: photographic feel) */
   scrim?: 'heavy' | 'branded';
+  /** When true, the entire component is hidden on [data-skin="light"] pages */
+  hideOnLight?: boolean;
 }
 
-const { src, scrim = 'heavy' } = Astro.props;
+const { src, scrim = 'heavy', hideOnLight = false } = Astro.props;
 ---
 
-<div class="sbg" aria-hidden="true">
+<div class:list={['sbg', { 'sbg--hide-light': hideOnLight }]} aria-hidden="true">
   <img
     class="sbg__img"
     src={src}
@@ -82,5 +82,12 @@ const { src, scrim = 'heavy' } = Astro.props;
         color-mix(in srgb, var(--rs-brand) 10%, rgba(4, 10, 28, 0.82)) 65%,
         color-mix(in srgb, var(--rs-brand) 14%, rgba(2, 6, 20, 0.88)) 100%
       );
+  }
+
+  /* hideOnLight prop: suppress the entire component on light-skin pages.
+     Uses :global so the [data-skin] selector on <html> is reachable from
+     within this component's scoped style block. */
+  :global([data-skin="light"]) .sbg--hide-light {
+    display: none;
   }
 </style>
