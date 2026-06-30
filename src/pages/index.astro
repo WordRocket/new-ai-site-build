@@ -11,7 +11,6 @@ import ProcessTimeline from '../components/sections/ProcessTimeline.astro';
 import { getFAQSchema } from '../lib/schema';
 import LeadForm from '../components/LeadForm.astro';
 import ServiceCard from '../components/ServiceCard.astro';
-import SmartImage from '../components/SmartImage.astro';
 
 const serviceEntries = await getCollection('services').catch(() => []);
 const locationEntries = await getCollection('locations').catch(() => []);
@@ -35,8 +34,6 @@ const primaryCta = siteConfig.phone ? `tel:${phoneDigits}` : '/contact';
 
 const preset = getPreset((siteConfig as any).businessType || 'other');
 const vars = { city: siteConfig.city, niche: nicheLabel };
-const ctaImage: string = ((siteConfig as any).ctaImage ?? '').trim();
-const hasCTAImage = ctaImage.length > 0;
 
 // Compute heroImage early so it can be used as the card image fallback below.
 const heroImage = (hp?.heroImage || (siteConfig as any).heroImage || '') as string;
@@ -392,6 +389,11 @@ const heroServiceOptions = serviceEntries.length > 0
   </div>
 </section>
 
+<!-- wave: neutral → white -->
+<div class="wave-divider" style="background:var(--color-neutral-50);" aria-hidden="true">
+  <svg viewBox="0 0 1440 48" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,24 C360,48 1080,0 1440,24 L1440,48 L0,48 Z" fill="white"/></svg>
+</div>
+
 <!-- ─── TESTIMONIAL (conditional) ────────────────────────────────────── -->
 {hasTestimonial && (
   <section class="section-pad" style="background:var(--rs-bg);" aria-labelledby="testimonial-heading">
@@ -440,6 +442,11 @@ const heroServiceOptions = serviceEntries.length > 0
   reverse
 />
 
+<!-- wave: neutral → neutral (section separator) -->
+<div class="wave-divider" style="background:var(--color-neutral-50);" aria-hidden="true">
+  <svg viewBox="0 0 1440 48" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,24 C360,0 1080,48 1440,24 L1440,48 L0,48 Z" fill="var(--color-neutral-50)"/></svg>
+</div>
+
 <!-- ─── WHAT YOU GET — feature card grid ─────────────────────────────── -->
 <FeatureGrid
   eyebrow="What You Get"
@@ -464,6 +471,11 @@ const heroServiceOptions = serviceEntries.length > 0
     { title: 'Final Walkthrough',    desc: "We walk you through the completed job so you're fully satisfied and know exactly what was done." },
   ]}
 />
+
+<!-- wave: neutral → neutral (section separator) -->
+<div class="wave-divider" style="background:var(--color-neutral-50);" aria-hidden="true">
+  <svg viewBox="0 0 1440 48" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,24 C360,0 1080,48 1440,24 L1440,48 L0,48 Z" fill="var(--color-neutral-50)"/></svg>
+</div>
 
 <!-- ─── SERVICE AREA ──────────────────────────────────────────────────── -->
 <section class="section-pad" style="background:var(--rs-surface);" aria-labelledby="area-heading">
@@ -503,6 +515,11 @@ const heroServiceOptions = serviceEntries.length > 0
   </section>
 )}
 
+<!-- wave: neutral → dark -->
+<div class="wave-divider" style="background:var(--color-neutral-50);" aria-hidden="true">
+  <svg viewBox="0 0 1440 48" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,24 C360,48 1080,0 1440,24 L1440,48 L0,48 Z" fill="var(--color-dark-navy)"/></svg>
+</div>
+
 <!-- ─── FAQ ─────────────────────────────────────────────────────────────── -->
 <section class="section-pad section-dark" aria-labelledby="faq-heading">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -524,23 +541,15 @@ const heroServiceOptions = serviceEntries.length > 0
   </div>
 </section>
 
+<!-- wave: dark → white -->
+<div class="wave-divider" style="background:var(--color-dark-navy);" aria-hidden="true">
+  <svg viewBox="0 0 1440 48" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,24 C360,0 1080,48 1440,24 L1440,48 L0,48 Z" fill="white"/></svg>
+</div>
+
 <!-- ─── CTA / CONTACT SECTION ────────────────────────────────────────── -->
 <section class="section-pad" style="background:var(--rs-bg);" aria-labelledby="cta-heading">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="u-reveal hp-cta-card rounded-[var(--radius-lg)] overflow-hidden grid grid-cols-1 lg:grid-cols-2" style="box-shadow:var(--shadow-md);" data-bg={hasCTAImage ? 'image' : undefined}>
-
-      {hasCTAImage && (
-        <div class="hp-cta-bgimg" aria-hidden="true">
-          <SmartImage
-            src={ctaImage}
-            alt=""
-            aspect="16/9"
-            loading="lazy"
-            style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"
-          />
-          <div class="hp-cta-scrim"></div>
-        </div>
-      )}
+    <div class="u-reveal hp-cta-card rounded-[var(--radius-lg)] overflow-hidden grid grid-cols-1 lg:grid-cols-2" style="box-shadow:var(--shadow-md);">
 
       <!-- Left: CTA text -->
       <div class="p-10 sm:p-14 flex flex-col justify-center gap-6">
@@ -720,34 +729,9 @@ const heroServiceOptions = serviceEntries.length > 0
     color: rgba(246,248,253,.78);
   }
 
-  /* ── Light skin: cinematic context overrides ────────────────────────────
-     The light scrim (rgba 246,248,253 ~82%) creates a near-white surface.
-     --rs-text-muted on light skin resolves to a mid-gray (~#64748b) which
-     reads fine on flat UI surfaces but loses contrast against photo content
-     bleeding through at the right edge of the scrim gradient.
-     Solution: push muted token to near-black for the hero panel only, and
-     add a subtle bright text-shadow on p/ul so text separates cleanly from
-     any photo tone — works for both light and dark source images.           */
-  .cinematic-hero:not([data-hero-skin="dark"]) .hero-left-panel {
-    --rs-text-muted: #1e293b;
-  }
-  .cinematic-hero:not([data-hero-skin="dark"]) .hero-left-panel p,
-  .cinematic-hero:not([data-hero-skin="dark"]) .hero-left-panel ul,
-  .cinematic-hero:not([data-hero-skin="dark"]) .trust-cluster__count,
-  .cinematic-hero:not([data-hero-skin="dark"]) .trust-cluster__text {
-    text-shadow: 0 1px 6px rgba(255,255,255,.70), 0 0 2px rgba(255,255,255,.50);
-  }
-  /* Match the explicit color rules that bypass the custom property cascade */
-  .cinematic-hero:not([data-hero-skin="dark"]) .trust-cluster__count {
-    color: #0f172a;
-  }
-  .cinematic-hero:not([data-hero-skin="dark"]) .trust-cluster__text {
-    color: #1e293b;
-  }
-
   /* ── Dark skin: text-shadow — extended to all left-column text ─────────
      Badge, cluster count/text, and icon labels added alongside h1/p/ul.   *
-   * Light skin uses its own text-shadow block above.                       */
+   * No text-shadow in light skin — scrim opacity is sufficient.           */
   .cinematic-hero[data-hero-skin="dark"] .hero-left-panel h1,
   .cinematic-hero[data-hero-skin="dark"] .hero-left-panel p,
   .cinematic-hero[data-hero-skin="dark"] .hero-left-panel ul,
@@ -857,57 +841,6 @@ const heroServiceOptions = serviceEntries.length > 0
   [data-skin="light"] .hp-cta-sub         { color: var(--rs-text-muted); }
   [data-skin="light"] .hp-cta-label       { color: var(--rs-text-muted); }
   [data-skin="light"] .hp-cta-value       { color: var(--rs-text); }
-
-  /* ── Image mode — full-bleed bg image with brand-tinted scrim ────────── */
-  /* Background image container — spans full card, behind both columns */
-  .hp-cta-bgimg {
-    position: absolute; inset: 0; z-index: 0;
-  }
-  .hp-cta-bgimg :global(picture),
-  .hp-cta-bgimg :global(img) {
-    position: absolute; inset: 0;
-    width: 100%; height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-
-  /* Brand-tinted dark scrim — dark enough for legibility, hint of brand hue */
-  .hp-cta-scrim {
-    position: absolute; inset: 0; z-index: 1;
-    background: linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--rs-brand) 28%, rgba(0,0,0,0.78)) 0%,
-      color-mix(in srgb, var(--rs-brand) 14%, rgba(0,0,0,0.72)) 50%,
-      color-mix(in srgb, var(--rs-brand) 20%, rgba(0,0,0,0.80)) 100%
-    );
-  }
-
-  /* Card must be position:relative so the absolute image sits inside it */
-  .hp-cta-card[data-bg="image"] {
-    position: relative;
-    background: transparent !important;
-  }
-  /* Suppress the split right-panel background when image is active */
-  .hp-cta-card[data-bg="image"] .hp-cta-card__right {
-    background: transparent !important;
-  }
-
-  /* Content columns sit above the image+scrim */
-  .hp-cta-card[data-bg="image"] > :not(.hp-cta-bgimg) {
-    position: relative;
-    z-index: 2;
-  }
-
-  /* Force white text over the image regardless of skin */
-  .hp-cta-card[data-bg="image"] .hp-cta-heading { color: #ffffff; }
-  .hp-cta-card[data-bg="image"] .hp-cta-sub     { color: rgba(255,255,255,0.85); }
-  .hp-cta-card[data-bg="image"] .hp-cta-label   { color: rgba(255,255,255,0.55); }
-  .hp-cta-card[data-bg="image"] .hp-cta-value   { color: #ffffff; }
-
-  /* Icon chip backgrounds on image mode */
-  .hp-cta-card[data-bg="image"] span[style*="rs-brand"] {
-    background: rgba(255,255,255,0.14) !important;
-  }
 </style>
 
 <script>

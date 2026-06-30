@@ -167,6 +167,10 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
   color: var(--rs-text) !important;
   border: 1px solid var(--rs-border);
 }
+/* Wave dividers: hide decorative SVG waves in dark skin to avoid color mismatches */
+[data-skin="dark"] .wave-divider {
+  display: none;
+}
 
 /* ── RS Pop Utilities ───────────────────────────────────────────────────── */
 .u-gradient-text { color: var(--rs-accent); }
@@ -626,6 +630,9 @@ details[open] .rs-faq-a {
 /* Hero content must sit above the pattern */
 .page-hero > * { position: relative; z-index: 1; }
 
+/* ── Wave divider ──────────────────────────────────────────────────────── */
+.wave-divider { display: block; width: 100%; overflow: hidden; line-height: 0; margin-bottom: -1px; }
+.wave-divider svg { display: block; width: 100%; }
 
 /* ═══════════════════════════════════════════════════════════════════════════
    PROSE — tuned typography for all markdown content areas
