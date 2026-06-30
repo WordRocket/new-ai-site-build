@@ -175,12 +175,13 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
 [data-skin="light"] .faq-wave-top {
   display: none;
 }
-/* FAQ heading: no text-shadow on light skin */
+/* FAQ heading: no text-shadow on light skin (heading + subhead paragraph) */
 [data-skin="light"] #faq-heading,
-[data-skin="light"] #faq-heading-light {
+[data-skin="light"] #faq-heading-light,
+[data-skin="light"] .faq-header p {
   text-shadow: none !important;
 }
-/* FAQ heading swap: dark version hidden, light two-tone version shown */
+/* FAQ heading swap: dark version hidden, light two-tone version shown — centered */
 [data-skin="light"] .faq-heading-dark { display: none !important; }
 [data-skin="light"] .faq-heading-light {
   display: block !important;
@@ -189,7 +190,7 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
   font-weight: 700;
   line-height: 1.15;
   letter-spacing: -0.025em;
-  text-align: left;
+  text-align: center;
 }
 /* FAQ subheading: normal weight to match site body */
 [data-skin="light"] .faq-subhead {
