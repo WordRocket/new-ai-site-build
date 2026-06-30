@@ -171,6 +171,15 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
 [data-skin="dark"] .wave-divider {
   display: none;
 }
+/* FAQ wave uses dark-navy fill — hide it on light skin since FAQ is now light */
+[data-skin="light"] .faq-wave-top {
+  display: none;
+}
+/* FAQ heading: no text-shadow on light skin */
+[data-skin="light"] #faq-heading,
+[data-skin="light"] #faq-heading-light {
+  text-shadow: none !important;
+}
 
 /* ── RS Pop Utilities ───────────────────────────────────────────────────── */
 .u-gradient-text { color: var(--rs-accent); }

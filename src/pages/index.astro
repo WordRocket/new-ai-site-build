@@ -960,15 +960,12 @@ const heroServiceOptions = serviceEntries.length > 0
     z-index: 2;
   }
 
-  /* Wave above FAQ: hidden on light skin (FAQ becomes light, no dark band needed) */
+  /* Wave background color (hide rule is in global.css) */
   .faq-wave-top {
     background: var(--color-neutral-50);
   }
-  [data-skin="light"] .faq-wave-top {
-    display: none;
-  }
 
-  /* Dark skin default heading (centered white) */
+  /* Dark skin default heading: centered white */
   .faq-heading-dark {
     color: #ffffff;
     text-align: center;
@@ -977,21 +974,19 @@ const heroServiceOptions = serviceEntries.length > 0
     margin-left: auto;
     margin-right: auto;
   }
-  .faq-header {
-    text-align: center;
-  }
+  .faq-header { text-align: center; }
   .faq-list-wrap {
     margin-left: auto;
     margin-right: auto;
   }
 
-  /* Light-skin heading: hide the dark version, show the two-tone version */
+  /* Light-skin heading: hidden by default, shown on light skin */
   .faq-heading-light { display: none; }
   .faq-heading-accent { color: var(--rs-brand-text); }
 
   /* ── LIGHT SKIN OVERRIDES ──────────────────────────────────────────── */
 
-  /* No image: flat light bg. Image: transparent so the photo+light-scrim show through. */
+  /* No image: flat light bg. Image: transparent so photo+light-scrim show through. */
   [data-skin="light"] .faq-section {
     background: var(--rs-bg) !important;
   }
@@ -999,7 +994,6 @@ const heroServiceOptions = serviceEntries.length > 0
     background: transparent !important;
   }
 
-  /* faq-photo-accent is unused (SectionBgImage lightScrim handles the photo now) */
   .faq-photo-accent { display: none; }
 
   /* Left-aligned header on light skin */
@@ -1020,9 +1014,10 @@ const heroServiceOptions = serviceEntries.length > 0
   [data-skin="light"] .faq-heading-light {
     display: block;
     color: var(--rs-text);
-    font-size: clamp(2rem, 4vw, 3rem);
-    font-weight: 800;
-    line-height: 1.1;
+    /* Match global h2: weight 700, same size scale */
+    font-size: clamp(1.8rem, 3vw, 2.8rem);
+    font-weight: 700;
+    line-height: 1.15;
     letter-spacing: -0.025em;
     text-align: left;
   }
