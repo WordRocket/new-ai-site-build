@@ -40,7 +40,7 @@ const { main: hMain, last: hLast } = splitH(displayHeading);
 
     <ol class="pt__list" aria-label={displayHeading}>
       {steps.map((step, i) => (
-        <li class="pt__step reveal">
+        <li class={`pt__step pt__step--${i}`}>
           <div class="pt__marker" aria-hidden="true">
             <span class="pt__num">{i + 1}</span>
           </div>
@@ -96,6 +96,7 @@ const { main: hMain, last: hLast } = splitH(displayHeading);
       var(--rs-accent),
       color-mix(in srgb, var(--rs-accent) 15%, transparent)
     );
+    transform-origin: top center;
   }
 
   .pt__marker {
@@ -149,9 +150,71 @@ const { main: hMain, last: hLast } = splitH(displayHeading);
         var(--rs-accent),
         color-mix(in srgb, var(--rs-accent) 25%, var(--rs-border))
       );
+      transform-origin: left center;
     }
 
     .pt__marker { margin-bottom: 1.25rem; }
     .pt__body { padding-top: 0; }
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────
+     Scroll-driven staggered reveal
+     Each step fades + slides up tied to the timeline section entering view.
+     The ::after connector line draws in (scaleX/scaleY) just before the
+     next step appears, giving a left-to-right "drawing" feel on desktop
+     and a top-to-bottom draw on mobile.
+     Content is always visible by default — animation is pure enhancement.
+  ───────────────────────────────────────────────────────────────────── */
+
+  @keyframes pt-step-in {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  @keyframes pt-line-draw-x {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+  }
+
+  @keyframes pt-line-draw-y {
+    from { transform: scaleY(0); }
+    to   { transform: scaleY(1); }
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      /* All steps animate relative to the section entering the viewport */
+      .pt__step {
+        animation: pt-step-in 0.35s ease-out both;
+        animation-timeline: view();
+        animation-range: entry 5% cover 35%;
+      }
+
+      /* Stagger each step by 120ms so they cascade left-to-right */
+      .pt__step--0 { animation-delay:  0ms; }
+      .pt__step--1 { animation-delay: 120ms; }
+      .pt__step--2 { animation-delay: 240ms; }
+      .pt__step--3 { animation-delay: 360ms; }
+      .pt__step--4 { animation-delay: 480ms; }
+
+      /* Mobile: connector line draws downward, delayed so it starts after
+         the step above it appears and before the next step does */
+      .pt__step:not(:last-child)::after {
+        animation: pt-line-draw-y 0.3s ease-out both;
+        animation-timeline: view();
+        animation-range: entry 5% cover 35%;
+      }
+      .pt__step--0:not(:last-child)::after { animation-delay:  60ms; }
+      .pt__step--1:not(:last-child)::after { animation-delay: 180ms; }
+      .pt__step--2:not(:last-child)::after { animation-delay: 300ms; }
+      .pt__step--3:not(:last-child)::after { animation-delay: 420ms; }
+
+      /* Desktop: connector draws left-to-right */
+      @media (min-width: 768px) {
+        .pt__step:not(:last-child)::after {
+          animation-name: pt-line-draw-x;
+        }
+      }
+    }
   }
 </style>
