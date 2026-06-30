@@ -525,6 +525,19 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
 .section-dark .stat-value { color: var(--color-brand-light); }
 .section-dark .stat-label { color: #94a3b8; }
 
+/* Light skin: flip .section-dark to light neutral with dark text */
+[data-skin="light"] .section-dark {
+  background: var(--rs-surface);
+  color: var(--rs-text);
+}
+[data-skin="light"] .section-dark h1,
+[data-skin="light"] .section-dark h2,
+[data-skin="light"] .section-dark h3 {
+  color: var(--rs-text);
+}
+[data-skin="light"] .section-dark .stat-value { color: var(--rs-brand-text); }
+[data-skin="light"] .section-dark .stat-label { color: var(--rs-text-muted); }
+
 /* ── FAQ accordion — native <details>/<summary> ────────────────────────── */
 .rs-faq-item {
   border-bottom: 1px solid var(--rs-border);
@@ -587,7 +600,7 @@ details[open] .rs-faq-a {
   margin: 0;
   padding-bottom: 1rem;
 }
-.section-dark .rs-faq-a > div > p {
+[data-skin="dark"] .section-dark .rs-faq-a > div > p {
   color: rgba(255, 255, 255, 0.62);
 }
 
