@@ -484,7 +484,7 @@ const heroServiceOptions = serviceEntries.length > 0
 <section class="section-pad" style="background:var(--rs-surface);" aria-labelledby="area-heading">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
     <h2 id="area-heading" class="reveal text-[var(--color-text)] mb-4">
-      Proudly Serving {siteConfig.city} &amp; Surrounding Areas
+      Proudly Serving <span style="color:var(--rs-brand-text)">{siteConfig.city} &amp; Surrounding Areas</span>
     </h2>
     <p class="text-[var(--color-text-muted)] text-lg max-w-xl mx-auto mb-8">
       We're local — we know these neighbourhoods, we live here too.
@@ -530,7 +530,7 @@ const heroServiceOptions = serviceEntries.length > 0
     <div class="faq-header mb-14">
       <h2 id="faq-heading" class="reveal faq-heading-dark mb-4">Frequently Asked Questions</h2>
       <h2 id="faq-heading-light" class="reveal faq-heading-light mb-4" aria-hidden="true">Frequently Asked <span class="faq-heading-accent">Questions</span></h2>
-      <p class="faq-subhead text-lg max-w-2xl" style="color:#94a3b8;">Everything you need to know before getting started.</p>
+      <p class="faq-subhead text-lg max-w-2xl">Everything you need to know before getting started.</p>
     </div>
     <div class="max-w-3xl faq-list-wrap mx-auto flex flex-col" id="faq-list">
       {faqs.map(({ question, answer }, i) => (
@@ -980,7 +980,7 @@ const heroServiceOptions = serviceEntries.length > 0
     margin-right: auto;
   }
 
-  /* Light-skin heading: hidden by default, shown on light skin */
+  /* Light-skin heading: hidden by default, shown on light skin (swap in global.css) */
   .faq-heading-light { display: none; }
   .faq-heading-accent { color: var(--rs-brand-text); }
 
@@ -996,12 +996,11 @@ const heroServiceOptions = serviceEntries.length > 0
 
   .faq-photo-accent { display: none; }
 
-  /* Left-aligned header on light skin */
+  /* Left-aligned header on light skin (heading swap handled by global.css) */
   [data-skin="light"] .faq-header { text-align: left; }
   [data-skin="light"] .faq-subhead {
     margin-left: 0;
     margin-right: 0;
-    color: var(--rs-text-muted) !important;
   }
   [data-skin="light"] .faq-list-wrap {
     margin-left: 0;
@@ -1009,18 +1008,7 @@ const heroServiceOptions = serviceEntries.length > 0
     max-width: none;
   }
 
-  /* Swap headings: dark version centered+white, light version left+two-tone */
-  [data-skin="light"] .faq-heading-dark { display: none; }
-  [data-skin="light"] .faq-heading-light {
-    display: block;
-    color: var(--rs-text);
-    /* Match global h2: weight 700, same size scale */
-    font-size: clamp(1.8rem, 3vw, 2.8rem);
-    font-weight: 700;
-    line-height: 1.15;
-    letter-spacing: -0.025em;
-    text-align: left;
-  }
+  /* Swap headings: handled in global.css to avoid Astro scoping issues */
 
   /* Dark skin image mode: transparent so photo fills section */
   .faq-section[data-bg="image"] { background: transparent; }

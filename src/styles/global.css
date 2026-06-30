@@ -180,6 +180,22 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
 [data-skin="light"] #faq-heading-light {
   text-shadow: none !important;
 }
+/* FAQ heading swap: dark version hidden, light two-tone version shown */
+[data-skin="light"] .faq-heading-dark { display: none !important; }
+[data-skin="light"] .faq-heading-light {
+  display: block !important;
+  color: var(--rs-text);
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  text-align: left;
+}
+/* FAQ subheading: normal weight to match site body */
+[data-skin="light"] .faq-subhead {
+  font-weight: 400;
+  color: var(--rs-text-muted) !important;
+}
 
 /* ── RS Pop Utilities ───────────────────────────────────────────────────── */
 .u-gradient-text { color: var(--rs-accent); }
