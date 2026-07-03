@@ -164,7 +164,7 @@ const heroServiceOptions = serviceEntries.length > 0
   <div class="hero-cin-scrim" data-scrim-skin={skin} aria-hidden="true"></div>
 
   <!-- Left: text (unchanged) -->
-  <div class="hero-left-panel flex flex-col justify-center px-6 sm:px-10 lg:px-10 py-20 lg:py-0 relative z-10">
+  <div class="hero-left-panel flex flex-col justify-center px-6 sm:px-10 lg:px-10 pt-8 pb-12 lg:py-0 relative z-10">
 
     <div class="mb-5">
       <span class="u-badge">
@@ -272,7 +272,7 @@ const heroServiceOptions = serviceEntries.length > 0
   <div class="hero-cin-scrim" data-scrim-skin={skin} aria-hidden="true"></div>
 
   <!-- Left: text -->
-  <div class="hero-left-panel flex flex-col justify-center px-6 sm:px-10 lg:px-10 py-20 lg:py-0 relative z-10">
+  <div class="hero-left-panel flex flex-col justify-center px-6 sm:px-10 lg:px-10 pt-8 pb-12 lg:py-0 relative z-10">
 
     <div class="mb-5">
       <span class="u-badge">
@@ -625,6 +625,14 @@ const heroServiceOptions = serviceEntries.length > 0
 </BaseLayout>
 
 <style>
+  /* Pull the hero flush against the fixed nav by cancelling the spacer div.
+     The spacer is 100px (top-bar 36px + nav 64px) when the top-bar is shown,
+     64px when it is hidden. We use -100px as the worst-case safe value; on
+     sites without a top-bar the hero simply starts 36px earlier (fine).     */
+  .hero-split {
+    margin-top: -100px;
+  }
+
   /* ── Cinematic hero — full-bleed background image treatment ─────────────
 
      LAYER ORDER (bottom → top):
