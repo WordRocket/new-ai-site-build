@@ -164,7 +164,14 @@ const heroServiceOptions = serviceEntries.length > 0
   <div class="hero-cin-scrim" data-scrim-skin={skin} aria-hidden="true"></div>
 
   <!-- Left: text (unchanged) -->
-  <div class="hero-left-panel flex flex-col justify-center px-6 sm:px-10 lg:px-10 pt-8 pb-12 lg:py-0 relative z-10">
+  <div class="hero-left-panel flex flex-col justify-start px-6 sm:px-10 lg:px-10 pt-[116px] pb-12 lg:pt-10 lg:pb-10 relative z-10">
+
+    <div class="mb-5">
+      <span class="u-badge">
+        <span class="u-badge__dot" aria-hidden="true"></span>
+        {siteConfig.city}'s Trusted {nicheLabel}
+      </span>
+    </div>
 
     <h1 class="font-extrabold tracking-tight leading-[1.1] mb-5" style="color:var(--rs-text);">
       {heroNameMain ? `${heroNameMain} ` : ''}<span class="u-gradient-text">{heroNameLast}</span>
@@ -206,6 +213,17 @@ const heroServiceOptions = serviceEntries.length > 0
         </li>
       ))}
     </ul>
+
+    {heroStats.length > 0 && (
+      <div class="u-reveal flex flex-wrap justify-center sm:justify-start gap-x-8 gap-y-4 pt-6 border-t" style="border-color:var(--rs-border);">
+        {heroStats.map(({ value, label }) => (
+          <div class="flex flex-col">
+            <span class="text-2xl font-extrabold leading-none u-gradient-text" data-count-to={value}>{value}</span>
+            <span class="text-xs font-medium mt-1 uppercase tracking-wide" style="color:var(--rs-text-muted);">{label}</span>
+          </div>
+        ))}
+      </div>
+    )}
   </div>
 
   <!-- Right: lead capture form card -->
@@ -254,7 +272,14 @@ const heroServiceOptions = serviceEntries.length > 0
   <div class="hero-cin-scrim" data-scrim-skin={skin} aria-hidden="true"></div>
 
   <!-- Left: text -->
-  <div class="hero-left-panel flex flex-col justify-center px-6 sm:px-10 lg:px-10 pt-8 pb-12 lg:py-0 relative z-10">
+  <div class="hero-left-panel flex flex-col justify-start px-6 sm:px-10 lg:px-10 pt-[116px] pb-12 lg:pt-10 lg:pb-10 relative z-10">
+
+    <div class="mb-5">
+      <span class="u-badge">
+        <span class="u-badge__dot" aria-hidden="true"></span>
+        {siteConfig.city}'s Trusted {nicheLabel}
+      </span>
+    </div>
 
     <h1 class="font-extrabold tracking-tight leading-[1.1] mb-5" style="color:var(--rs-text);">
       {heroNameMain ? `${heroNameMain} ` : ''}<span class="u-gradient-text">{heroNameLast}</span>
@@ -296,6 +321,17 @@ const heroServiceOptions = serviceEntries.length > 0
         </li>
       ))}
     </ul>
+
+    {heroStats.length > 0 && (
+      <div class="u-reveal flex flex-wrap justify-center sm:justify-start gap-x-8 gap-y-4 pt-6 border-t" style="border-color:var(--rs-border);">
+        {heroStats.map(({ value, label }) => (
+          <div class="flex flex-col">
+            <span class="text-2xl font-extrabold leading-none u-gradient-text" data-count-to={value}>{value}</span>
+            <span class="text-xs font-medium mt-1 uppercase tracking-wide" style="color:var(--rs-text-muted);">{label}</span>
+          </div>
+        ))}
+      </div>
+    )}
   </div>
 
   <!-- Right: graphic panel -->

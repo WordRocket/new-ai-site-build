@@ -345,7 +345,7 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
 
 /* ── Hero split ────────────────────────────────────────────────────────── */
 .hero-split {
-  min-height: min(75vh, 680px);
+  min-height: min(82vh, 720px);
   display: grid;
   grid-template-columns: 55fr 45fr;
 }
