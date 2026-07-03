@@ -432,7 +432,7 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
 @media (min-width: 901px) {
   .hero-split--form {
     grid-template-columns: 50fr 50fr;
-    min-height: calc(100vh - 100px);
+    min-height: min(calc(100vh - 100px), 760px);
   }
 }
 

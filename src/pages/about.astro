@@ -49,6 +49,16 @@ const vars = { city: siteConfig.city, niche: nicheLabel };
 
 const hasStats = Boolean(siteConfig.yearsInBusiness || siteConfig.clientsServed);
 
+function splitH(h: string): { main: string; last: string } {
+  const words = h.trim().split(/\s+/);
+  if (words.length === 1) return { main: '', last: words[0] };
+  return { main: words.slice(0, -1).join(' ') + ' ', last: words[words.length - 1] };
+}
+const aboutTitle = ap?.title || ('About ' + siteConfig.name);
+const { main: aboutMain, last: aboutLast } = splitH(aboutTitle);
+const whyTitle = 'Why Choose ' + siteConfig.name;
+const { main: whyMain, last: whyLast } = splitH(whyTitle);
+
 const trustSignals = [
   siteConfig.yearsInBusiness && { value: siteConfig.yearsInBusiness, label: 'Years in Business' },
   siteConfig.clientsServed && { value: siteConfig.clientsServed, label: 'Clients Served' },
@@ -118,7 +128,7 @@ const whyUs = [
     <section class="py-16 sm:py-24 text-center" style="background:var(--rs-surface);">
       <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-[var(--color-text)] mb-5">
-          {ap?.title || ('About ' + siteConfig.name)}
+          {aboutMain}<span class="u-gradient-text">{aboutLast}</span>
         </h1>
         <p class="text-[var(--color-text-muted)] text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed">
           {ap?.description || ('Your trusted ' + nicheLabel + ' experts in ' + siteConfig.city + ', ' + siteConfig.state)}
@@ -145,7 +155,7 @@ const whyUs = [
       <!-- Our Story — Option B: single-column, image between heading and prose -->
       <section>
         <div class="max-w-[740px] mx-auto flex flex-col gap-6">
-          <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--color-text)]">Our Story</h2>
+          <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--color-text)]">Our <span class="u-gradient-text">Story</span></h2>
           <div class="rounded-[var(--radius-lg)] overflow-hidden" style="max-width:640px;">
             <SmartImage
               src={ap?.heroImage ?? ''}
@@ -178,7 +188,7 @@ const whyUs = [
 
       <!-- Our Team -->
       <section>
-        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--color-text)] mb-8 text-center">Our Team</h2>
+        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--color-text)] mb-8 text-center">Our <span class="u-gradient-text">Team</span></h2>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
           {team.map((member) => (
             <div class="flex flex-col items-center text-center gap-4 p-6 rounded-[var(--radius-md)]" style="background:var(--rs-surface); box-shadow:var(--rs-shadow-card); border:1px solid var(--rs-border);">
@@ -197,7 +207,7 @@ const whyUs = [
 
       <!-- Why Choose Us -->
       <section>
-        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--color-text)] mb-8 text-center">Why Choose {siteConfig.name}</h2>
+        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--color-text)] mb-8 text-center">{whyMain}<span class="u-gradient-text">{whyLast}</span></h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {whyUs.map((item) => (
             <div class="flex items-start gap-4 p-6 rounded-[var(--radius-md)]" style="background:var(--rs-surface); box-shadow:var(--rs-shadow-card); border:1px solid var(--rs-border);">

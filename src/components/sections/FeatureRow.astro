@@ -41,6 +41,13 @@ const {
 } = Astro.props;
 
 const showBadge = statValue && statLabel;
+
+function splitH(h: string): { main: string; last: string } {
+  const words = h.trim().split(/\s+/);
+  if (words.length === 1) return { main: '', last: words[0] };
+  return { main: words.slice(0, -1).join(' ') + ' ', last: words[words.length - 1] };
+}
+const { main: frMain, last: frLast } = splitH(heading);
 ---
 
 <section class="fr-section u-reveal" style={`background:${bg};`}>
@@ -68,7 +75,7 @@ const showBadge = statValue && statLabel;
     <div class="fr-text">
       {eyebrow && <span class="u-eyebrow fr-eyebrow">{eyebrow}</span>}
 
-      <h2 class="fr-heading">{heading}</h2>
+      <h2 class="fr-heading">{frMain}<span class="u-gradient-text">{frLast}</span></h2>
 
       <p class="fr-body">{body}</p>
 
