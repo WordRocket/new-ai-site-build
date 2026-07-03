@@ -519,6 +519,21 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
 /* Decorative radial gradient behind the headline; transform/opacity only.  */
 /* prefers-reduced-motion: reduce → animation disabled, static low opacity. */
 .hero-left-panel { overflow: hidden; }
+
+/* Mobile: center all hero left-panel content */
+@media (max-width: 900px) {
+  .hero-left-panel {
+    align-items: center;
+    text-align: center;
+  }
+  .hero-left-panel p {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .hero-left-panel ul {
+    justify-content: center;
+  }
+}
 .hero-left-panel::before {
   content: "";
   position: absolute;

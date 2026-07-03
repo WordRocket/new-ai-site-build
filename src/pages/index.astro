@@ -164,7 +164,7 @@ const heroServiceOptions = serviceEntries.length > 0
   <div class="hero-cin-scrim" data-scrim-skin={skin} aria-hidden="true"></div>
 
   <!-- Left: text (unchanged) -->
-  <div class="hero-left-panel flex flex-col justify-center px-6 sm:px-10 lg:px-16 py-20 lg:py-0 relative z-10">
+  <div class="hero-left-panel flex flex-col justify-center px-6 sm:px-10 lg:px-10 py-20 lg:py-0 relative z-10">
 
     <div class="mb-5">
       <span class="u-badge">
@@ -181,7 +181,7 @@ const heroServiceOptions = serviceEntries.length > 0
       {siteConfig.tagline}
     </p>
 
-    <div class="flex flex-col sm:flex-row items-start gap-3 mb-4">
+    <div class="flex flex-col sm:flex-row items-center sm:items-start gap-3 mb-4">
       <a href={primaryCta} class="u-btn u-btn-primary">
         {preset.heroCta}
       </a>
@@ -215,7 +215,7 @@ const heroServiceOptions = serviceEntries.length > 0
     </ul>
 
     {heroStats.length > 0 && (
-      <div class="u-reveal flex flex-wrap gap-x-8 gap-y-4 pt-6 border-t" style="border-color:var(--rs-border);">
+      <div class="u-reveal flex flex-wrap justify-center sm:justify-start gap-x-8 gap-y-4 pt-6 border-t" style="border-color:var(--rs-border);">
         {heroStats.map(({ value, label }) => (
           <div class="flex flex-col">
             <span class="text-2xl font-extrabold leading-none u-gradient-text" data-count-to={value}>{value}</span>
@@ -272,7 +272,7 @@ const heroServiceOptions = serviceEntries.length > 0
   <div class="hero-cin-scrim" data-scrim-skin={skin} aria-hidden="true"></div>
 
   <!-- Left: text -->
-  <div class="hero-left-panel flex flex-col justify-center px-6 sm:px-10 lg:px-16 py-20 lg:py-0 relative z-10">
+  <div class="hero-left-panel flex flex-col justify-center px-6 sm:px-10 lg:px-10 py-20 lg:py-0 relative z-10">
 
     <div class="mb-5">
       <span class="u-badge">
@@ -289,7 +289,7 @@ const heroServiceOptions = serviceEntries.length > 0
       {siteConfig.tagline}
     </p>
 
-    <div class="flex flex-col sm:flex-row items-start gap-3 mb-4">
+    <div class="flex flex-col sm:flex-row items-center sm:items-start gap-3 mb-4">
       <a href={primaryCta} class="u-btn u-btn-primary">
         {preset.heroCta}
       </a>
@@ -323,7 +323,7 @@ const heroServiceOptions = serviceEntries.length > 0
     </ul>
 
     {heroStats.length > 0 && (
-      <div class="u-reveal flex flex-wrap gap-x-8 gap-y-4 pt-6 border-t" style="border-color:var(--rs-border);">
+      <div class="u-reveal flex flex-wrap justify-center sm:justify-start gap-x-8 gap-y-4 pt-6 border-t" style="border-color:var(--rs-border);">
         {heroStats.map(({ value, label }) => (
           <div class="flex flex-col">
             <span class="text-2xl font-extrabold leading-none u-gradient-text" data-count-to={value}>{value}</span>
