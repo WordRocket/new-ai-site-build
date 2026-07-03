@@ -949,11 +949,27 @@ details[open] .rs-faq-a {
 
 /* ── Images ─────────────────────────────────────────────────────────────── */
 .prose img {
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
+  width: 100%;
   max-width: 100%;
   height: auto;
-  margin: 1.5em 0;
+  border-radius: var(--radius-lg, 12px);
+  margin: 2rem auto;
+  display: block;
+  object-fit: cover;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+/* Caption support — italicised text immediately after an image renders as a subtle caption */
+.prose img + em {
+  display: block;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--rs-text-muted);
+  margin-top: -1.25rem;
+  margin-bottom: 2rem;
+}
+/* Skin-aware shadow */
+[data-skin="dark"] .prose img {
+  box-shadow: 0 4px 24px rgba(0,0,0,0.32);
 }
 
 /* ── Page body two-column layout ──────────────────────────────────────────
