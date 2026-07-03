@@ -15,6 +15,9 @@ import SectionBgImage from '../components/SectionBgImage.astro';
 
 const serviceEntries = await getCollection('services').catch(() => []);
 const locationEntries = await getCollection('locations').catch(() => []);
+const allBlogPosts = await getCollection('blog').catch(() => []);
+const recentBlogPosts = allBlogPosts
+  .sort((a, b) => new Date(b.data.datePublished).getTime() - new Date(a.data.datePublished).getTime());
 const extraCities = [...new Set(
   locationEntries
     .map(e => e.data.city?.trim())
@@ -143,6 +146,7 @@ function splitH(h: string): { main: string; last: string } {
 
 const servicesHeadingText = interpolate(preset.servicesHeading, vars);
 const { main: svcMain, last: svcLast } = splitH(servicesHeadingText);
+const { main: blogMain, last: blogLast } = splitH('Latest Posts');
 // Derive skin here (same logic as BaseLayout) so the hero template can set
 // skin-aware attributes directly on elements — avoids relying on the
 // [data-skin="dark"] CSS ancestor selector which can fail in Astro scoped CSS.
@@ -401,7 +405,8 @@ const heroServiceOptions = serviceEntries.length > 0
 </section>
 )}
 
-<!-- ─── SERVICES GRID ─────────────────────────────────────────────────── -->
+<!-- ─── SERVICES GRID / BLOG GRID ─────────────────────────────────────── -->
+{isLocalService ? (
 <section class="section-pad" style="background:var(--rs-surface);" aria-labelledby="services-heading">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center mb-14">
@@ -422,6 +427,31 @@ const heroServiceOptions = serviceEntries.length > 0
     </div>
   </div>
 </section>
+) : (
+<section class="section-pad" style="background:var(--rs-surface);" aria-labelledby="blog-grid-heading">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-14">
+      <h2 id="blog-grid-heading" class="reveal text-[var(--color-text)] mb-4">{blogMain}<span class="u-gradient-text">{blogLast}</span></h2>
+      <p class="text-[var(--color-text-muted)] text-lg max-w-2xl mx-auto">{siteConfig.tagline || 'Insights and ideas worth reading'}</p>
+    </div>
+    {recentBlogPosts.length > 0 ? (
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {recentBlogPosts.slice(0, 6).map((post) => (
+          <ServiceCard
+            title={post.data.title}
+            description={post.data.description}
+            image={post.data.featuredImage || post.data.heroImage || undefined}
+            href={`/blog/${post.slug}`}
+            class="reveal"
+          />
+        ))}
+      </div>
+    ) : (
+      <p class="text-center py-8" style="color:var(--rs-text-muted);">Blog posts will appear here once published.</p>
+    )}
+  </div>
+</section>
+)}
 
 <!-- wave: neutral → white -->
 <div class="wave-divider" style="background:var(--color-neutral-50);" aria-hidden="true">
