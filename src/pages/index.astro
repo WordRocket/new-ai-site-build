@@ -150,6 +150,7 @@ const skin: 'light' | 'dark' =
   (siteConfig as any).skin === 'dark'  ? 'dark'  :
   (siteConfig as any).skin === 'light' ? 'light' :
   (siteConfig as any).darkMode         ? 'dark'  : 'light';
+const isLocalService = (siteConfig as any).businessType === 'local-service';
 const heroServiceOptions = serviceEntries.length > 0
   ? serviceEntries.map((e) => ({ value: e.slug, label: e.data.title }))
   : [{ value: 'general-inquiry', label: 'General Inquiry' }];
@@ -242,7 +243,7 @@ const heroServiceOptions = serviceEntries.length > 0
       ))}
     </ul>
 
-    {heroStats.length > 0 && (
+    {isLocalService && heroStats.length > 0 && (
       <div class="u-reveal flex flex-wrap justify-center sm:justify-start gap-x-8 gap-y-4 pt-6 border-t" style="border-color:var(--rs-border);">
         {heroStats.map(({ value, label }) => (
           <div class="flex flex-col">
@@ -257,7 +258,7 @@ const heroServiceOptions = serviceEntries.length > 0
   <!-- Right: lead capture form card -->
   <div class="hero-form-panel relative z-[2]">
     <div class="hero-form-card w-full">
-      <p class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--rs-accent);">Get a Free Estimate</p>
+      <p class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--rs-accent);">{isLocalService ? 'Get a Free Estimate' : 'Get in Touch'}</p>
       <LeadForm
         formId="hero-form"
         endpoint={formEndpoint}
@@ -350,7 +351,7 @@ const heroServiceOptions = serviceEntries.length > 0
       ))}
     </ul>
 
-    {heroStats.length > 0 && (
+    {isLocalService && heroStats.length > 0 && (
       <div class="u-reveal flex flex-wrap justify-center sm:justify-start gap-x-8 gap-y-4 pt-6 border-t" style="border-color:var(--rs-border);">
         {heroStats.map(({ value, label }) => (
           <div class="flex flex-col">
@@ -372,10 +373,12 @@ const heroServiceOptions = serviceEntries.length > 0
       <Icon name="star" width={14} height={14} style="fill:#f59e0b; color:#f59e0b;" aria-hidden="true" />
       5-Star Rated
     </div>
-    <div class="hero-float-card" style="bottom:10%; left:8%;">
-      <Icon name="file-text" width={14} height={14} style="color:var(--rs-accent);" aria-hidden="true" />
-      Free Estimates
-    </div>
+    {isLocalService && (
+      <div class="hero-float-card" style="bottom:10%; left:8%;">
+        <Icon name="file-text" width={14} height={14} style="color:var(--rs-accent);" aria-hidden="true" />
+        Free Estimates
+      </div>
+    )}
   </div>
 
 </section>
@@ -383,7 +386,7 @@ const heroServiceOptions = serviceEntries.length > 0
 )}
 
 <!-- ─── DARK STATS BAR (no-form variant only; form variant shows stats in hero) ─ -->
-{!formConnected && (
+{!formConnected && isLocalService && (
 <section class="section-dark" aria-label="Trust statistics">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
     <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
@@ -451,8 +454,8 @@ const heroServiceOptions = serviceEntries.length > 0
   heading={`Why ${siteConfig.city} Trusts ${siteConfig.name}`}
   body={hp?.description || siteConfig.description}
   checks={features.slice(0, 3).map((f) => ({ text: f.title }))}
-  ctaText="Get a Free Estimate"
-  ctaHref={siteConfig.phone ? `tel:${phoneDigits}` : '/contact'}
+  ctaText={isLocalService ? "Get a Free Estimate" : "Get in Touch"}
+  ctaHref={isLocalService && siteConfig.phone ? `tel:${phoneDigits}` : '/contact'}
   image={hp?.heroImage || siteConfig.heroImage}
   imageAlt={`${siteConfig.name} professional service`}
   bg="var(--rs-bg)"
@@ -509,6 +512,7 @@ const heroServiceOptions = serviceEntries.length > 0
 </div>
 
 <!-- ─── SERVICE AREA ──────────────────────────────────────────────────── -->
+{isLocalService && (
 <section class="section-pad" style="background:var(--rs-surface);" aria-labelledby="area-heading">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Section header -->
@@ -585,6 +589,7 @@ const heroServiceOptions = serviceEntries.length > 0
     </div>
   </div>
 </section>
+)}
 
 <!-- ─── BODY CONTENT (home.md markdown body) ─────────────────────────── -->
 {HomeContent && (

@@ -74,7 +74,7 @@ function formatDate(iso: string): string {
         </a>
       )}
       <a href="/contact" class="sb-cta-btn">
-        Get a Free Quote
+        {(siteConfig as any).businessType === 'local-service' ? 'Get a Free Quote' : 'Get in Touch'}
       </a>
       {signals.length > 0 && (
         <ul class="sb-trust-inline" aria-label="Why choose us">

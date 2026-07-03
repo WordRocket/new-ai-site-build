@@ -105,7 +105,7 @@ const sidebarLocations = allLocations.map(l => ({
         <p class="text-lg mb-4 max-w-xl" style="color:rgba(255,255,255,0.75);">{d.description}</p>
         {d.phone && (
           <a href={`tel:${(d.phone as string).replace(/\D/g,'')}`} class="btn-primary inline-flex items-center gap-2 px-7 py-3 rounded-[var(--radius-md)] text-base font-semibold text-white">
-            Call for a Free Quote
+            {(siteConfig as any).businessType === 'local-service' ? 'Call for a Free Quote' : 'Learn More'}
           </a>
         )}
       </div>
@@ -200,7 +200,7 @@ const sidebarLocations = allLocations.map(l => ({
         image={d.sectionImage}
         imageAlt={d.title}
         imageAspect="4/3"
-        ctaText="Get a Free Quote"
+        ctaText={(siteConfig as any).businessType === 'local-service' ? 'Get a Free Quote' : 'Get in Touch'}
         ctaHref="/contact"
         bg="var(--rs-surface)"
         reverse

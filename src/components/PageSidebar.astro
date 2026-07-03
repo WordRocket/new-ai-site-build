@@ -60,7 +60,7 @@ if (pageType === 'service') {
 // Show area block if we have links, OR as a service page fallback with siteConfig.city
 const showAreas =
   areasToShow.length > 0 ||
-  (pageType === 'service' && locations.length === 0 && !!siteConfig.city);
+  ((siteConfig as any).businessType === 'local-service' && pageType === 'service' && locations.length === 0 && !!siteConfig.city);
 
 // "Services in [city]" — location pages only
 const showCityServices = pageType === 'location' && services.length > 0;
@@ -93,7 +93,7 @@ const cityServicesHeading = city ? `Services in ${city}` : 'Our Services';
         </a>
       )}
       <a href="/contact" class="sb-cta-btn">
-        Get a Free Quote
+        {(siteConfig as any).businessType === 'local-service' ? 'Get a Free Quote' : 'Get in Touch'}
       </a>
       {showHours && (
         <ul class="sb-hours" aria-label="Business hours">

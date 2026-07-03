@@ -5,6 +5,7 @@ export type BusinessType =
   | 'restaurant'
   | 'ecommerce'
   | 'real-estate'
+  | 'general'
   | 'other';
 
 export interface TrustSignal {
@@ -256,6 +257,33 @@ export const BUSINESS_PRESETS: Record<BusinessType, BusinessPreset> = {
       heading: 'Ready to Get Started?',
       subtext: "We'd love to hear from you — reach out today.",
       buttonLabel: 'Contact Us',
+      buttonHref: '/contact',
+    },
+    processHeading: 'How It Works',
+  },
+
+  'general': {
+    skin: 'light',
+    emergencyBarEnabled: false,
+    heroCta: 'Get in Touch',
+    heroCtaSecondary: 'Learn More',
+    trustSignals: [],
+    statsLabel: 'Years in Business',
+    servicesHeading: 'What We Do',
+    servicesSubheading: 'Our work in {city}',
+    contactCta: 'Send a Message',
+    contactSubtext: 'We respond to all messages within one business day.',
+    stickyBar: {
+      show: false,
+      primaryLabel: 'Contact Us',
+      primaryHref: '/contact',
+      secondaryLabel: 'Learn More',
+      secondaryHref: '/about',
+    },
+    ctaBand: {
+      heading: 'Ready to Connect?',
+      subtext: "Get in touch — we'd love to hear from you.",
+      buttonLabel: 'Get in Touch',
       buttonHref: '/contact',
     },
     processHeading: 'How It Works',
