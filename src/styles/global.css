@@ -1,9 +1,11 @@
 @import "tailwindcss";
 
 /* ── CSS View Transitions (Astro ClientRouter handles JS lifecycle) ─────── */
-::view-transition-old(root) { animation: 220ms ease-out vt-fade-out forwards; }
-::view-transition-new(root) { animation: 220ms ease-in  vt-fade-in  forwards; }
-@keyframes vt-fade-out { from { opacity: 1; } to { opacity: 0; } }
+/* Fade-in only: old content stays visible until the swap, new content fades
+   in on top. Avoids the "double-dark" flash produced by pairing ease-out
+   (fast start) and ease-in (slow start) — both near opacity:0 at midpoint.  */
+::view-transition-old(root) { animation: none; }
+::view-transition-new(root) { animation: 180ms ease vt-fade-in; }
 @keyframes vt-fade-in  { from { opacity: 0; } to { opacity: 1; } }
 
 /* ── Design Tokens ─────────────────────────────────────────────────────── */
