@@ -333,6 +333,10 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
 
 /* ── Nav ───────────────────────────────────────────────────────────────── */
 #site-nav { top: 36px; }
+/* No emergency bar (general sites): snap nav to viewport top */
+body:not(:has(#top-bar)) #site-nav { top: 0; }
+/* Reduce hero clearance to match nav-only height (64px + 8px breathing) */
+body:not(:has(#top-bar)) .hero-split { padding-top: 72px; }
 #site-nav.scrolled {
   background: rgba(255,255,255,0.92) !important;
   backdrop-filter: blur(12px);
@@ -345,9 +349,12 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
 
 /* ── Hero split ────────────────────────────────────────────────────────── */
 .hero-split {
-  min-height: min(82vh, 720px);
+  min-height: calc(100vh - 100px);
   display: grid;
   grid-template-columns: 55fr 45fr;
+  padding-top: 100px;
+  padding-bottom: 60px;
+  box-sizing: border-box;
 }
 @media (max-width: 900px) {
   .hero-split,
@@ -432,7 +439,6 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
 @media (min-width: 901px) {
   .hero-split--form {
     grid-template-columns: 50fr 50fr;
-    min-height: min(calc(100vh - 100px), 760px);
   }
 }
 
@@ -518,7 +524,7 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
 }
 /* Decorative radial gradient behind the headline; transform/opacity only.  */
 /* prefers-reduced-motion: reduce → animation disabled, static low opacity. */
-.hero-left-panel { overflow: hidden; }
+.hero-left-panel { overflow: hidden; justify-content: center; }
 
 /* Mobile: center all hero left-panel content */
 @media (max-width: 900px) {
