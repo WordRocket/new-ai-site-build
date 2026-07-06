@@ -173,6 +173,7 @@ const servicesActive = pathname.startsWith('/services');
       <!-- Hamburger -->
       <button
         id="nav-toggle"
+        type="button"
         class="md:hidden flex flex-col justify-center items-center w-9 h-9 gap-1.5 rounded-md hover:bg-black/5 transition-colors"
         aria-label="Toggle menu"
         aria-expanded="false"
@@ -226,6 +227,7 @@ const servicesActive = pathname.startsWith('/services');
             </a>
             <button
               id="mob-svc-toggle"
+              type="button"
               class="mob-svc__caret px-2 py-2 rounded-md transition-colors hover:bg-neutral-100"
               style="color:var(--color-text);"
               aria-expanded="false"
@@ -303,6 +305,11 @@ const servicesActive = pathname.startsWith('/services');
 <div style={(siteConfig.phone && preset.emergencyBarEnabled) ? 'height:100px;' : 'height:64px;'}></div>
 
 <style>
+  /* ── Hamburger — touch-action prevents 300ms tap delay + double-tap zoom ── */
+  #nav-toggle {
+    touch-action: manipulation;
+  }
+
   /* ── Logo container — fixed height, never driven by native image dimensions ── */
   .nav-logo-wrap {
     display: block;
@@ -406,9 +413,19 @@ const servicesActive = pathname.startsWith('/services');
 </style>
 
 <script>
+  // AbortController lets us tear down every listener added by a previous initNav
+  // call before adding new ones. Without this, astro:page-load (which fires on
+  // every ClientRouter navigation) would stack scroll/click/keydown handlers
+  // indefinitely, eventually causing race conditions on the toggle state.
+  let _navAC: AbortController | null = null;
+
   function initNav() {
+    if (_navAC) _navAC.abort();
+    _navAC = new AbortController();
+    const { signal } = _navAC;
+
     const nav    = document.getElementById('site-nav');
-    const toggle = document.getElementById('nav-toggle');
+    const toggle = document.getElementById('nav-toggle') as HTMLButtonElement | null;
     const menu   = document.getElementById('mobile-menu');
     const hamTop = document.getElementById('ham-top');
     const hamMid = document.getElementById('ham-mid');
@@ -431,7 +448,7 @@ const servicesActive = pathname.startsWith('/services');
     }
 
     applyNavStyle();
-    window.addEventListener('scroll', applyNavStyle, { passive: true });
+    window.addEventListener('scroll', applyNavStyle, { passive: true, signal });
 
     function openMenu(open: boolean) {
       toggle!.setAttribute('aria-expanded', String(open));
@@ -443,21 +460,32 @@ const servicesActive = pathname.startsWith('/services');
     }
 
     toggle.addEventListener('click', () => {
-      openMenu(toggle.getAttribute('aria-expanded') !== 'true');
-    });
+      openMenu(toggle!.getAttribute('aria-expanded') !== 'true');
+    }, { signal });
 
+    // Close when clicking outside the nav
     document.addEventListener('click', (e) => {
-      if (!nav.contains(e.target as Node)) openMenu(false);
-    });
+      if (!nav!.contains(e.target as Node)) openMenu(false);
+    }, { signal });
+
+    // Close before Astro view transitions start — prevents the white menu
+    // overlay (bg-white, z-50 fixed) from covering the viewport during the
+    // transition animation, which looks exactly like a blank page.
+    document.addEventListener('astro:before-preparation', () => openMenu(false), { signal });
+
+    // Belt-and-suspenders: also close the instant any link inside the menu is
+    // tapped, for non-Astro navigation (external links, anchor hrefs, etc.)
+    menu.addEventListener('click', (e) => {
+      if ((e.target as Element).closest('a[href]')) openMenu(false);
+    }, { signal });
 
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape') return;
       openMenu(false);
-      // Return focus to trigger if Esc pressed inside a desktop dropdown
       const focused = document.activeElement as HTMLElement | null;
       const dd = focused?.closest<HTMLElement>('.nav-dd');
       if (dd) dd.querySelector<HTMLElement>('.nav-dd__trigger')?.focus();
-    });
+    }, { signal });
 
     // Mobile services submenu
     const mobToggle  = document.getElementById('mob-svc-toggle');
@@ -471,7 +499,7 @@ const servicesActive = pathname.startsWith('/services');
         mobSubmenu.setAttribute('aria-hidden', String(!open));
         mobSubmenu.style.maxHeight = open ? mobSubmenu.scrollHeight + 'px' : '0';
         if (mobChevron) (mobChevron as HTMLElement).style.transform = open ? 'rotate(180deg)' : '';
-      });
+      }, { signal });
     }
   }
 
