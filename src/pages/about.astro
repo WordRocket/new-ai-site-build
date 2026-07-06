@@ -66,23 +66,30 @@ const trustSignals = [
   { value: '100%', label: 'Satisfaction Guarantee' },
 ].filter(Boolean) as Array<{ value: string; label: string }>;
 
-const team = [
+const defaultTeam = [
   {
     name: 'Team Member',
-    title: 'Owner & Operator',
+    role: 'Owner & Operator',
     bio: `Dedicated to providing quality ${nicheLabel} services in ${siteConfig.city} and the surrounding area.`,
+    photo: '',
   },
   {
     name: 'Team Member',
-    title: 'Lead Technician',
+    role: 'Lead Technician',
     bio: `Experienced professional committed to delivering excellent results and outstanding customer service.`,
+    photo: '',
   },
   {
     name: 'Team Member',
-    title: 'Service Specialist',
+    role: 'Service Specialist',
     bio: `Skilled and reliable — focused on getting every job done right the first time.`,
+    photo: '',
   },
 ];
+const teamItems: Array<{ name: string; role?: string; title?: string; bio: string; photo?: string }> =
+  ((siteConfig as any).teamMembers?.length > 0)
+    ? (siteConfig as any).teamMembers
+    : defaultTeam;
 
 const whyUs = [
   {
@@ -189,15 +196,18 @@ const whyUs = [
       <!-- Our Team -->
       <section>
         <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--color-text)] mb-8 text-center">Our <span class="u-gradient-text">Team</span></h2>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
-          {team.map((member) => (
+        <div class={`grid grid-cols-1 gap-8 ${teamItems.length === 1 ? 'max-w-sm mx-auto' : teamItems.length === 2 ? 'sm:grid-cols-2 max-w-2xl mx-auto' : 'sm:grid-cols-3'}`}>
+          {teamItems.map((member) => (
             <div class="flex flex-col items-center text-center gap-4 p-6 rounded-[var(--radius-md)]" style="background:var(--rs-surface); box-shadow:var(--rs-shadow-card); border:1px solid var(--rs-border);">
-              <div class="flex-shrink-0 w-20 h-20 rounded-full flex items-center justify-center" style="background-color:var(--rs-accent); color:var(--rs-on-brand);">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <div class="flex-shrink-0 w-20 h-20 rounded-full overflow-hidden flex items-center justify-center" style={member.photo ? '' : 'background-color:var(--rs-accent); color:var(--rs-on-brand);'}>
+                {member.photo
+                  ? <img src={member.photo} alt={member.name} class="w-full h-full object-cover" loading="lazy" />
+                  : <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                }
               </div>
               <div>
                 <p class="font-semibold text-[var(--color-text)]">{member.name}</p>
-                <p class="text-sm font-medium" style="color:var(--rs-brand-text);">{member.title}</p>
+                <p class="text-sm font-medium" style="color:var(--rs-brand-text);">{member.role ?? member.title}</p>
               </div>
               <p class="text-sm text-[var(--color-text-muted)] leading-relaxed">{member.bio}</p>
             </div>
