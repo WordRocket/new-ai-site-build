@@ -663,7 +663,16 @@ details[open] .rs-faq-a {
   overflow: hidden;
 }
 .page-hero h1, .page-hero h2, .page-hero h3 { color: white; }
-.page-hero h1 { font-size: clamp(1.75rem, 3.5vw, 2.75rem); }
+.page-hero h1 {
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  text-transform: capitalize; /* ensure titles from content files always render in title case */
+}
+/* Mobile: center hero content for consistent look across all inner-page templates */
+@media (max-width: 639px) {
+  .page-hero > div                 { text-align: center; }
+  .page-hero > div > p             { margin-inline: auto; }
+  .page-hero > div ol              { justify-content: center; }
+}
 /* Subtle grid pattern overlay */
 .page-hero::before {
   content: '';
