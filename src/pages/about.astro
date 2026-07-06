@@ -66,30 +66,8 @@ const trustSignals = [
   { value: '100%', label: 'Satisfaction Guarantee' },
 ].filter(Boolean) as Array<{ value: string; label: string }>;
 
-const defaultTeam = [
-  {
-    name: 'Team Member',
-    role: 'Owner & Operator',
-    bio: `Dedicated to providing quality ${nicheLabel} services in ${siteConfig.city} and the surrounding area.`,
-    photo: '',
-  },
-  {
-    name: 'Team Member',
-    role: 'Lead Technician',
-    bio: `Experienced professional committed to delivering excellent results and outstanding customer service.`,
-    photo: '',
-  },
-  {
-    name: 'Team Member',
-    role: 'Service Specialist',
-    bio: `Skilled and reliable — focused on getting every job done right the first time.`,
-    photo: '',
-  },
-];
 const teamItems: Array<{ name: string; role?: string; title?: string; bio: string; photo?: string }> =
-  ((siteConfig as any).teamMembers?.length > 0)
-    ? (siteConfig as any).teamMembers
-    : defaultTeam;
+  Array.isArray((siteConfig as any).teamMembers) ? (siteConfig as any).teamMembers : [];
 
 const whyUs = [
   {
@@ -194,6 +172,7 @@ const whyUs = [
       </section>
 
       <!-- Our Team -->
+      {teamItems.length > 0 && (
       <section>
         <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--color-text)] mb-8 text-center">Our <span class="u-gradient-text">Team</span></h2>
         <div class={`grid grid-cols-1 gap-8 ${teamItems.length === 1 ? 'max-w-sm mx-auto' : teamItems.length === 2 ? 'sm:grid-cols-2 max-w-2xl mx-auto' : 'sm:grid-cols-3'}`}>
@@ -214,6 +193,7 @@ const whyUs = [
           ))}
         </div>
       </section>
+      )}
 
       <!-- Why Choose Us -->
       <section>
