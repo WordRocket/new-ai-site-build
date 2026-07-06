@@ -1,9 +1,25 @@
+import { getCollection } from 'astro:content';
 import siteConfig from '../../lib/site-config';
 
-export function GET() {
+export async function GET() {
+  const services = await getCollection('services').catch(() => []);
+  const niche: string = ((siteConfig as any).niche as string | undefined)?.trim() || 'services';
+
+  const sortedServices = services.sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
+
+  const keyFeatures = sortedServices.length > 0
+    ? sortedServices.slice(0, 6).map((s) => s.data.title)
+    : [`Professional ${niche} in ${siteConfig.city}, ${siteConfig.state}`];
+
+  const primaryUseCases = sortedServices.length > 0
+    ? sortedServices.slice(0, 3).map((s) => s.data.shortDescription || s.data.description || s.data.title)
+    : [`${niche} services for customers in ${siteConfig.city}, ${siteConfig.state}`];
+
+  const today = new Date().toISOString().slice(0, 10);
+
   const payload = {
     version: '1.0',
-    lastModified: '2026-06-11T00:00:00.000Z',
+    lastModified: today + 'T00:00:00.000Z',
     schema: 'https://geo-checklist.dev/schemas/summary/v1',
     entity: {
       name: siteConfig.name,
@@ -17,25 +33,14 @@ export function GET() {
       ].filter(Boolean),
     },
     summary: `${siteConfig.name} is a local business serving ${siteConfig.city}, ${siteConfig.state} and surrounding areas. ${siteConfig.description}`,
-    keyFeatures: [
-      'Local SEO and Google Maps ranking',
-      'GEO optimisation for AI answer engines',
-      'High-performance, conversion-focused website design',
-      'Technical SEO audits and fixes',
-      'Transparent month-to-month engagements',
-    ],
+    keyFeatures,
     targetAudience: [
-      'Local business owners seeking more online visibility',
-      'Multi-location businesses needing scalable SEO',
-      'Service businesses competing in local search',
+      `${niche.charAt(0).toUpperCase() + niche.slice(1)} customers in ${siteConfig.city}, ${siteConfig.state}`,
+      `Residents and businesses in ${siteConfig.city} and surrounding areas`,
     ],
-    primaryUseCases: [
-      'Ranking a local business in Google Maps and organic results',
-      'Getting cited in AI-generated answers (ChatGPT, Perplexity, Gemini)',
-      'Launching or redesigning a website that ranks from day one',
-    ],
+    primaryUseCases,
     contentLanguage: 'en',
-    lastReviewed: '2026-06-11',
+    lastReviewed: today,
   };
 
   return new Response(JSON.stringify(payload, null, 2), {

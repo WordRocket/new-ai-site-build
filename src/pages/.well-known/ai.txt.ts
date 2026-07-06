@@ -1,5 +1,11 @@
+import siteConfig from '../../lib/site-config';
+
 export function GET() {
-  const body = `# AI.txt for placeholder.com
+  const siteUrl = (siteConfig.url || 'https://placeholder.com').replace(/\/+$/, '');
+  const contactEmail = siteConfig.email || '';
+  const today = new Date().toISOString().slice(0, 10);
+
+  const body = `# AI.txt for ${siteUrl}
 # Declares machine-readable endpoints for AI systems
 # Following the GEO contract standard (geo-checklist.dev)
 
@@ -13,9 +19,9 @@ Allow: /sitemap-llm.xml
 Allow: /.well-known/ai.txt
 
 Preferred-Format: application/json
-Contact: contact@placeholder.com
+${contactEmail ? `Contact: ${contactEmail}` : ''}
 
-# Last updated: 2026-06-11
+# Last updated: ${today}
 `;
 
   return new Response(body, {

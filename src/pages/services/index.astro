@@ -7,11 +7,15 @@ import siteConfig from '../../lib/site-config';
 
 const all = await getCollection('services');
 const services = all.sort((a, b) => a.data.order - b.data.order);
+
+const servicesIntro: string = ((siteConfig as any).servicesIntro as string | undefined)?.trim() || '';
+const servicesDescription = servicesIntro ||
+  `${siteConfig.name} provides professional ${(siteConfig as any).niche || 'services'} in ${siteConfig.city}, ${siteConfig.state}. Browse all available services below.`;
 ---
 
 <BaseLayout
   title={`Our Services | ${siteConfig.name}`}
-  description="Explore our full range of professional services designed to help your business grow online."
+  description={servicesDescription}
 >
   <main>
     <!-- Breadcrumb -->
@@ -32,7 +36,7 @@ const services = all.sort((a, b) => a.data.order - b.data.order);
       <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-[var(--color-text)] mb-4">Our <span class="u-gradient-text">Services</span></h1>
         <p class="text-[var(--color-text-muted)] text-lg max-w-xl mx-auto">
-          Professional services built to help your business rank, grow, and convert.
+          {servicesDescription}
         </p>
       </div>
     </section>

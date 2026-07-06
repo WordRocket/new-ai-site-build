@@ -21,11 +21,15 @@ function formatDate(iso: string): string {
     day: 'numeric',
   });
 }
+
+const blogIntro: string = ((siteConfig as any).blogIntro as string | undefined)?.trim() || '';
+const blogDescription = blogIntro ||
+  `Tips, guides, and news from ${siteConfig.name} in ${siteConfig.city}, ${siteConfig.state}.`;
 ---
 
 <BaseLayout
   title={`Blog | ${siteConfig.name}`}
-  description="Tips, guides, and insights on local SEO, GEO optimization, and AI-powered websites for small businesses."
+  description={blogDescription}
 >
   <main>
     <!-- Breadcrumb -->
@@ -46,7 +50,7 @@ function formatDate(iso: string): string {
       <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-[var(--color-text)] mb-4"><span class="u-gradient-text">Blog</span></h1>
         <p class="text-[var(--color-text-muted)] text-lg max-w-xl mx-auto">
-          Local SEO tips, GEO strategies, and practical guides for business owners.
+          {blogDescription}
         </p>
       </div>
     </section>
