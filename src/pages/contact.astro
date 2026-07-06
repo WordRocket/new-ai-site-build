@@ -90,19 +90,6 @@ const mapSrc = mapQuery ? `https://maps.google.com/maps?q=${mapQuery}&output=emb
       </div>
     </section>
 
-    <!-- Full-width map strip -->
-    {mapSrc && (
-      <div class="contact-map-strip" aria-label="Service area map">
-        <iframe
-          src={mapSrc}
-          loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade"
-          style="border:0; display:block; width:100%; height:100%;"
-          title={`Map showing ${siteConfig.name} location`}
-        ></iframe>
-      </div>
-    )}
-
     <!-- Two-column layout -->
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
       <div class="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-12">
@@ -177,6 +164,19 @@ const mapSrc = mapQuery ? `https://maps.google.com/maps?q=${mapQuery}&output=emb
 
       </div>
     </div>
+
+    <!-- Full-width map strip -->
+    {mapSrc && (
+      <div class="contact-map-strip" aria-label="Service area map">
+        <iframe
+          src={mapSrc}
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          style="border:0; display:block; width:100%; height:100%;"
+          title={`Map showing ${siteConfig.name} location`}
+        ></iframe>
+      </div>
+    )}
   </main>
 </BaseLayout>
 
