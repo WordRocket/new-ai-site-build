@@ -10,6 +10,7 @@ import FeatureRow from '../../components/sections/FeatureRow.astro';
 import Testimonials from '../../components/sections/Testimonials.astro';
 import CtaBand from '../../components/sections/CtaBand.astro';
 import siteConfig from '../../lib/site-config';
+import { toTitleCase } from '../../lib/site-config';
 import ReviewBanner from '../../components/ReviewBanner.astro';
 import {
   getServiceSchema,
@@ -26,6 +27,7 @@ export async function getStaticPaths() {
 const { service } = Astro.props;
 const { Content } = await service.render();
 const d = service.data;
+const displayTitle = toTitleCase(d.title);
 
 const siteUrl = import.meta.env.SITE ?? 'https://example.com';
 const pageUrl = `${siteUrl}/services/${service.slug}`;
@@ -98,10 +100,10 @@ const sidebarLocations = allLocations.map(l => ({
             <li aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></li>
             <li><a href="/services" class="hover:text-white transition-colors">Services</a></li>
             <li aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></li>
-            <li class="text-white font-medium">{d.title}</li>
+            <li class="text-white font-medium">{displayTitle}</li>
           </ol>
         </nav>
-        <h1 class="text-white font-extrabold tracking-tight mb-2">{d.title}</h1>
+        <h1 class="text-white font-extrabold tracking-tight mb-2">{displayTitle}</h1>
         <p class="text-lg mb-4 max-w-xl" style="color:rgba(255,255,255,0.75);">{d.description}</p>
         {d.phone && (
           <a href={`tel:${(d.phone as string).replace(/\D/g,'')}`} class="btn-primary inline-flex items-center gap-2 px-7 py-3 rounded-[var(--radius-md)] text-base font-semibold text-white">
@@ -141,7 +143,7 @@ const sidebarLocations = allLocations.map(l => ({
                     class="px-4 py-1.5 rounded-full text-sm font-medium border transition-colors hover:border-[var(--color-brand)] hover:text-[var(--color-brand)]"
                     style="border-color:#e4e4e7; color:var(--color-text-muted);"
                   >
-                    {city}
+                    {toTitleCase(city)}
                   </a>
                 );
               })}

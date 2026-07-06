@@ -1,5 +1,5 @@
 ---
-import siteConfig, { formatPhone } from '../lib/site-config';
+import siteConfig, { formatPhone, toTitleCase } from '../lib/site-config';
 import { getPreset } from '../lib/business-presets';
 import { iconSvg } from '../lib/icons';
 import SmartImage from './SmartImage.astro';
@@ -49,12 +49,12 @@ if (pageType === 'service') {
   const normalised = (serviceTitle ?? '').trim().toLowerCase();
   areasToShow = locations
     .filter(l => l.service.trim().toLowerCase() === normalised)
-    .map(l => ({ href: `/${l.slug.replace(/^\/+/, '')}`, label: l.city }));
+    .map(l => ({ href: `/${l.slug.replace(/^\/+/, '')}`, label: toTitleCase(l.city) }));
 } else {
   // Sibling location pages — exclude the current one
   areasToShow = locations
     .filter(l => l.slug !== currentSlug)
-    .map(l => ({ href: `/${l.slug.replace(/^\/+/, '')}`, label: l.city }));
+    .map(l => ({ href: `/${l.slug.replace(/^\/+/, '')}`, label: toTitleCase(l.city) }));
 }
 
 // Show area block if we have links, OR as a service page fallback with siteConfig.city
@@ -66,7 +66,7 @@ const showAreas =
 const showCityServices = pageType === 'location' && services.length > 0;
 
 const areasHeading       = pageType === 'service' ? 'Service Areas' : 'Other Areas';
-const cityServicesHeading = city ? `Services in ${city}` : 'Our Services';
+const cityServicesHeading = city ? `Services in ${toTitleCase(city)}` : 'Our Services';
 ---
 
 <div class="sb-wrap">
@@ -133,7 +133,7 @@ const cityServicesHeading = city ? `Services in ${city}` : 'Our Services';
                 pageType === 'service' && s.slug === currentSlug ? 'sb-link--active' : '',
               ].filter(Boolean).join(' ')}
             >
-              <span>{s.title}</span>
+              <span>{toTitleCase(s.title)}</span>
               <svg class="sb-chevron" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
             </a>
           </li>
@@ -164,7 +164,7 @@ const cityServicesHeading = city ? `Services in ${city}` : 'Our Services';
           ))}
         </ul>
       ) : (
-        <p class="sb-fallback">{siteConfig.city}, {siteConfig.state}</p>
+        <p class="sb-fallback">{toTitleCase(siteConfig.city)}, {siteConfig.state}</p>
       )}
     </div>
   )}
@@ -177,7 +177,7 @@ const cityServicesHeading = city ? `Services in ${city}` : 'Our Services';
         {services.map(s => (
           <li>
             <a href={`/services/${s.slug}`} class="sb-link">
-              <span>{s.title}</span>
+              <span>{toTitleCase(s.title)}</span>
               <svg class="sb-chevron" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
             </a>
           </li>

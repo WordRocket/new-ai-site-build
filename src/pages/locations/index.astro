@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getBreadcrumbSchema } from '../../lib/schema';
 import siteConfig from '../../lib/site-config';
+import { toTitleCase } from '../../lib/site-config';
 
 const siteUrl = (import.meta.env.SITE ?? siteConfig.url ?? 'https://example.com').replace(/\/+$/, '');
 const pageUrl = `${siteUrl}/locations`;
@@ -67,7 +68,7 @@ const breadcrumbSchema = getBreadcrumbSchema([
                 <a
                   href={`/${slug}`}
                   class="loc-card u-card"
-                  aria-label={`${city}, ${state} – ${service}`}
+                  aria-label={`${toTitleCase(city)}, ${state} – ${toTitleCase(service)}`}
                 >
                   <!-- Icon chip -->
                   <div class="loc-card__icon" aria-hidden="true">
@@ -75,10 +76,10 @@ const breadcrumbSchema = getBreadcrumbSchema([
                   </div>
 
                   <!-- City + state -->
-                  <h2 class="loc-card__city">{city}<span class="loc-card__state">, {state}</span></h2>
+                  <h2 class="loc-card__city">{toTitleCase(city)}<span class="loc-card__state">, {state}</span></h2>
 
                   <!-- Service as eyebrow/subtitle -->
-                  <p class="loc-card__service">{service}</p>
+                  <p class="loc-card__service">{toTitleCase(service)}</p>
 
                   <!-- CTA affordance -->
                   <span class="loc-card__cta" aria-hidden="true">

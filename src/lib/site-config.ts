@@ -2,6 +2,12 @@ import siteConfig from '../data/site-config.json'
 export default siteConfig
 export type SiteConfig = typeof siteConfig
 
+/** Capitalise the first letter of each whitespace-separated word.
+ *  Internal casing (e.g. "McDonald's") is left untouched. */
+export function toTitleCase(str: string): string {
+  return str.replace(/\w\S*/g, (word) => word.charAt(0).toUpperCase() + word.slice(1));
+}
+
 /** Normalise and format a phone number for display.
  *  Strips to digits first (handles already-formatted inputs),
  *  then formats 10-digit NA numbers as XXX-XXX-XXXX.
