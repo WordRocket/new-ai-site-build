@@ -61,7 +61,11 @@ const phoneDigits = siteConfig.phone ? siteConfig.phone.replace(/\D/g, '') : '';
       <div class="md:col-span-1 flex flex-col gap-4">
         <a href="/" class="inline-flex hover:opacity-80 transition-opacity">
           {siteConfig.logo
-            ? <img src={siteConfig.logo} alt={siteConfig.name} class="h-8 w-auto" />
+            ? (
+              <span class="footer-logo-wrap">
+                <img src={siteConfig.logo} alt={siteConfig.name} class="footer-logo-img" />
+              </span>
+            )
             : <span class="text-xl font-bold tracking-tight">{siteConfig.name}</span>
           }
         </a>
@@ -151,3 +155,19 @@ const phoneDigits = siteConfig.phone ? siteConfig.phone.replace(/\D/g, '') : '';
     </div>
   </div>
 </footer>
+
+<style>
+  .footer-logo-wrap {
+    display: block;
+    height: 32px;
+    max-width: 140px;
+    flex-shrink: 0;
+  }
+  .footer-logo-img {
+    display: block;
+    height: 100%;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+  }
+</style>

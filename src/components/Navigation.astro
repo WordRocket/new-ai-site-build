@@ -55,7 +55,11 @@ const servicesActive = pathname.startsWith('/services');
     <!-- Logo -->
     <a href="/" class="flex items-center hover:opacity-80 transition-opacity">
       {siteConfig.logo
-        ? <img src={siteConfig.logo} alt={siteConfig.name} class="h-8 w-auto" />
+        ? (
+          <span class="nav-logo-wrap">
+            <img src={siteConfig.logo} alt={siteConfig.name} class="nav-logo-img" />
+          </span>
+        )
         : <span class="text-xl font-bold tracking-tight text-[var(--color-text)]">{siteConfig.name}</span>
       }
     </a>
@@ -299,6 +303,27 @@ const servicesActive = pathname.startsWith('/services');
 <div style={(siteConfig.phone && preset.emergencyBarEnabled) ? 'height:100px;' : 'height:64px;'}></div>
 
 <style>
+  /* ── Logo container — fixed height, never driven by native image dimensions ── */
+  .nav-logo-wrap {
+    display: block;
+    height: 32px;       /* mobile */
+    max-width: 120px;
+    flex-shrink: 0;
+  }
+  @media (min-width: 768px) {
+    .nav-logo-wrap {
+      height: 40px;     /* desktop */
+      max-width: 160px;
+    }
+  }
+  .nav-logo-img {
+    display: block;
+    height: 100%;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+  }
+
   /* ── Desktop dropdown ──────────────────────────────────────── */
   .nav-dd {
     position: relative;
