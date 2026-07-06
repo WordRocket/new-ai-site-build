@@ -119,6 +119,29 @@ const defaultFaqs = [
 const faqs = (hp?.faq && hp.faq.length > 0) ? hp.faq : defaultFaqs;
 const faqSchema = faqs.length > 0 ? getFAQSchema(faqs) : null;
 
+const defaultFeatureGrid = [
+  { icon: 'clock',        title: 'Same-Day Service Available',  desc: 'Urgent situations happen — we respond fast and show up when it matters most.' },
+  { icon: 'shield-check', title: 'Licensed & Fully Insured',    desc: 'Full coverage for your complete peace of mind. We stand behind every job we do.' },
+  { icon: 'badge-check',  title: 'Upfront Transparent Pricing', desc: 'Clear quotes before work begins — no hidden costs or surprises, ever.' },
+  { icon: 'star',         title: 'Satisfaction Guaranteed',      desc: "We don't consider the job done until you're completely happy with the results." },
+  { icon: 'award',        title: 'Experienced Local Team',       desc: `Skilled professionals who know ${siteConfig.city} and the unique needs of this community.` },
+  { icon: 'file-text',    title: 'Free Estimates',               desc: 'Honest, obligation-free quotes so you can make informed decisions without pressure.' },
+];
+const featureGridItems = ((siteConfig as any).featureGrid?.length > 0)
+  ? (siteConfig as any).featureGrid
+  : defaultFeatureGrid;
+
+const defaultProcessSteps = [
+  { title: 'Book & Schedule',    desc: 'Reach us by phone or the contact form. We confirm your appointment quickly and work around your schedule.' },
+  { title: 'On-Site Assessment', desc: 'Our team arrives on time, evaluates the job, and walks you through exactly what needs to be done and why.' },
+  { title: 'Service Delivery',   desc: 'We carry out the work with care, using quality materials and proven techniques — no shortcuts, no guesswork.' },
+  { title: 'Quality Check',      desc: 'Before we pack up, we inspect the finished work against our standards and address anything that needs attention.' },
+  { title: 'Final Walkthrough',  desc: "We walk you through the completed job so you're fully satisfied and know exactly what was done." },
+];
+const processStepsItems = ((siteConfig as any).processSteps?.length > 0)
+  ? (siteConfig as any).processSteps
+  : defaultProcessSteps;
+
 const hasTestimonial = !!(siteConfig as any).testimonial_text;
 const testimonialText   = (siteConfig as any).testimonial_text   ?? '';
 const testimonialAuthor = (siteConfig as any).testimonial_author ?? 'Happy Customer';
@@ -521,25 +544,12 @@ const heroServiceOptions = serviceEntries.length > 0
 <FeatureGrid
   eyebrow="What You Get"
   heading={`Every Job, Every Time`}
-  items={[
-    { icon: 'clock',         title: 'Same-Day Service Available',   desc: 'Urgent situations happen — we respond fast and show up when it matters most.' },
-    { icon: 'shield-check',  title: 'Licensed & Fully Insured',     desc: 'Full coverage for your complete peace of mind. We stand behind every job we do.' },
-    { icon: 'badge-check',   title: 'Upfront Transparent Pricing',  desc: 'Clear quotes before work begins — no hidden costs or surprises, ever.' },
-    { icon: 'star',          title: 'Satisfaction Guaranteed',       desc: "We don't consider the job done until you're completely happy with the results." },
-    { icon: 'award',         title: 'Experienced Local Team',        desc: `Skilled professionals who know ${siteConfig.city} and the unique needs of this community.` },
-    { icon: 'file-text',     title: 'Free Estimates',                desc: 'Honest, obligation-free quotes so you can make informed decisions without pressure.' },
-  ]}
+  items={featureGridItems}
 />
 
 <!-- ─── HOW IT WORKS — process timeline ─────────────────────────────── -->
 <ProcessTimeline
-  steps={[
-    { title: 'Book & Schedule',      desc: 'Reach us by phone or the contact form. We confirm your appointment quickly and work around your schedule.' },
-    { title: 'On-Site Assessment',   desc: 'Our team arrives on time, evaluates the job, and walks you through exactly what needs to be done and why.' },
-    { title: 'Service Delivery',     desc: 'We carry out the work with care, using quality materials and proven techniques — no shortcuts, no guesswork.' },
-    { title: 'Quality Check',        desc: 'Before we pack up, we inspect the finished work against our standards and address anything that needs attention.' },
-    { title: 'Final Walkthrough',    desc: "We walk you through the completed job so you're fully satisfied and know exactly what was done." },
-  ]}
+  steps={processStepsItems}
 />
 
 <!-- wave: neutral → neutral (section separator) -->

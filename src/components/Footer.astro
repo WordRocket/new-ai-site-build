@@ -70,7 +70,7 @@ const phoneDigits = siteConfig.phone ? siteConfig.phone.replace(/\D/g, '') : '';
           }
         </a>
         <p class="text-sm leading-relaxed" style="color:#94a3b8;">
-          {siteConfig.tagline}. We deliver quality results with care, professionalism, and a commitment to the communities we serve.
+          {(siteConfig as any).footerTagline || siteConfig.description || `${siteConfig.tagline}. We deliver quality results with care, professionalism, and a commitment to the communities we serve.`}
         </p>
         {socialLinks.length > 0 && (
           <div class="flex items-center gap-2 mt-1 flex-wrap">

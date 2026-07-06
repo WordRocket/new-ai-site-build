@@ -34,5 +34,8 @@
   "testimonial_author": "",
   "testimonial_neighborhood": "",
   "openingHours": [],
-  "formEndpoint": ""
+  "formEndpoint": "",
+  "footerTagline": "",
+  "featureGrid": [],
+  "processSteps": []
 }
