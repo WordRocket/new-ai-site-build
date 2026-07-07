@@ -1,0 +1,691 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import siteConfig from '../lib/site-config';
+
+const allProjects = await getCollection('projects').catch(() => []);
+const projects = allProjects
+  .filter(p => p.data.published !== false)
+  .sort((a, b) => {
+    if (a.data.date && b.data.date) return new Date(b.data.date).getTime() - new Date(a.data.date).getTime();
+    if (a.data.date) return -1;
+    if (b.data.date) return 1;
+    return 0;
+  });
+
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+}
+
+function excerpt(text: string, max = 100): string {
+  if (text.length <= max) return text;
+  return text.slice(0, max).trimEnd() + '…';
+}
+
+const pageDescription = `Browse completed ${siteConfig.niche || 'projects'} by ${siteConfig.name} in ${siteConfig.city}, ${siteConfig.state}.`;
+---
+
+<BaseLayout title={`Our Work | ${siteConfig.name}`} description={pageDescription}>
+  <main>
+
+    <!-- Breadcrumb -->
+    <nav aria-label="Breadcrumb" class="border-b" style="background:var(--rs-surface); border-color:var(--rs-border);">
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-3">
+        <ol class="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
+          <li><a href="/" class="hover:text-[var(--rs-brand-text)] transition-colors">Home</a></li>
+          <li aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </li>
+          <li><span class="text-[var(--color-text)] font-medium" aria-current="page">Our Work</span></li>
+        </ol>
+      </div>
+    </nav>
+
+    <!-- Page header -->
+    <section class="py-14 sm:py-20 text-center" style="background:var(--rs-surface-2);">
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-[var(--color-text)] mb-4">
+          Our <span class="u-gradient-text">Work</span>
+        </h1>
+        <p class="text-[var(--color-text-muted)] text-lg max-w-xl mx-auto">{pageDescription}</p>
+      </div>
+    </section>
+
+    <!-- Project grid -->
+    <section class="py-16 sm:py-20" aria-label="Completed projects">
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+        {projects.length === 0 ? (
+          <div class="flex flex-col items-center justify-center gap-4 py-24 text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d4d4d8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m9 14 2 2 4-4"/></svg>
+            <p class="text-[var(--color-text-muted)] text-lg font-medium">Projects coming soon</p>
+            <p class="text-sm text-[var(--color-text-muted)]">We're documenting our completed work — check back shortly.</p>
+          </div>
+        ) : (
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {projects.map((project) => {
+              const thumb = project.data.images[0];
+              const jsonPayload = JSON.stringify({
+                id: project.slug,
+                title: project.data.title,
+                description: project.data.description,
+                images: project.data.images,
+                date: project.data.date ?? null,
+                location: project.data.location ?? null,
+                cost: project.data.cost ?? null,
+                relatedService: project.data.relatedService ?? null,
+                customerQuote: project.data.customerQuote ?? null,
+              });
+              return (
+                <article
+                  id={`project-${project.slug}`}
+                  class="pw-card rounded-[var(--radius-md)] overflow-hidden flex flex-col transition-shadow duration-200 hover:shadow-[var(--shadow-md)]"
+                  style="background:var(--rs-surface); box-shadow:var(--shadow-sm);"
+                  data-project={JSON.stringify({ id: project.slug })}
+                  data-project-json={jsonPayload}
+                >
+                  <!-- Thumbnail -->
+                  <button
+                    class="pw-card-img block w-full overflow-hidden aspect-video relative text-left border-0 p-0 cursor-pointer bg-transparent"
+                    aria-label={`View project: ${project.data.title}`}
+                    data-open-project={project.slug}
+                  >
+                    {thumb ? (
+                      <img
+                        src={thumb}
+                        alt={project.data.title}
+                        class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ) : (
+                      <div class="w-full h-full flex items-center justify-center" style="background:var(--rs-surface-2);">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--rs-text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                      </div>
+                    )}
+                    {project.data.images.length > 1 && (
+                      <span class="pw-img-count" aria-label={`${project.data.images.length} photos`}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                        {project.data.images.length}
+                      </span>
+                    )}
+                  </button>
+
+                  <!-- Card body -->
+                  <div class="flex flex-col flex-1 p-5 gap-2">
+                    <h2 class="text-base font-semibold text-[var(--color-text)] leading-snug">
+                      <button
+                        class="pw-title-btn text-left hover:text-[var(--rs-brand-text)] transition-colors w-full border-0 p-0 bg-transparent cursor-pointer font-semibold"
+                        data-open-project={project.slug}
+                      >
+                        {project.data.title}
+                      </button>
+                    </h2>
+                    <p class="text-sm text-[var(--color-text-muted)] leading-relaxed flex-1">{excerpt(project.data.description)}</p>
+
+                    <!-- Meta row -->
+                    <div class="flex items-center flex-wrap gap-x-3 gap-y-1 pt-2 mt-auto border-t text-xs text-[var(--color-text-muted)]" style="border-color:var(--rs-border);">
+                      {project.data.location && (
+                        <span class="flex items-center gap-1">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                          {project.data.location}
+                        </span>
+                      )}
+                      {project.data.date && (
+                        <span class="flex items-center gap-1">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                          <time datetime={project.data.date}>{formatDate(project.data.date)}</time>
+                        </span>
+                      )}
+                      {project.data.cost && (
+                        <span class="pw-cost-badge">{project.data.cost}</span>
+                      )}
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </section>
+
+  </main>
+</BaseLayout>
+
+<!-- ─── Lightbox dialog ───────────────────────────────────────────────────── -->
+<dialog
+  id="pw-dialog"
+  aria-modal="true"
+  aria-labelledby="pw-dialog-title"
+  class="pw-dialog"
+>
+  <div class="pw-dialog-box">
+
+    <!-- Close button -->
+    <button id="pw-close" class="pw-close-btn" aria-label="Close project">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+
+    <!-- Image gallery -->
+    <div class="pw-gallery" id="pw-gallery" aria-label="Project photos">
+      <div class="pw-gallery-track" id="pw-track">
+        <!-- Images inserted by JS -->
+      </div>
+      <button id="pw-prev" class="pw-nav-btn pw-nav-btn--prev" aria-label="Previous photo" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <button id="pw-next" class="pw-nav-btn pw-nav-btn--next" aria-label="Next photo" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+      <div class="pw-dots" id="pw-dots" aria-hidden="true"></div>
+    </div>
+
+    <!-- Content -->
+    <div class="pw-dialog-body">
+      <h2 id="pw-dialog-title" class="pw-title"></h2>
+
+      <!-- Meta strip -->
+      <div class="pw-meta" id="pw-meta"></div>
+
+      <!-- Description -->
+      <p class="pw-desc" id="pw-desc"></p>
+
+      <!-- Customer quote -->
+      <blockquote class="pw-quote" id="pw-quote" hidden>
+        <p class="pw-quote-text" id="pw-quote-text"></p>
+      </blockquote>
+
+      <!-- Related service link -->
+      <div class="pw-service-link-wrap" id="pw-service-link-wrap" hidden>
+        <a id="pw-service-link" href="#" class="pw-service-link"></a>
+      </div>
+    </div>
+
+  </div>
+</dialog>
+
+<!-- Embed project data for JS lookup -->
+<script id="pw-data" type="application/json" set:text={JSON.stringify(
+  projects.map(p => ({
+    id: p.slug,
+    title: p.data.title,
+    description: p.data.description,
+    images: p.data.images,
+    date: p.data.date ?? null,
+    location: p.data.location ?? null,
+    cost: p.data.cost ?? null,
+    relatedService: p.data.relatedService ?? null,
+    customerQuote: p.data.customerQuote ?? null,
+  }))
+)} />
+
+<style>
+  /* ── Gallery card ──────────────────────────────────────────────────────── */
+  .pw-card-img {
+    display: block;
+    position: relative;
+  }
+  .pw-card-img img { display: block; }
+  .pw-card-img:hover img { transform: scale(1.04); }
+
+  .pw-img-count {
+    position: absolute;
+    bottom: 0.5rem;
+    right: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+    background: rgba(0,0,0,0.55);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    pointer-events: none;
+  }
+
+  .pw-cost-badge {
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    background: var(--rs-brand-tint);
+    color: var(--rs-accent);
+    font-weight: 600;
+    font-size: 0.75rem;
+  }
+
+  .pw-title-btn { font-size: inherit; line-height: inherit; }
+
+  /* ── Dialog backdrop + box ─────────────────────────────────────────────── */
+  .pw-dialog {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    background: transparent;
+    border: none;
+    display: grid;
+    place-items: center;
+  }
+  .pw-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  .pw-dialog[open] { display: grid; }
+
+  .pw-dialog-box {
+    position: relative;
+    width: min(680px, 96vw);
+    max-height: 90dvh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-radius: var(--radius-lg, 16px);
+    background: var(--rs-surface);
+    box-shadow: 0 24px 64px -12px rgba(0,0,0,0.48);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Close button ──────────────────────────────────────────────────────── */
+  .pw-close-btn {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    z-index: 10;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0,0,0,0.45);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .pw-close-btn:hover { background: rgba(0,0,0,0.68); }
+
+  /* ── Gallery ───────────────────────────────────────────────────────────── */
+  .pw-gallery {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: var(--rs-surface-2);
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .pw-gallery-track {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.3s ease;
+  }
+  .pw-gallery-track img {
+    flex-shrink: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .pw-gallery-placeholder {
+    flex-shrink: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--rs-surface-2);
+  }
+
+  /* Nav arrows */
+  .pw-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0,0,0,0.48);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .pw-nav-btn:hover { background: rgba(0,0,0,0.72); }
+  .pw-nav-btn--prev { left: 0.75rem; }
+  .pw-nav-btn--next { right: 0.75rem; }
+
+  /* Dots */
+  .pw-dots {
+    position: absolute;
+    bottom: 0.6rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.35rem;
+  }
+  .pw-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.45);
+    transition: background 0.15s ease, transform 0.15s ease;
+  }
+  .pw-dot--active {
+    background: #fff;
+    transform: scale(1.3);
+  }
+
+  /* ── Dialog body ───────────────────────────────────────────────────────── */
+  .pw-dialog-body {
+    padding: 1.5rem 1.75rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .pw-title {
+    font-size: 1.375rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--rs-text);
+    margin: 0;
+    line-height: 1.25;
+  }
+
+  .pw-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    font-size: 0.8125rem;
+    color: var(--rs-text-muted);
+  }
+  .pw-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .pw-meta-item svg { flex-shrink: 0; }
+  .pw-cost-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.625rem;
+    border-radius: 999px;
+    background: var(--rs-brand-tint);
+    color: var(--rs-accent);
+    font-weight: 600;
+    font-size: 0.8125rem;
+  }
+
+  .pw-desc {
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    color: var(--rs-text-muted);
+    margin: 0;
+  }
+
+  .pw-quote {
+    margin: 0;
+    padding: 1rem 1.25rem;
+    border-left: 3px solid var(--rs-brand);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    background: color-mix(in srgb, var(--rs-accent) 6%, var(--rs-surface));
+  }
+  .pw-quote-text {
+    margin: 0;
+    font-size: 0.9375rem;
+    font-style: italic;
+    line-height: 1.6;
+    color: var(--rs-text);
+  }
+  .pw-quote-text::before { content: '"'; }
+  .pw-quote-text::after  { content: '"'; }
+
+  .pw-service-link-wrap { margin-top: 0.25rem; }
+  .pw-service-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--rs-brand-text);
+    text-decoration: none;
+    transition: opacity 0.15s ease;
+  }
+  .pw-service-link:hover { opacity: 0.75; }
+
+  @media (max-width: 480px) {
+    .pw-dialog-body { padding: 1.25rem 1.25rem 1.5rem; }
+    .pw-title { font-size: 1.125rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pw-gallery-track { transition: none; }
+    .pw-nav-btn, .pw-close-btn, .pw-dot { transition: none; }
+  }
+</style>
+
+<script>
+  // ── data ────────────────────────────────────────────────────────────────
+  interface ProjectData {
+    id: string;
+    title: string;
+    description: string;
+    images: string[];
+    date: string | null;
+    location: string | null;
+    cost: string | null;
+    relatedService: string | null;
+    customerQuote: string | null;
+  }
+
+  function getProjectsData(): ProjectData[] {
+    const el = document.getElementById('pw-data');
+    if (!el) return [];
+    try { return JSON.parse(el.textContent ?? '[]'); } catch { return []; }
+  }
+
+  // ── state ────────────────────────────────────────────────────────────────
+  let currentProject: ProjectData | null = null;
+  let imgIndex = 0;
+
+  // ── element refs ─────────────────────────────────────────────────────────
+  function getRefs() {
+    return {
+      dialog:          document.getElementById('pw-dialog') as HTMLDialogElement | null,
+      track:           document.getElementById('pw-track'),
+      prev:            document.getElementById('pw-prev') as HTMLButtonElement | null,
+      next:            document.getElementById('pw-next') as HTMLButtonElement | null,
+      dots:            document.getElementById('pw-dots'),
+      titleEl:         document.getElementById('pw-dialog-title'),
+      meta:            document.getElementById('pw-meta'),
+      desc:            document.getElementById('pw-desc'),
+      quote:           document.getElementById('pw-quote'),
+      quoteText:       document.getElementById('pw-quote-text'),
+      serviceLinkWrap: document.getElementById('pw-service-link-wrap'),
+      serviceLink:     document.getElementById('pw-service-link') as HTMLAnchorElement | null,
+      closeBtn:        document.getElementById('pw-close'),
+    };
+  }
+
+  // ── gallery render ────────────────────────────────────────────────────────
+  function renderGallery(images: string[], idx: number) {
+    const { track, prev, next, dots } = getRefs();
+    if (!track) return;
+
+    if (images.length === 0) {
+      track.innerHTML = `<div class="pw-gallery-placeholder">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--rs-text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+      </div>`;
+      if (prev) prev.hidden = true;
+      if (next) next.hidden = true;
+      if (dots) dots.innerHTML = '';
+      return;
+    }
+
+    track.innerHTML = images.map((src, i) =>
+      `<img src="${src}" alt="Project photo ${i + 1}" loading="${i === 0 ? 'eager' : 'lazy'}" decoding="async" />`
+    ).join('');
+
+    const multi = images.length > 1;
+    if (prev) prev.hidden = !multi;
+    if (next) next.hidden = !multi;
+
+    if (dots) {
+      dots.innerHTML = multi
+        ? images.map((_, i) => `<span class="pw-dot${i === idx ? ' pw-dot--active' : ''}"></span>`).join('')
+        : '';
+    }
+
+    track.style.transform = `translateX(-${idx * 100}%)`;
+  }
+
+  function goTo(idx: number) {
+    if (!currentProject) return;
+    const images = currentProject.images;
+    imgIndex = Math.max(0, Math.min(idx, images.length - 1));
+    const { track, dots } = getRefs();
+    if (track) track.style.transform = `translateX(-${imgIndex * 100}%)`;
+    if (dots) {
+      dots.querySelectorAll<HTMLElement>('.pw-dot').forEach((d, i) => {
+        d.classList.toggle('pw-dot--active', i === imgIndex);
+      });
+    }
+  }
+
+  // ── populate dialog ───────────────────────────────────────────────────────
+  function populateDialog(project: ProjectData) {
+    const { titleEl, meta, desc, quote, quoteText, serviceLinkWrap, serviceLink } = getRefs();
+
+    if (titleEl) titleEl.textContent = project.title;
+    if (desc) desc.textContent = project.description;
+
+    // Meta strip
+    if (meta) {
+      const parts: string[] = [];
+      if (project.location) {
+        parts.push(`<span class="pw-meta-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          ${project.location}
+        </span>`);
+      }
+      if (project.date) {
+        const formatted = new Date(project.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+        parts.push(`<span class="pw-meta-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <time datetime="${project.date}">${formatted}</time>
+        </span>`);
+      }
+      if (project.cost) {
+        parts.push(`<span class="pw-cost-tag">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          ${project.cost}
+        </span>`);
+      }
+      meta.innerHTML = parts.join('');
+    }
+
+    // Customer quote
+    if (quote && quoteText) {
+      if (project.customerQuote) {
+        quoteText.textContent = project.customerQuote;
+        quote.hidden = false;
+      } else {
+        quote.hidden = true;
+      }
+    }
+
+    // Related service link
+    if (serviceLinkWrap && serviceLink) {
+      if (project.relatedService) {
+        serviceLink.href = `/services/${project.relatedService}`;
+        serviceLink.innerHTML = `View ${project.relatedService.replace(/-/g, ' ')} service
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>`;
+        serviceLinkWrap.hidden = false;
+      } else {
+        serviceLinkWrap.hidden = true;
+      }
+    }
+  }
+
+  // ── open / close ──────────────────────────────────────────────────────────
+  function openProject(id: string, pushState = true) {
+    const data = getProjectsData();
+    const project = data.find(p => p.id === id);
+    if (!project) return;
+
+    currentProject = project;
+    imgIndex = 0;
+
+    renderGallery(project.images, 0);
+    populateDialog(project);
+
+    const { dialog } = getRefs();
+    if (dialog) {
+      dialog.showModal();
+      if (pushState) history.pushState(null, '', `#project-${id}`);
+    }
+  }
+
+  function closeDialog() {
+    const { dialog } = getRefs();
+    if (dialog) dialog.close();
+    currentProject = null;
+    // Remove hash without scroll jump
+    history.replaceState(null, '', window.location.pathname + window.location.search);
+  }
+
+  // ── event wiring ──────────────────────────────────────────────────────────
+  function init() {
+    const { dialog, prev, next, closeBtn } = getRefs();
+    if (!dialog) return;
+
+    // Close button
+    closeBtn?.addEventListener('click', closeDialog);
+
+    // Backdrop click
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) closeDialog();
+    });
+
+    // Arrow buttons
+    prev?.addEventListener('click', () => goTo(imgIndex - 1));
+    next?.addEventListener('click', () => goTo(imgIndex + 1));
+
+    // Keyboard in lightbox
+    dialog.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft')  goTo(imgIndex - 1);
+      if (e.key === 'ArrowRight') goTo(imgIndex + 1);
+    });
+
+    // Card open triggers (buttons with data-open-project)
+    document.querySelectorAll<HTMLElement>('[data-open-project]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.openProject!;
+        openProject(id);
+      });
+    });
+
+    // Hash deep-link on load
+    const hash = window.location.hash;
+    if (hash.startsWith('#project-')) {
+      const id = hash.slice('#project-'.length);
+      openProject(id, false);
+    }
+
+    // Back button closes dialog if hash was pushed
+    window.addEventListener('popstate', () => {
+      const { dialog } = getRefs();
+      if (dialog?.open) dialog.close();
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+  document.addEventListener('astro:page-load', init);
+</script>

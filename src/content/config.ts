@@ -97,4 +97,18 @@ const locations = defineCollection({
   }),
 });
 
-export const collections = { blog, pages, services, locations };
+const projects = defineCollection({
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    published: z.boolean().default(true),
+    images: z.array(z.string()).default([]),
+    date: z.string().optional(),
+    location: z.string().optional(),
+    cost: z.string().optional(),
+    relatedService: z.string().optional(),
+    customerQuote: z.string().optional(),
+  }),
+});
+
+export const collections = { blog, pages, services, locations, projects };
