@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import siteConfig, { formatPhone } from '../lib/site-config';
+import siteConfig, { formatPhone, cleanTitle } from '../lib/site-config';
 import { getCollection, getEntry } from 'astro:content';
 import { getPreset, interpolate } from '../lib/business-presets';
 import Icon from '../components/Icon.astro';
@@ -33,13 +33,13 @@ const areaGroups: AreaEntry[] = [
     city: siteConfig.city,
     links: locationEntries
       .filter(e => e.data.city?.trim().toLowerCase() === siteConfig.city.toLowerCase())
-      .map(e => ({ label: (e.data as any).title ?? e.slug, slug: e.slug })),
+      .map(e => ({ label: cleanTitle((e.data as any).title ?? e.slug), slug: e.slug })),
   },
   ...extraCities.map(city => ({
     city,
     links: locationEntries
       .filter(e => e.data.city?.trim().toLowerCase() === city.toLowerCase())
-      .map(e => ({ label: (e.data as any).title ?? e.slug, slug: e.slug })),
+      .map(e => ({ label: cleanTitle((e.data as any).title ?? e.slug), slug: e.slug })),
   })),
 ];
 const areaMapQ = encodeURIComponent((siteConfig.address ? siteConfig.address + ', ' : '') + siteConfig.city + ' ' + siteConfig.state);
@@ -96,7 +96,7 @@ const displayServices = serviceEntries.length > 0
       slug: e.slug,
       num: String(i + 1).padStart(2, '0'),
       icon: iconSvg(getServiceIcon(e.data.title), 22),
-      title: e.data.title,
+      title: cleanTitle(e.data.title),
       description: e.data.description ?? '',
       image: e.data.heroImage || e.data.sectionImage || heroImage,
     }))

@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { iconSvg, getServiceIcon } from '../../lib/icons';
 import ServiceCard from '../../components/ServiceCard.astro';
-import siteConfig from '../../lib/site-config';
+import siteConfig, { cleanTitle } from '../../lib/site-config';
 
 const all = await getCollection('services');
 const services = all.sort((a, b) => a.data.order - b.data.order);
@@ -59,7 +59,7 @@ const servicesDescription = servicesIntro ||
               return (
                 <li>
                   <ServiceCard
-                    title={service.data.title}
+                    title={cleanTitle(service.data.title)}
                     description={desc}
                     image={image}
                     href={`/services/${service.slug}`}
