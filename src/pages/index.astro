@@ -12,6 +12,7 @@ import { getFAQSchema } from '../lib/schema';
 import LeadForm from '../components/LeadForm.astro';
 import ServiceCard from '../components/ServiceCard.astro';
 import SectionBgImage from '../components/SectionBgImage.astro';
+import ReviewBadge from '../components/ReviewBadge.astro';
 
 const serviceEntries = await getCollection('services').catch(() => []);
 const locationEntries = await getCollection('locations').catch(() => []);
@@ -273,6 +274,7 @@ const heroServiceOptions = serviceEntries.length > 0
         </li>
       ))}
     </ul>
+    <ReviewBadge variant="hero" />
   </div>
 
   <!-- Right: lead capture form card -->
@@ -370,6 +372,7 @@ const heroServiceOptions = serviceEntries.length > 0
         </li>
       ))}
     </ul>
+    <ReviewBadge variant="hero" />
   </div>
 
   <!-- Right: graphic panel -->

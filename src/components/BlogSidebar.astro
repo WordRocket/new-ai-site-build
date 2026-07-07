@@ -3,6 +3,7 @@ import siteConfig, { formatPhone } from '../lib/site-config';
 import { getPreset } from '../lib/business-presets';
 import { iconSvg } from '../lib/icons';
 import SmartImage from './SmartImage.astro';
+import ReviewBadge from './ReviewBadge.astro';
 import { getCollection } from 'astro:content';
 
 interface Heading {
@@ -91,7 +92,10 @@ function formatDate(iso: string): string {
     </div>
   </div>
 
-  <!-- ② TOC card — not sticky, auto-hidden if fewer than 3 H2s -->
+  <!-- ② Review badge — only renders when reviewRating is configured -->
+  <ReviewBadge variant="sidebar" />
+
+  <!-- ③ TOC card — not sticky, auto-hidden if fewer than 3 H2s -->
   {showToc && (
     <div class="sb-card sb-links-card">
       <p class="sb-block-heading">In This Article</p>

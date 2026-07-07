@@ -3,6 +3,7 @@ import siteConfig, { formatPhone, toTitleCase } from '../lib/site-config';
 import { getPreset } from '../lib/business-presets';
 import { iconSvg } from '../lib/icons';
 import SmartImage from './SmartImage.astro';
+import ReviewBadge from './ReviewBadge.astro';
 
 interface ServiceItem {
   slug: string;
@@ -119,7 +120,10 @@ const cityServicesHeading = city ? `Services in ${toTitleCase(city)}` : 'Our Ser
     </div>
   )}
 
-  <!-- ③ Our Services — crawlable <a> links (SEO silo) -->
+  <!-- ③ Review badge — only renders when reviewRating is configured -->
+  <ReviewBadge variant="sidebar" />
+
+  <!-- ④ Our Services — crawlable <a> links (SEO silo) -->
   {showServices && (
     <div class="sb-card sb-links-card">
       <p class="sb-block-heading">Our Services</p>

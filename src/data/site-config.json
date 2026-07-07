@@ -41,5 +41,9 @@
   "teamMembers": [],
   "trustSignals": [],
   "servicesIntro": "",
-  "blogIntro": ""
+  "blogIntro": "",
+  "reviewRating": "",
+  "reviewCount": "",
+  "reviewPlatform": "Google",
+  "reviewPlatformUrl": ""
 }

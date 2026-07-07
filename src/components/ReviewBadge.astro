@@ -1,0 +1,188 @@
+---
+import siteConfig from '../lib/site-config';
+
+interface Props {
+  /**
+   * hero   – inline pill below trust signals, matches u-badge visual language
+   * sidebar – card-style block for use inside PageSidebar / BlogSidebar
+   */
+  variant?: 'hero' | 'sidebar';
+}
+
+const { variant = 'sidebar' } = Astro.props;
+
+const reviewRating    = (siteConfig as any).reviewRating;
+const reviewCount     = (siteConfig as any).reviewCount;
+const reviewPlatform  = ((siteConfig as any).reviewPlatform  || 'Google').trim();
+const reviewPlatformUrl = ((siteConfig as any).reviewPlatformUrl ?? '').trim();
+
+// Nothing renders if reviewRating is not configured
+const hasReview = !!reviewRating && String(reviewRating).trim() !== '';
+if (!hasReview) return;
+
+function formatCount(n: string | number): string {
+  const num = Number(n);
+  if (isNaN(num)) return String(n);
+  return num.toLocaleString('en-US');
+}
+
+const ratingDisplay = String(reviewRating).trim();
+const countDisplay  = reviewCount ? formatCount(reviewCount) : '';
+const hasUrl        = reviewPlatformUrl.length > 0;
+---
+
+{variant === 'hero' ? (
+  /* ── Hero: inline pill below trust signals ─────────────────────────── */
+  hasUrl ? (
+    <a
+      href={reviewPlatformUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="rb-hero"
+      aria-label={`${ratingDisplay} stars${countDisplay ? ` · ${countDisplay} ${reviewPlatform} reviews` : ` on ${reviewPlatform}`} — opens in new tab`}
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#f59e0b" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      <span class="rb-rating">{ratingDisplay}</span>
+      {countDisplay && (
+        <>
+          <span class="rb-sep" aria-hidden="true">·</span>
+          <span class="rb-text">{countDisplay} {reviewPlatform} Reviews</span>
+        </>
+      )}
+      {!countDisplay && <span class="rb-text">{reviewPlatform}</span>}
+      <svg class="rb-ext" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+    </a>
+  ) : (
+    <div class="rb-hero" role="img" aria-label={`${ratingDisplay} stars${countDisplay ? ` · ${countDisplay} ${reviewPlatform} reviews` : ` on ${reviewPlatform}`}`}>
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#f59e0b" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      <span class="rb-rating">{ratingDisplay}</span>
+      {countDisplay && (
+        <>
+          <span class="rb-sep" aria-hidden="true">·</span>
+          <span class="rb-text">{countDisplay} {reviewPlatform} Reviews</span>
+        </>
+      )}
+      {!countDisplay && <span class="rb-text">{reviewPlatform}</span>}
+    </div>
+  )
+) : (
+  /* ── Sidebar: card block ───────────────────────────────────────────── */
+  <div class="rb-card">
+    <div class="rb-card-stars" aria-hidden="true">
+      {Array.from({ length: 5 }).map(() => (
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#f59e0b"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      ))}
+    </div>
+    <div class="rb-card-row">
+      <span class="rb-card-rating">{ratingDisplay}</span>
+      <span class="rb-card-platform">{reviewPlatform}</span>
+    </div>
+    {countDisplay && (
+      <p class="rb-card-count">Based on {countDisplay} reviews</p>
+    )}
+    {hasUrl && (
+      <a href={reviewPlatformUrl} target="_blank" rel="noopener noreferrer" class="rb-card-link">
+        Read reviews
+        <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </a>
+    )}
+  </div>
+)}
+
+<style>
+  /* ── Hero pill ──────────────────────────────────────────────────── */
+  .rb-hero {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-top: 0.75rem;
+    padding: 0.35rem 0.85rem;
+    border-radius: var(--rs-radius-pill, 999px);
+    background: var(--rs-brand-tint, rgba(37,99,235,0.1));
+    border: 1px solid var(--rs-brand-tint-border, rgba(37,99,235,0.2));
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--rs-accent, var(--color-brand));
+    text-decoration: none;
+    transition: opacity 0.15s ease;
+  }
+  a.rb-hero:hover { opacity: 0.78; }
+
+  .rb-rating {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+  }
+  .rb-sep {
+    opacity: 0.5;
+  }
+  .rb-text {
+    white-space: nowrap;
+  }
+  .rb-ext {
+    opacity: 0.55;
+    flex-shrink: 0;
+  }
+
+  /* ── Sidebar card ──────────────────────────────────────────────── */
+  .rb-card {
+    border-radius: var(--radius-md, 12px);
+    padding: 1.125rem 1.5rem;
+    background: var(--rs-surface);
+    border: 1px solid var(--rs-border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  .rb-card-stars {
+    display: flex;
+    gap: 0.125rem;
+    margin-bottom: 0.125rem;
+  }
+
+  .rb-card-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+
+  .rb-card-rating {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--rs-text, var(--color-text));
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .rb-card-platform {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--rs-text-muted, var(--color-text-muted));
+  }
+
+  .rb-card-count {
+    font-size: 0.75rem;
+    color: var(--rs-text-muted, var(--color-text-muted));
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  .rb-card-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-top: 0.25rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--rs-brand-text, var(--color-brand));
+    text-decoration: none;
+    transition: opacity 0.15s ease;
+  }
+  .rb-card-link:hover { opacity: 0.75; }
+
+  @media (prefers-reduced-motion: reduce) {
+    a.rb-hero, .rb-card-link { transition: none; }
+  }
+</style>
