@@ -223,17 +223,18 @@ const heroServiceOptions = serviceEntries.length > 0
   {/* Skin-aware scrim: left→right gradient keeps text legible over any photo */}
   <div class="hero-cin-scrim" data-scrim-skin={skin} aria-hidden="true"></div>
 
-  <!-- Left: text (unchanged) -->
-  <div class="hero-left-panel flex flex-col justify-start px-6 sm:px-10 lg:px-10 pt-14 pb-12 relative z-10">
+  <div class="hero-inner">
+  <!-- Left: text -->
+  <div class="hero-left-panel flex flex-col justify-center py-8">
 
-    <div class="mb-6">
+    <div class="mb-5">
       <span class="u-badge">
         <span class="u-badge__dot" aria-hidden="true"></span>
         {siteConfig.city}'s Trusted {nicheLabel}
       </span>
     </div>
 
-    <h1 class="font-extrabold tracking-tight leading-[1.1] mb-6" style="color:var(--rs-text);">
+    <h1 class="font-extrabold tracking-tight leading-[1.1] mb-5" style="color:var(--rs-text);">
       {heroNameMain ? `${heroNameMain} ` : ''}<span class="u-gradient-text">{heroNameLast}</span>
     </h1>
 
@@ -241,7 +242,7 @@ const heroServiceOptions = serviceEntries.length > 0
       {siteConfig.tagline}
     </p>
 
-    <div class="flex flex-col sm:flex-row items-center sm:items-start gap-3 mb-8">
+    <div class="flex flex-col sm:flex-row items-center sm:items-start gap-3 mb-4">
       <a href={primaryCta} class="u-btn u-btn-primary">
         {preset.heroCta}
       </a>
@@ -251,7 +252,7 @@ const heroServiceOptions = serviceEntries.length > 0
     </div>
 
     {siteConfig.clientsServed && (
-      <div class="trust-cluster mb-7">
+      <div class="trust-cluster mb-6">
         <div class="trust-cluster__avatars" aria-hidden="true">
           <span class="trust-avatar ta-1"><Icon name="user" width={16} height={16} /></span>
           <span class="trust-avatar ta-2"><Icon name="user" width={16} height={16} /></span>
@@ -276,7 +277,7 @@ const heroServiceOptions = serviceEntries.length > 0
   </div>
 
   <!-- Right: lead capture form card -->
-  <div class="hero-form-panel relative z-[2]">
+  <div class="hero-form-panel">
     <div class="hero-form-card w-full">
       <p class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--rs-accent);">{isLocalService ? 'Get a Free Estimate' : 'Get in Touch'}</p>
       <LeadForm
@@ -290,6 +291,7 @@ const heroServiceOptions = serviceEntries.length > 0
         compact={true}
       />
     </div>
+  </div>
   </div>
 
 </section>
@@ -320,17 +322,18 @@ const heroServiceOptions = serviceEntries.length > 0
   )}
   <div class="hero-cin-scrim" data-scrim-skin={skin} aria-hidden="true"></div>
 
+  <div class="hero-inner">
   <!-- Left: text -->
-  <div class="hero-left-panel flex flex-col justify-start px-6 sm:px-10 lg:px-10 pt-14 pb-12 relative z-10">
+  <div class="hero-left-panel flex flex-col justify-center py-8">
 
-    <div class="mb-6">
+    <div class="mb-5">
       <span class="u-badge">
         <span class="u-badge__dot" aria-hidden="true"></span>
         {siteConfig.city}'s Trusted {nicheLabel}
       </span>
     </div>
 
-    <h1 class="font-extrabold tracking-tight leading-[1.1] mb-6" style="color:var(--rs-text);">
+    <h1 class="font-extrabold tracking-tight leading-[1.1] mb-5" style="color:var(--rs-text);">
       {heroNameMain ? `${heroNameMain} ` : ''}<span class="u-gradient-text">{heroNameLast}</span>
     </h1>
 
@@ -338,7 +341,7 @@ const heroServiceOptions = serviceEntries.length > 0
       {siteConfig.tagline}
     </p>
 
-    <div class="flex flex-col sm:flex-row items-center sm:items-start gap-3 mb-8">
+    <div class="flex flex-col sm:flex-row items-center sm:items-start gap-3 mb-4">
       <a href={primaryCta} class="u-btn u-btn-primary">
         {preset.heroCta}
       </a>
@@ -348,7 +351,7 @@ const heroServiceOptions = serviceEntries.length > 0
     </div>
 
     {siteConfig.clientsServed && (
-      <div class="trust-cluster mb-7">
+      <div class="trust-cluster mb-6">
         <div class="trust-cluster__avatars" aria-hidden="true">
           <span class="trust-avatar ta-1"><Icon name="user" width={16} height={16} /></span>
           <span class="trust-avatar ta-2"><Icon name="user" width={16} height={16} /></span>
@@ -389,9 +392,26 @@ const heroServiceOptions = serviceEntries.length > 0
       </div>
     )}
   </div>
+  </div>
 
 </section>
 
+)}
+
+<!-- ─── STATS BAR (both hero variants, local-service only) ─────────────── -->
+{isLocalService && (
+<section class="section-dark" aria-label="Trust statistics">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+      {statsItems.map(({ value, label }) => (
+        <div class="u-reveal flex flex-col items-center gap-2">
+          <span class="stat-value text-4xl sm:text-5xl font-extrabold leading-none tracking-tight">{value}</span>
+          <span class="stat-label text-sm font-medium uppercase tracking-wider">{label}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
 )}
 
 <!-- ─── SERVICES GRID / BLOG GRID ─────────────────────────────────────── -->
@@ -759,6 +779,7 @@ const heroServiceOptions = serviceEntries.length > 0
   }
 
   /* ── Layer 3: content columns above scrim ────────────────────────────── */
+  .cinematic-hero .hero-inner,
   .cinematic-hero .hero-left-panel,
   .cinematic-hero .hero-form-panel,
   .cinematic-hero .hero-right {
