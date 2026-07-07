@@ -3,7 +3,6 @@ import siteConfig, { formatPhone, toTitleCase } from '../lib/site-config';
 import { getPreset } from '../lib/business-presets';
 import { iconSvg } from '../lib/icons';
 import SmartImage from './SmartImage.astro';
-import ReviewBadge from './ReviewBadge.astro';
 
 interface ServiceItem {
   slug: string;
@@ -19,8 +18,8 @@ interface LocationItem {
 interface Props {
   pageType: 'service' | 'location';
   currentSlug: string;
-  serviceTitle?: string;  // service page: d.title; location page: d.service
-  city?: string;          // location page only: d.city
+  serviceTitle?: string;
+  city?: string;
   services: ServiceItem[];
   locations: LocationItem[];
 }
@@ -37,42 +36,56 @@ const showHours = Array.isArray(openingHours) && openingHours.length > 0;
 const sidebarImage: string = ((siteConfig as any).sidebarImage ?? '').trim();
 const hasSidebarImage = sidebarImage.length > 0;
 
-// ── Block visibility booleans ─────────────────────────────────────────────
-// Each is a single clear boolean; extend to an explicit user toggle here later.
 const showCta      = true;
 const showTrust    = signals.length > 0;
 const showServices = services.length > 0;
 
-// "Service Areas" (service page) or "Other Areas" (location page)
+// Review data — appended to the trust card when configured
+const reviewRating      = (siteConfig as any).reviewRating;
+const reviewCount       = (siteConfig as any).reviewCount;
+const reviewPlatform    = ((siteConfig as any).reviewPlatform  || 'Google').trim();
+const reviewPlatformUrl = ((siteConfig as any).reviewPlatformUrl ?? '').trim();
+const hasReview         = !!reviewRating && String(reviewRating).trim() !== '';
+
+function formatCount(n: string | number): string {
+  const num = Number(n);
+  return isNaN(num) ? String(n) : num.toLocaleString('en-US');
+}
+
+const ratingDisplay = hasReview ? String(reviewRating).trim() : '';
+const countDisplay  = hasReview && reviewCount ? formatCount(reviewCount) : '';
+const reviewHasUrl  = reviewPlatformUrl.length > 0;
+
+// Build label server-side to avoid JSX whitespace-collapsing bugs
+const reviewLineLabel = countDisplay
+  ? `${ratingDisplay} · ${countDisplay} ${reviewPlatform} Reviews`
+  : `${ratingDisplay} · ${reviewPlatform} Reviews`;
+
 let areasToShow: Array<{ href: string; label: string }> = [];
 if (pageType === 'service') {
-  // Normalize for case/whitespace to prevent silent mismatch
   const normalised = (serviceTitle ?? '').trim().toLowerCase();
   areasToShow = locations
     .filter(l => l.service.trim().toLowerCase() === normalised)
     .map(l => ({ href: `/${l.slug.replace(/^\/+/, '')}`, label: toTitleCase(l.city) }));
 } else {
-  // Sibling location pages — exclude the current one
   areasToShow = locations
     .filter(l => l.slug !== currentSlug)
     .map(l => ({ href: `/${l.slug.replace(/^\/+/, '')}`, label: toTitleCase(l.city) }));
 }
 
-// Show area block if we have links, OR as a service page fallback with siteConfig.city
 const showAreas =
   areasToShow.length > 0 ||
   ((siteConfig as any).businessType === 'local-service' && pageType === 'service' && locations.length === 0 && !!siteConfig.city);
 
-// "Services in [city]" — location pages only
 const showCityServices = pageType === 'location' && services.length > 0;
 
-const areasHeading       = pageType === 'service' ? 'Service Areas' : 'Other Areas';
+const areasHeading        = pageType === 'service' ? 'Service Areas' : 'Other Areas';
 const cityServicesHeading = city ? `Services in ${toTitleCase(city)}` : 'Our Services';
 ---
 
 <div class="sb-wrap">
 
-  <!-- ① CTA card — always shown, visual anchor of the sidebar -->
+  <!-- ① CTA card -->
   <div class="sb-card sb-cta-card" data-has-image={hasSidebarImage ? 'true' : undefined}>
     {hasSidebarImage && (
       <div class="sb-cta-bg" aria-hidden="true">
@@ -106,8 +119,8 @@ const cityServicesHeading = city ? `Services in ${toTitleCase(city)}` : 'Our Ser
     </div>
   </div>
 
-  <!-- ② Trust badges — hidden on mobile (TrustBar handles mobile trust signals) -->
-  {showTrust && (
+  <!-- ② Trust card + review row merged — hidden on mobile -->
+  {(showTrust || hasReview) && (
     <div class="sb-card sb-trust-card sb-trust-mobile-hide" aria-label="Why choose us">
       {signals.map(({ icon, label }) => (
         <div class="sb-trust-item">
@@ -117,13 +130,43 @@ const cityServicesHeading = city ? `Services in ${toTitleCase(city)}` : 'Our Ser
           <span class="sb-trust-label">{label}</span>
         </div>
       ))}
+
+      {hasReview && (
+        <div class={signals.length > 0 ? 'sb-review-row sb-review-divider' : 'sb-review-row'}>
+          {reviewHasUrl ? (
+            <a
+              href={reviewPlatformUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="sb-review-link"
+              aria-label={`${reviewLineLabel} — opens in new tab`}
+            >
+              <span class="sb-review-star" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="#f59e0b"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              </span>
+              <span class="sb-review-label">
+                <strong class="sb-review-rating">{ratingDisplay}</strong>
+                <span class="sb-review-meta"> · {countDisplay ? `${countDisplay} ` : ''}{reviewPlatform} Reviews</span>
+              </span>
+              <svg class="sb-review-ext" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </a>
+          ) : (
+            <div class="sb-review-link sb-review-static" aria-label={reviewLineLabel}>
+              <span class="sb-review-star" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="#f59e0b"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              </span>
+              <span class="sb-review-label">
+                <strong class="sb-review-rating">{ratingDisplay}</strong>
+                <span class="sb-review-meta"> · {countDisplay ? `${countDisplay} ` : ''}{reviewPlatform} Reviews</span>
+              </span>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )}
 
-  <!-- ③ Review badge — only renders when reviewRating is configured -->
-  <ReviewBadge variant="sidebar" />
-
-  <!-- ④ Our Services — crawlable <a> links (SEO silo) -->
+  <!-- ③ Our Services -->
   {showServices && (
     <div class="sb-card sb-links-card">
       <p class="sb-block-heading">Our Services</p>
@@ -146,7 +189,7 @@ const cityServicesHeading = city ? `Services in ${toTitleCase(city)}` : 'Our Ser
     </div>
   )}
 
-  <!-- ④ Service Areas / Other Areas — crawlable links or city fallback -->
+  <!-- ④ Service Areas / Other Areas -->
   {showAreas && (
     <div class="sb-card sb-links-card">
       <p class="sb-block-heading">{areasHeading}</p>
@@ -173,7 +216,7 @@ const cityServicesHeading = city ? `Services in ${toTitleCase(city)}` : 'Our Ser
     </div>
   )}
 
-  <!-- ⑤ Services in [city] — location page only, links back up the content hierarchy -->
+  <!-- ⑤ Services in [city] -->
   {showCityServices && (
     <div class="sb-card sb-links-card">
       <p class="sb-block-heading">{cityServicesHeading}</p>
@@ -199,16 +242,12 @@ const cityServicesHeading = city ? `Services in ${toTitleCase(city)}` : 'Our Ser
     gap: 1rem;
   }
 
-  /* ── Base card ──────────────────────────────────────────────────────────── */
   .sb-card {
     border-radius: var(--radius-md, 12px);
     overflow: hidden;
   }
 
-  /* ── ① CTA card ──────────────────────────────────────────────────────────
-     Tinted brand background gives it more presence than the plain link cards.
-     Uses --rs-brand-tint + --rs-brand-tint-border (both defined in :root and
-     overridden in [data-skin="dark"]) so it adapts to every skin.             */
+  /* ── CTA card ─────────────────────────────────────────────────────────── */
   .sb-cta-card {
     position: relative;
     background: var(--rs-brand-subtle);
@@ -216,14 +255,10 @@ const cityServicesHeading = city ? `Services in ${toTitleCase(city)}` : 'Our Ser
     display: flex;
     flex-direction: column;
   }
-
-  /* Image-mode: suppress tinted background, image+scrim takes over */
   .sb-cta-card[data-has-image] {
     background: none;
     border-color: transparent;
   }
-
-  /* Background image layer — sits behind all content */
   .sb-cta-bg {
     position: absolute;
     inset: 0;
@@ -231,16 +266,12 @@ const cityServicesHeading = city ? `Services in ${toTitleCase(city)}` : 'Our Ser
     border-radius: inherit;
     overflow: hidden;
   }
-
-  /* Dark scrim for legibility — consistent with CtaBand image mode */
   .sb-cta-scrim {
     position: absolute;
     inset: 0;
     background: rgba(0, 0, 0, 0.6);
     z-index: 1;
   }
-
-  /* Content sits above image+scrim */
   .sb-cta-content {
     position: relative;
     z-index: 2;
@@ -249,20 +280,10 @@ const cityServicesHeading = city ? `Services in ${toTitleCase(city)}` : 'Our Ser
     flex-direction: column;
     gap: 0.875rem;
   }
-
-  /* Image mode: force text colors to white for legibility against any image */
-  .sb-cta-card[data-has-image] .sb-eyebrow {
-    color: rgba(255, 255, 255, 0.75);
-  }
-  .sb-cta-card[data-has-image] .sb-phone {
-    color: #fff;
-  }
-  .sb-cta-card[data-has-image] .sb-hours li {
-    color: rgba(255, 255, 255, 0.7);
-  }
-  .sb-cta-card[data-has-image] .sb-hours {
-    border-top-color: rgba(255, 255, 255, 0.2);
-  }
+  .sb-cta-card[data-has-image] .sb-eyebrow { color: rgba(255, 255, 255, 0.75); }
+  .sb-cta-card[data-has-image] .sb-phone   { color: #fff; }
+  .sb-cta-card[data-has-image] .sb-hours li { color: rgba(255, 255, 255, 0.7); }
+  .sb-cta-card[data-has-image] .sb-hours   { border-top-color: rgba(255, 255, 255, 0.2); }
 
   .sb-eyebrow {
     font-size: 0.6875rem;
@@ -273,8 +294,6 @@ const cityServicesHeading = city ? `Services in ${toTitleCase(city)}` : 'Our Ser
     margin: 0;
     line-height: 1;
   }
-
-  /* Large brand-colored phone — the visual hero of the CTA card */
   .sb-phone {
     display: block;
     font-size: 1.625rem;
@@ -286,8 +305,6 @@ const cityServicesHeading = city ? `Services in ${toTitleCase(city)}` : 'Our Ser
     transition: opacity 0.15s ease;
   }
   .sb-phone:hover { opacity: 0.75; }
-
-  /* Full-width primary button */
   .sb-cta-btn {
     display: flex;
     align-items: center;
@@ -310,7 +327,6 @@ const cityServicesHeading = city ? `Services in ${toTitleCase(city)}` : 'Our Ser
     box-shadow: 0 6px 20px color-mix(in srgb, var(--rs-accent) 40%, transparent);
   }
   .sb-cta-btn:active { transform: none; opacity: 1; }
-
   .sb-hours {
     list-style: none;
     margin: 0.125rem 0 0;
@@ -326,7 +342,7 @@ const cityServicesHeading = city ? `Services in ${toTitleCase(city)}` : 'Our Ser
     line-height: 1.5;
   }
 
-  /* ── ② Trust badges ───────────────────────────────────────────────────── */
+  /* ── Trust + review card ─────────────────────────────────────────────── */
   .sb-trust-card {
     padding: 1.25rem 1.5rem;
     background: var(--rs-surface);
@@ -335,8 +351,6 @@ const cityServicesHeading = city ? `Services in ${toTitleCase(city)}` : 'Our Ser
     flex-direction: column;
     gap: 0.75rem;
   }
-
-  /* Hidden on mobile — TrustBar already shows trust signals below the hero */
   @media (max-width: 1023px) {
     .sb-trust-mobile-hide { display: none; }
   }
@@ -346,14 +360,12 @@ const cityServicesHeading = city ? `Services in ${toTitleCase(city)}` : 'Our Ser
     align-items: center;
     gap: 0.625rem;
   }
-
   .sb-trust-icon {
     flex-shrink: 0;
     color: var(--rs-brand-text);
     display: flex;
     align-items: center;
   }
-
   .sb-trust-label {
     font-size: 0.875rem;
     font-weight: 600;
@@ -361,14 +373,62 @@ const cityServicesHeading = city ? `Services in ${toTitleCase(city)}` : 'Our Ser
     line-height: 1.3;
   }
 
-  /* ── ③④⑤ Link list cards ─────────────────────────────────────────────── */
+  /* Review row — merged into the trust card */
+  .sb-review-row { display: flex; }
+  .sb-review-divider {
+    margin-top: 0.25rem;
+    padding-top: 0.875rem;
+    border-top: 1px solid var(--rs-border);
+  }
+  .sb-review-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    text-decoration: none;
+    color: inherit;
+    border-radius: 6px;
+    transition: background 0.15s ease;
+  }
+  a.sb-review-link:hover { color: inherit; }
+  a.sb-review-link:hover .sb-review-rating { color: var(--rs-brand-text); }
+  .sb-review-static { cursor: default; }
+  .sb-review-star {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+  .sb-review-label {
+    flex: 1;
+    line-height: 1.2;
+  }
+  .sb-review-rating {
+    font-size: 0.9375rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+    color: var(--rs-text);
+    transition: color 0.15s ease;
+  }
+  .sb-review-meta {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--rs-text-muted);
+  }
+  .sb-review-ext {
+    flex-shrink: 0;
+    color: var(--rs-text-muted);
+    opacity: 0.6;
+    transition: opacity 0.15s ease;
+  }
+  a.sb-review-link:hover .sb-review-ext { opacity: 1; }
+
+  /* ── Link list cards ─────────────────────────────────────────────────── */
   .sb-links-card {
     padding: 1.25rem 1.5rem;
     background: var(--rs-surface);
     border: 1px solid var(--rs-border);
   }
-
-  /* Eyebrow block heading with a thin brand-tinted underline */
   .sb-block-heading {
     font-size: 0.6875rem;
     font-weight: 700;
@@ -379,18 +439,14 @@ const cityServicesHeading = city ? `Services in ${toTitleCase(city)}` : 'Our Ser
     padding-bottom: 0.75rem;
     border-bottom: 2px solid color-mix(in srgb, var(--rs-accent) 18%, transparent);
   }
-
   .sb-link-list {
     list-style: none;
     margin: 0;
     padding: 0;
   }
-
-  /* Thin separator between items — slightly faded so it doesn't feel heavy */
   .sb-link-list li + li {
     border-top: 1px solid color-mix(in srgb, var(--rs-border) 70%, transparent);
   }
-
   .sb-link {
     display: flex;
     align-items: center;
@@ -411,16 +467,13 @@ const cityServicesHeading = city ? `Services in ${toTitleCase(city)}` : 'Our Ser
     color: var(--rs-brand-text);
     font-weight: 600;
   }
-
-  /* Chevron arrow nudges right on hover */
   .sb-chevron {
     flex-shrink: 0;
     opacity: 0.35;
     transition: opacity 0.15s ease, transform 0.15s ease;
   }
-  .sb-link:hover .sb-chevron  { opacity: 1; transform: translateX(2px); }
+  .sb-link:hover .sb-chevron   { opacity: 1; transform: translateX(2px); }
   .sb-link--active .sb-chevron { opacity: 0.65; }
-
   .sb-fallback {
     font-size: 0.875rem;
     color: var(--rs-text-muted);
@@ -429,7 +482,8 @@ const cityServicesHeading = city ? `Services in ${toTitleCase(city)}` : 'Our Ser
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .sb-link, .sb-phone, .sb-cta-btn, .sb-chevron { transition: none; }
+    .sb-link, .sb-phone, .sb-cta-btn, .sb-chevron,
+    .sb-review-link, .sb-review-rating, .sb-review-ext { transition: none; }
     .sb-link:hover { padding-left: 0; }
     .sb-cta-btn:hover { transform: none; }
   }

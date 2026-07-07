@@ -3,7 +3,6 @@ import siteConfig, { formatPhone } from '../lib/site-config';
 import { getPreset } from '../lib/business-presets';
 import { iconSvg } from '../lib/icons';
 import SmartImage from './SmartImage.astro';
-import ReviewBadge from './ReviewBadge.astro';
 import { getCollection } from 'astro:content';
 
 interface Heading {
@@ -37,10 +36,26 @@ const showPhone = !!siteConfig.phone;
 const sidebarImage: string = ((siteConfig as any).sidebarImage ?? '').trim();
 const hasSidebarImage = sidebarImage.length > 0;
 
-const showToc = headings.length >= 3;
-const showTags = tags.length > 0;
+const showToc     = headings.length >= 3;
+const showTags    = tags.length > 0;
 const showRelated = relatedPosts.length > 0;
 const displayTags = tags.slice(0, 5);
+
+// Review data — appended to the inline trust list inside the CTA card
+const reviewRating      = (siteConfig as any).reviewRating;
+const reviewCount       = (siteConfig as any).reviewCount;
+const reviewPlatform    = ((siteConfig as any).reviewPlatform  || 'Google').trim();
+const reviewPlatformUrl = ((siteConfig as any).reviewPlatformUrl ?? '').trim();
+const hasReview         = !!reviewRating && String(reviewRating).trim() !== '';
+
+function formatCount(n: string | number): string {
+  const num = Number(n);
+  return isNaN(num) ? String(n) : num.toLocaleString('en-US');
+}
+
+const ratingDisplay = hasReview ? String(reviewRating).trim() : '';
+const countDisplay  = hasReview && reviewCount ? formatCount(reviewCount) : '';
+const reviewHasUrl  = reviewPlatformUrl.length > 0;
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', {
@@ -49,6 +64,8 @@ function formatDate(iso: string): string {
     day: 'numeric',
   });
 }
+
+const showTrustSection = signals.length > 0 || hasReview;
 ---
 
 <div class="sb-wrap">
@@ -77,7 +94,8 @@ function formatDate(iso: string): string {
       <a href="/contact" class="sb-cta-btn">
         {(siteConfig as any).businessType === 'local-service' ? 'Get a Free Quote' : 'Get in Touch'}
       </a>
-      {signals.length > 0 && (
+
+      {showTrustSection && (
         <ul class="sb-trust-inline" aria-label="Why choose us">
           {signals.slice(0, 3).map(({ icon, label }) => (
             <li class="sb-trust-inline-item">
@@ -87,15 +105,39 @@ function formatDate(iso: string): string {
               <span>{label}</span>
             </li>
           ))}
+
+          {hasReview && (
+            <li class={`sb-trust-inline-item sb-review-item${signals.length > 0 ? ' sb-review-divider' : ''}`}>
+              {reviewHasUrl ? (
+                <a
+                  href={reviewPlatformUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="sb-review-link"
+                  aria-label={`${ratingDisplay} · ${countDisplay ? `${countDisplay} ` : ''}${reviewPlatform} Reviews — opens in new tab`}
+                >
+                  <span class="sb-review-inner">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#f59e0b" class="sb-review-star" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    <strong class="sb-review-rating">{ratingDisplay}</strong>
+                    <span class="sb-review-meta"> · {countDisplay ? `${countDisplay} ` : ''}{reviewPlatform} Reviews</span>
+                  </span>
+                  <svg class="sb-review-ext" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                </a>
+              ) : (
+                <span class="sb-review-inner">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#f59e0b" class="sb-review-star" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  <strong class="sb-review-rating">{ratingDisplay}</strong>
+                  <span class="sb-review-meta"> · {countDisplay ? `${countDisplay} ` : ''}{reviewPlatform} Reviews</span>
+                </span>
+              )}
+            </li>
+          )}
         </ul>
       )}
     </div>
   </div>
 
-  <!-- ② Review badge — only renders when reviewRating is configured -->
-  <ReviewBadge variant="sidebar" />
-
-  <!-- ③ TOC card — not sticky, auto-hidden if fewer than 3 H2s -->
+  <!-- ② TOC card -->
   {showToc && (
     <div class="sb-card sb-links-card">
       <p class="sb-block-heading">In This Article</p>
@@ -128,7 +170,7 @@ function formatDate(iso: string): string {
     )}
   </div>
 
-  <!-- ④ Related posts card — hidden if no other posts exist -->
+  <!-- ④ Related posts card -->
   {showRelated && (
     <div class="sb-card sb-links-card">
       <p class="sb-block-heading">Related Articles</p>
@@ -152,13 +194,12 @@ function formatDate(iso: string): string {
     gap: 1rem;
   }
 
-  /* ── Base card ── */
   .sb-card {
     border-radius: var(--radius-md, 12px);
     overflow: hidden;
   }
 
-  /* ── ① CTA card ── */
+  /* ── CTA card ─────────────────────────────────────────────────────── */
   .sb-cta-card {
     position: relative;
     background: var(--rs-brand-subtle);
@@ -214,7 +255,6 @@ function formatDate(iso: string): string {
     transition: opacity 0.15s ease;
   }
   .sb-phone:hover { opacity: 0.75; }
-
   .sb-cta-btn {
     display: flex;
     align-items: center;
@@ -238,6 +278,7 @@ function formatDate(iso: string): string {
   }
   .sb-cta-btn:active { transform: none; opacity: 1; }
 
+  /* Trust + review inline list */
   .sb-trust-inline {
     list-style: none;
     margin: 0.25rem 0 0;
@@ -267,7 +308,57 @@ function formatDate(iso: string): string {
   }
   .sb-cta-card[data-has-image] .sb-trust-icon { color: rgba(255,255,255,0.85); }
 
-  /* ── ②③④ Shared link/info cards ── */
+  /* Review item inside trust list */
+  .sb-review-item { align-items: center; }
+  .sb-review-divider {
+    margin-top: 0.35rem;
+    padding-top: 0.65rem;
+    border-top: 1px solid var(--rs-border);
+  }
+  .sb-cta-card[data-has-image] .sb-review-divider {
+    border-top-color: rgba(255,255,255,0.15);
+  }
+  .sb-review-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 1;
+    gap: 0.375rem;
+    text-decoration: none;
+    color: inherit;
+  }
+  .sb-review-inner {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex: 1;
+  }
+  .sb-review-star { flex-shrink: 0; display: flex; }
+  .sb-review-rating {
+    font-size: 0.875rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+    color: var(--rs-text);
+    transition: color 0.15s ease;
+  }
+  .sb-cta-card[data-has-image] .sb-review-rating { color: #fff; }
+  a.sb-review-link:hover .sb-review-rating { color: var(--rs-brand-text); }
+  .sb-review-meta {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--rs-text-muted);
+  }
+  .sb-cta-card[data-has-image] .sb-review-meta { color: rgba(255,255,255,0.65); }
+  .sb-review-ext {
+    flex-shrink: 0;
+    color: var(--rs-text-muted);
+    opacity: 0.55;
+    transition: opacity 0.15s ease;
+  }
+  a.sb-review-link:hover .sb-review-ext { opacity: 1; }
+
+  /* ── Shared link/info cards ──────────────────────────────────────── */
   .sb-links-card {
     padding: 1.25rem 1.5rem;
     background: var(--rs-surface);
@@ -284,7 +375,7 @@ function formatDate(iso: string): string {
     border-bottom: 2px solid color-mix(in srgb, var(--rs-brand) 18%, transparent);
   }
 
-  /* ── ② TOC ── */
+  /* TOC */
   .sb-toc-list {
     list-style: none;
     margin: 0;
@@ -330,7 +421,7 @@ function formatDate(iso: string): string {
     border-top: 1px solid color-mix(in srgb, var(--rs-border) 70%, transparent);
   }
 
-  /* ── ③ Meta card ── */
+  /* Meta card */
   .sb-meta-card {
     padding: 1rem 1.5rem;
     background: var(--rs-surface);
@@ -344,14 +435,8 @@ function formatDate(iso: string): string {
     align-items: center;
     gap: 0.5rem;
   }
-  .sb-meta-icon {
-    flex-shrink: 0;
-    color: var(--rs-text-muted);
-  }
-  .sb-meta-label {
-    font-size: 0.8125rem;
-    color: var(--rs-text-muted);
-  }
+  .sb-meta-icon { flex-shrink: 0; color: var(--rs-text-muted); }
+  .sb-meta-label { font-size: 0.8125rem; color: var(--rs-text-muted); }
   .sb-tags {
     display: flex;
     flex-wrap: wrap;
@@ -370,12 +455,8 @@ function formatDate(iso: string): string {
     line-height: 1.4;
   }
 
-  /* ── ④ Related posts ── */
-  .sb-link-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
+  /* Related posts */
+  .sb-link-list { list-style: none; margin: 0; padding: 0; }
   .sb-link-list li + li {
     border-top: 1px solid color-mix(in srgb, var(--rs-border) 70%, transparent);
   }
@@ -394,13 +475,11 @@ function formatDate(iso: string): string {
     transition: color 0.15s ease;
   }
   .sb-related-link:hover { color: var(--rs-brand-text); text-decoration: underline; }
-  .sb-related-date {
-    font-size: 0.75rem;
-    color: var(--rs-text-muted);
-  }
+  .sb-related-date { font-size: 0.75rem; color: var(--rs-text-muted); }
 
   @media (prefers-reduced-motion: reduce) {
-    .sb-phone, .sb-cta-btn, .sb-toc-link { transition: none; }
+    .sb-phone, .sb-cta-btn, .sb-toc-link,
+    .sb-review-rating, .sb-review-ext { transition: none; }
     .sb-toc-link:hover { padding-left: 0; }
     .sb-cta-btn:hover  { transform: none; }
   }
