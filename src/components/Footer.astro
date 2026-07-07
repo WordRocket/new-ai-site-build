@@ -1,6 +1,6 @@
 ---
 import siteConfig from '../lib/site-config';
-import { formatPhone } from '../lib/site-config';
+import { formatPhone, cleanTitle } from '../lib/site-config';
 import { getPreset } from '../lib/business-presets';
 import { getCollection } from 'astro:content';
 const currentYear = new Date().getFullYear();
@@ -9,18 +9,13 @@ const preset = getPreset((siteConfig as any).businessType || 'other');
 // Build per-city area links from content collection; fall back to siteConfig.city
 const allLocations = await getCollection('locations').catch(() => []);
 
-// Deduplicate by city — one representative entry per city, linked to its slug
-const cityMap = new Map<string, { label: string; href: string }>();
-for (const entry of allLocations) {
-  const city = entry.data.city;
-  if (!cityMap.has(city)) {
-    const slug = entry.slug.replace(/^\/+/, '');
-    cityMap.set(city, { label: entry.data.title, href: `/${slug}` });
-  }
-}
-const areaLinks = cityMap.size > 0
-  ? Array.from(cityMap.values())
-  : [{ label: `${siteConfig.city}, ${siteConfig.state}`, href: '/' }];
+// Show up to 6 location pages with clean display names; fall back to siteConfig.city
+const areaLinks = allLocations.length > 0
+  ? allLocations.slice(0, 6).map(e => ({
+      label: cleanTitle(e.data.title),
+      href: `/${e.slug.replace(/^\/+/, '')}`,
+    }))
+  : [{ label: [siteConfig.city, siteConfig.state].filter(Boolean).join(', '), href: '/' }];
 
 const quickLinks = [
   { label: 'Home',     href: '/' },
