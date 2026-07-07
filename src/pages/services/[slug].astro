@@ -55,6 +55,8 @@ const faqSchema = hasFaq ? getFAQSchema(d.faq) : null;
 const schemas = [serviceSchema, breadcrumbSchema, orgSchema, ...(faqSchema ? [faqSchema] : [])];
 const testimonials = d.testimonials ?? (siteConfig as any).testimonials ?? [];
 
+const pageHeaderImage = d.featuredImage || d.heroImage || null;
+
 // Resolve single-testimonial fallback (mirrors Testimonials.astro logic)
 const rawTestimonials = (() => {
   if (testimonials.length > 0) return testimonials;
@@ -93,6 +95,21 @@ const sidebarLocations = allLocations.map(l => ({
 
     <!-- ─── Hero band ──────────────────────────────────────────────────── -->
     <div class="page-hero">
+      {pageHeaderImage && (
+        <>
+          <img
+            src={pageHeaderImage}
+            alt=""
+            role="presentation"
+            aria-hidden="true"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+            style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:0;pointer-events:none;"
+          />
+          <div style="position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(100deg,rgba(8,12,26,.88) 0%,rgba(8,12,26,.65) 55%,rgba(8,12,26,.40) 100%);" aria-hidden="true"></div>
+        </>
+      )}
       <div class="relative z-10 max-w-[1200px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <nav aria-label="Breadcrumb" class="mb-2">
           <ol class="flex items-center gap-2 text-sm flex-wrap" style="color:rgba(255,255,255,0.6);">

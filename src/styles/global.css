@@ -45,6 +45,13 @@ h1, h2, h3 {
 }
 h1 { font-size: clamp(2.5rem, 5.5vw, 5rem); font-weight: 800; letter-spacing: -0.03em;  line-height: 1.08; }
 h2 { font-size: clamp(1.8rem, 3vw, 2.8rem); font-weight: 700; letter-spacing: -0.025em; line-height: 1.15; }
+
+/* ── JetBrains Mono: small uppercase accent labels only ────────────────── */
+.u-eyebrow,
+.u-badge,
+.stat-label {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
 h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0.015em; line-height: 1.25; }
 
 /* ── Scroll Reveal ─────────────────────────────────────────────────────── */
@@ -351,18 +358,40 @@ body:not(:has(#top-bar)) .hero-split { padding-top: 72px; }
 
 /* ── Hero split ────────────────────────────────────────────────────────── */
 .hero-split {
-  min-height: calc(100vh - 100px);
-  display: grid;
-  grid-template-columns: 55fr 45fr;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
   padding-top: 100px;
   padding-bottom: 60px;
   box-sizing: border-box;
 }
 @media (max-width: 900px) {
-  .hero-split,
-  .hero-split--form { grid-template-columns: 1fr; min-height: auto; }
+  .hero-split { min-height: auto; }
   .hero-right { min-height: 320px; }
   .hero-form-panel { min-height: 0; border-left: none; }
+}
+
+/* Inner content grid: both columns vertically centered as one unit */
+.hero-inner {
+  position: relative;
+  z-index: 10;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 7fr 5fr;
+  gap: 3rem;
+  align-items: center;
+}
+.hero-split--form .hero-inner {
+  grid-template-columns: 1fr 1fr;
+}
+@media (min-width: 640px) {
+  .hero-inner { padding-inline: 2.5rem; }
+}
+@media (max-width: 900px) {
+  .hero-inner { grid-template-columns: 1fr; }
 }
 /* Hero skin-aware background: uses --rs-bg so light=white, dark=navy */
 .hero-split { background-color: var(--rs-bg); }
@@ -437,13 +466,6 @@ body:not(:has(#top-bar)) .hero-split { padding-top: 72px; }
 }
 
 /* ── Hero form variant ─────────────────────────────────────────────────── */
-/* .hero-split--form: desktop-only overrides; mobile inherits the 1fr reset above */
-@media (min-width: 901px) {
-  .hero-split--form {
-    grid-template-columns: 50fr 50fr;
-  }
-}
-
 /* Panel: navy gradient provides contrast on both skins. On dark skin the   */
 /* dark card has clear elevation above it; on light skin it frames a white  */
 /* card. The hardcoded gradient is intentional — token bg would disappear.  */

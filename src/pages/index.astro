@@ -158,8 +158,6 @@ const statsItems = [
 const nameParts = siteConfig.name.trim().split(/\s+/);
 const heroNameLast = nameParts[nameParts.length - 1];
 const heroNameMain = nameParts.length > 1 ? nameParts.slice(0, -1).join(' ') : '';
-// First three stats used in the hero triplet; renders nothing if empty
-const heroStats = statsItems.slice(0, 3);
 
 const formEndpoint: string = ((siteConfig as any).formEndpoint ?? '').trim();
 const formConnected = formEndpoint !== '';
@@ -225,8 +223,9 @@ const heroServiceOptions = serviceEntries.length > 0
   {/* Skin-aware scrim: left→right gradient keeps text legible over any photo */}
   <div class="hero-cin-scrim" data-scrim-skin={skin} aria-hidden="true"></div>
 
-  <!-- Left: text (unchanged) -->
-  <div class="hero-left-panel flex flex-col justify-center px-6 sm:px-10 lg:px-10 py-8 relative z-10">
+  <div class="hero-inner">
+  <!-- Left: text -->
+  <div class="hero-left-panel flex flex-col justify-center py-8">
 
     <div class="mb-5">
       <span class="u-badge">
@@ -267,7 +266,7 @@ const heroServiceOptions = serviceEntries.length > 0
       </div>
     )}
 
-    <ul class="flex flex-col sm:flex-row flex-wrap gap-x-6 gap-y-2 text-sm mb-8" style="color:var(--rs-text-muted);">
+    <ul class="flex flex-col sm:flex-row flex-wrap gap-x-6 gap-y-2 text-sm" style="color:var(--rs-text-muted);">
       {preset.trustSignals.map(({ icon: iconName, label }) => (
         <li class="flex items-center gap-1.5">
           <Icon name={iconName} width={16} height={16} style="color:var(--rs-brand-text); flex-shrink:0;" aria-hidden="true" />
@@ -275,21 +274,10 @@ const heroServiceOptions = serviceEntries.length > 0
         </li>
       ))}
     </ul>
-
-    {isLocalService && heroStats.length > 0 && (
-      <div class="u-reveal flex flex-wrap justify-center sm:justify-start gap-x-8 gap-y-4 pt-6 border-t" style="border-color:var(--rs-border);">
-        {heroStats.map(({ value, label }) => (
-          <div class="flex flex-col">
-            <span class="text-2xl font-extrabold leading-none u-gradient-text" data-count-to={value}>{value}</span>
-            <span class="text-xs font-medium mt-1 uppercase tracking-wide" style="color:var(--rs-text-muted);">{label}</span>
-          </div>
-        ))}
-      </div>
-    )}
   </div>
 
   <!-- Right: lead capture form card -->
-  <div class="hero-form-panel relative z-[2]">
+  <div class="hero-form-panel">
     <div class="hero-form-card w-full">
       <p class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--rs-accent);">{isLocalService ? 'Get a Free Estimate' : 'Get in Touch'}</p>
       <LeadForm
@@ -303,6 +291,7 @@ const heroServiceOptions = serviceEntries.length > 0
         compact={true}
       />
     </div>
+  </div>
   </div>
 
 </section>
@@ -333,8 +322,9 @@ const heroServiceOptions = serviceEntries.length > 0
   )}
   <div class="hero-cin-scrim" data-scrim-skin={skin} aria-hidden="true"></div>
 
+  <div class="hero-inner">
   <!-- Left: text -->
-  <div class="hero-left-panel flex flex-col justify-center px-6 sm:px-10 lg:px-10 py-8 relative z-10">
+  <div class="hero-left-panel flex flex-col justify-center py-8">
 
     <div class="mb-5">
       <span class="u-badge">
@@ -375,7 +365,7 @@ const heroServiceOptions = serviceEntries.length > 0
       </div>
     )}
 
-    <ul class="flex flex-col sm:flex-row flex-wrap gap-x-6 gap-y-2 text-sm mb-8" style="color:var(--rs-text-muted);">
+    <ul class="flex flex-col sm:flex-row flex-wrap gap-x-6 gap-y-2 text-sm" style="color:var(--rs-text-muted);">
       {preset.trustSignals.map(({ icon: iconName, label }) => (
         <li class="flex items-center gap-1.5">
           <Icon name={iconName} width={16} height={16} style="color:var(--rs-brand-text); flex-shrink:0;" aria-hidden="true" />
@@ -383,17 +373,6 @@ const heroServiceOptions = serviceEntries.length > 0
         </li>
       ))}
     </ul>
-
-    {isLocalService && heroStats.length > 0 && (
-      <div class="u-reveal flex flex-wrap justify-center sm:justify-start gap-x-8 gap-y-4 pt-6 border-t" style="border-color:var(--rs-border);">
-        {heroStats.map(({ value, label }) => (
-          <div class="flex flex-col">
-            <span class="text-2xl font-extrabold leading-none u-gradient-text" data-count-to={value}>{value}</span>
-            <span class="text-xs font-medium mt-1 uppercase tracking-wide" style="color:var(--rs-text-muted);">{label}</span>
-          </div>
-        ))}
-      </div>
-    )}
   </div>
 
   <!-- Right: graphic panel -->
@@ -413,13 +392,14 @@ const heroServiceOptions = serviceEntries.length > 0
       </div>
     )}
   </div>
+  </div>
 
 </section>
 
 )}
 
-<!-- ─── DARK STATS BAR (no-form variant only; form variant shows stats in hero) ─ -->
-{!formConnected && isLocalService && (
+<!-- ─── STATS BAR (both hero variants, local-service only) ─────────────── -->
+{isLocalService && (
 <section class="section-dark" aria-label="Trust statistics">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
     <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
@@ -799,6 +779,7 @@ const heroServiceOptions = serviceEntries.length > 0
   }
 
   /* ── Layer 3: content columns above scrim ────────────────────────────── */
+  .cinematic-hero .hero-inner,
   .cinematic-hero .hero-left-panel,
   .cinematic-hero .hero-form-panel,
   .cinematic-hero .hero-right {
