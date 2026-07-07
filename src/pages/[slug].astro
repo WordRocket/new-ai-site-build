@@ -4,8 +4,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import SmartImage from '../components/SmartImage.astro';
 import PageSidebar from '../components/PageSidebar.astro';
 import TrustBar from '../components/sections/TrustBar.astro';
-import ProcessTimeline from '../components/sections/ProcessTimeline.astro';
-import FeatureGrid from '../components/sections/FeatureGrid.astro';
 import FeatureRow from '../components/sections/FeatureRow.astro';
 import Testimonials from '../components/sections/Testimonials.astro';
 import CtaBand from '../components/sections/CtaBand.astro';
@@ -65,7 +63,6 @@ const faqSchema = hasFaq ? getFAQSchema(d.faq) : null;
 const autoSchemas: object[] = [localBusinessSchema, breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])];
 const schemas: object[] = d.schemaJsonld ? [] : autoSchemas;
 
-const hasFeatures = d.features && d.features.length > 0;
 const testimonials = d.testimonials ?? (siteConfig as any).testimonials ?? [];
 const pageHeaderImage = d.heroImage || null;
 
@@ -225,34 +222,6 @@ const sidebarLocations = allLocations.map(l => ({
       />
     )}
 
-    {hasFeatures ? (
-      <FeatureGrid items={d.features!} />
-    ) : (
-      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-        <div class="max-w-[740px] mx-auto">
-          <section>
-            <h2 class="text-2xl font-bold tracking-tight text-[var(--color-text)] mb-6">
-              Why Choose Us in {displayCity}
-            </h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              {[
-                { label: `Local expertise in ${displayCity}` },
-                { label: `Proven ${displayService} results` },
-                { label: 'Transparent reporting & communication' },
-                { label: 'No long-term contracts required' },
-              ].map((point) => (
-                <div class="flex items-start gap-3 p-4 rounded-[var(--radius-md)]" style="background:var(--rs-surface-2); border:1px solid var(--rs-border);">
-                  <span class="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold" style="background-color:var(--rs-brand); color:var(--rs-on-brand);" aria-hidden="true">✓</span>
-                  <span class="text-sm text-[var(--color-text)] font-medium">{point.label}</span>
-                </div>
-              ))}
-            </div>
-          </section>
-        </div>
-      </div>
-    )}
-
-    <ProcessTimeline steps={d.steps ?? []} />
     <Testimonials testimonials={testimonials} />
     <CtaBand />
 
