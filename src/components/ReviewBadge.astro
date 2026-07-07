@@ -48,7 +48,7 @@ const hasUrl        = reviewPlatformUrl.length > 0;
 <style>
   /* Matches .u-badge — brand-tinted pill, skin-adaptive */
   .rb-hero {
-    align-self: flex-start;
+    align-self: center;
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
@@ -70,6 +70,10 @@ const hasUrl        = reviewPlatformUrl.length > 0;
     transition: opacity 0.15s ease;
   }
   a.rb-hero:hover { opacity: 0.75; }
+
+  @media (min-width: 640px) {
+    .rb-hero { align-self: flex-start; }
+  }
 
   .rb-star { flex-shrink: 0; }
 
