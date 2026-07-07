@@ -8,6 +8,15 @@ export function toTitleCase(str: string): string {
   return str.replace(/\w\S*/g, (word) => word.charAt(0).toUpperCase() + word.slice(1));
 }
 
+/** Strip a trailing " | <Business Name>" SEO suffix and apply title case.
+ *  Use for all user-facing display text (H1, breadcrumbs, nav labels).
+ *  The raw `d.title` value (which may already include the suffix) should
+ *  be used as-is only in the <title> meta tag. */
+export function cleanTitle(str: string): string {
+  const clean = str.includes(' | ') ? str.split(' | ')[0].trim() : str;
+  return toTitleCase(clean);
+}
+
 /** Normalise and format a phone number for display.
  *  Strips to digits first (handles already-formatted inputs),
  *  then formats 10-digit NA numbers as XXX-XXX-XXXX.

@@ -10,7 +10,7 @@ import FeatureRow from '../../components/sections/FeatureRow.astro';
 import Testimonials from '../../components/sections/Testimonials.astro';
 import CtaBand from '../../components/sections/CtaBand.astro';
 import siteConfig from '../../lib/site-config';
-import { toTitleCase } from '../../lib/site-config';
+import { toTitleCase, cleanTitle } from '../../lib/site-config';
 import ReviewBanner from '../../components/ReviewBanner.astro';
 import {
   getServiceSchema,
@@ -27,7 +27,7 @@ export async function getStaticPaths() {
 const { service } = Astro.props;
 const { Content } = await service.render();
 const d = service.data;
-const displayTitle = toTitleCase(d.title);
+const displayTitle = cleanTitle(d.title);
 
 const siteUrl = import.meta.env.SITE ?? 'https://example.com';
 const pageUrl = `${siteUrl}/services/${service.slug}`;
@@ -41,7 +41,7 @@ const serviceSchema = getServiceSchema({
 const breadcrumbSchema = getBreadcrumbSchema([
   { name: 'Home', url: siteUrl },
   { name: 'Services', url: `${siteUrl}/services` },
-  { name: d.title, url: pageUrl },
+  { name: displayTitle, url: pageUrl },
 ]);
 const orgSchema = getOrganizationSchema({
   name: siteConfig.name,
@@ -75,7 +75,7 @@ const reviewTestimonial = rawTestimonials.length > 0
 // Sidebar data
 const allServices  = await getCollection('services').catch(() => []);
 const allLocations = await getCollection('locations').catch(() => []);
-const sidebarServices  = allServices.map(s => ({ slug: s.slug, title: s.data.title }));
+const sidebarServices  = allServices.map(s => ({ slug: s.slug, title: cleanTitle(s.data.title) }));
 const sidebarLocations = allLocations.map(l => ({
   slug: l.slug,
   city: l.data.city,
@@ -84,7 +84,7 @@ const sidebarLocations = allLocations.map(l => ({
 ---
 
 <BaseLayout
-  title={`${d.title} | ${siteConfig.name}`}
+  title={d.title.includes(' | ') ? d.title : `${d.title} | ${siteConfig.name}`}
   description={d.description}
   canonical={pageUrl}
   schemas={schemas}

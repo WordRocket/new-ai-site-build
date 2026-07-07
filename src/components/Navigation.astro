@@ -1,6 +1,6 @@
 ---
 import siteConfig from '../lib/site-config';
-import { formatPhone } from '../lib/site-config';
+import { formatPhone, cleanTitle } from '../lib/site-config';
 import { getPreset } from '../lib/business-presets';
 import { getEntry, getCollection } from 'astro:content';
 const pathname = Astro.url.pathname;
@@ -11,7 +11,7 @@ const faqEntry = await getEntry('pages', 'faq').catch(() => null);
 const rawServices = await getCollection('services').catch(() => []);
 const serviceLinks = rawServices
   .sort((a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title))
-  .map((s) => ({ label: s.data.title, href: `/services/${s.slug}` }));
+  .map((s) => ({ label: cleanTitle(s.data.title), href: `/services/${s.slug}` }));
 const hasServiceDropdown = serviceLinks.length > 0;
 
 // Services item is handled separately; remaining flat links
