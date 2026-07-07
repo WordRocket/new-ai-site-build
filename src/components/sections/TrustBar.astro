@@ -4,7 +4,13 @@ import { getPreset } from '../../lib/business-presets';
 import { iconSvg } from '../../lib/icons';
 
 const preset = getPreset((siteConfig as any).businessType || 'other');
-const signals = preset.trustSignals;
+const FALLBACK_ICONS = ['shield-check', 'check-circle', 'clock'];
+const customLabels: string[] = Array.isArray((siteConfig as any).trustSignals) && (siteConfig as any).trustSignals.length > 0
+  ? ((siteConfig as any).trustSignals as string[]).slice(0, 3)
+  : [];
+const signals = customLabels.length > 0
+  ? customLabels.map((label, i) => ({ icon: preset.trustSignals[i]?.icon ?? FALLBACK_ICONS[i] ?? 'check-circle', label }))
+  : preset.trustSignals;
 ---
 
 {signals.length > 0 && (
