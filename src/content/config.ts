@@ -107,6 +107,7 @@ const projects = defineCollection({
     location: z.string().optional(),
     cost: z.string().optional(),
     relatedService: z.string().optional(),
+    featuredOnService: z.boolean().default(false),
     customerQuote: z.string().optional(),
   }),
 });
