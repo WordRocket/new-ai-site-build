@@ -398,11 +398,11 @@ const heroServiceOptions = serviceEntries.length > 0
 {isLocalService ? (
 <section class="section-pad" style="background:var(--rs-surface);" aria-labelledby="services-heading">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center mb-14">
+    <div class="text-center mb-16">
       <h2 id="services-heading" class="reveal text-[var(--color-text)] mb-4">{svcMain}<span class="u-gradient-text">{svcLast}</span></h2>
       <p class="text-[var(--color-text-muted)] text-lg max-w-2xl mx-auto">{interpolate(preset.servicesSubheading, vars)}</p>
     </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
       {displayServices.map(({ slug, icon, title, description, image }) => (
         <ServiceCard
           title={title}
@@ -419,12 +419,12 @@ const heroServiceOptions = serviceEntries.length > 0
 ) : (
 <section class="section-pad" style="background:var(--rs-surface);" aria-labelledby="blog-grid-heading">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center mb-14">
+    <div class="text-center mb-16">
       <h2 id="blog-grid-heading" class="reveal text-[var(--color-text)] mb-4">{blogMain}<span class="u-gradient-text">{blogLast}</span></h2>
       <p class="text-[var(--color-text-muted)] text-lg max-w-2xl mx-auto">{siteConfig.tagline || 'Insights and ideas worth reading'}</p>
     </div>
     {recentBlogPosts.length > 0 ? (
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {recentBlogPosts.slice(0, 6).map((post) => (
           <ServiceCard
             title={post.data.title}
