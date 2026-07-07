@@ -224,16 +224,16 @@ const heroServiceOptions = serviceEntries.length > 0
   <div class="hero-cin-scrim" data-scrim-skin={skin} aria-hidden="true"></div>
 
   <!-- Left: text (unchanged) -->
-  <div class="hero-left-panel flex flex-col justify-center px-6 sm:px-10 lg:px-10 py-8 relative z-10">
+  <div class="hero-left-panel flex flex-col justify-start px-6 sm:px-10 lg:px-10 pt-14 pb-12 relative z-10">
 
-    <div class="mb-5">
+    <div class="mb-6">
       <span class="u-badge">
         <span class="u-badge__dot" aria-hidden="true"></span>
         {siteConfig.city}'s Trusted {nicheLabel}
       </span>
     </div>
 
-    <h1 class="font-extrabold tracking-tight leading-[1.1] mb-5" style="color:var(--rs-text);">
+    <h1 class="font-extrabold tracking-tight leading-[1.1] mb-6" style="color:var(--rs-text);">
       {heroNameMain ? `${heroNameMain} ` : ''}<span class="u-gradient-text">{heroNameLast}</span>
     </h1>
 
@@ -241,7 +241,7 @@ const heroServiceOptions = serviceEntries.length > 0
       {siteConfig.tagline}
     </p>
 
-    <div class="flex flex-col sm:flex-row items-center sm:items-start gap-3 mb-4">
+    <div class="flex flex-col sm:flex-row items-center sm:items-start gap-3 mb-8">
       <a href={primaryCta} class="u-btn u-btn-primary">
         {preset.heroCta}
       </a>
@@ -251,7 +251,7 @@ const heroServiceOptions = serviceEntries.length > 0
     </div>
 
     {siteConfig.clientsServed && (
-      <div class="trust-cluster mb-6">
+      <div class="trust-cluster mb-7">
         <div class="trust-cluster__avatars" aria-hidden="true">
           <span class="trust-avatar ta-1"><Icon name="user" width={16} height={16} /></span>
           <span class="trust-avatar ta-2"><Icon name="user" width={16} height={16} /></span>
@@ -321,16 +321,16 @@ const heroServiceOptions = serviceEntries.length > 0
   <div class="hero-cin-scrim" data-scrim-skin={skin} aria-hidden="true"></div>
 
   <!-- Left: text -->
-  <div class="hero-left-panel flex flex-col justify-center px-6 sm:px-10 lg:px-10 py-8 relative z-10">
+  <div class="hero-left-panel flex flex-col justify-start px-6 sm:px-10 lg:px-10 pt-14 pb-12 relative z-10">
 
-    <div class="mb-5">
+    <div class="mb-6">
       <span class="u-badge">
         <span class="u-badge__dot" aria-hidden="true"></span>
         {siteConfig.city}'s Trusted {nicheLabel}
       </span>
     </div>
 
-    <h1 class="font-extrabold tracking-tight leading-[1.1] mb-5" style="color:var(--rs-text);">
+    <h1 class="font-extrabold tracking-tight leading-[1.1] mb-6" style="color:var(--rs-text);">
       {heroNameMain ? `${heroNameMain} ` : ''}<span class="u-gradient-text">{heroNameLast}</span>
     </h1>
 
@@ -338,7 +338,7 @@ const heroServiceOptions = serviceEntries.length > 0
       {siteConfig.tagline}
     </p>
 
-    <div class="flex flex-col sm:flex-row items-center sm:items-start gap-3 mb-4">
+    <div class="flex flex-col sm:flex-row items-center sm:items-start gap-3 mb-8">
       <a href={primaryCta} class="u-btn u-btn-primary">
         {preset.heroCta}
       </a>
@@ -348,7 +348,7 @@ const heroServiceOptions = serviceEntries.length > 0
     </div>
 
     {siteConfig.clientsServed && (
-      <div class="trust-cluster mb-6">
+      <div class="trust-cluster mb-7">
         <div class="trust-cluster__avatars" aria-hidden="true">
           <span class="trust-avatar ta-1"><Icon name="user" width={16} height={16} /></span>
           <span class="trust-avatar ta-2"><Icon name="user" width={16} height={16} /></span>

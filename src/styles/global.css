@@ -361,6 +361,7 @@ body:not(:has(#top-bar)) .hero-split { padding-top: 72px; }
   min-height: calc(100vh - 100px);
   display: grid;
   grid-template-columns: 55fr 45fr;
+  align-items: start;
   padding-top: 100px;
   padding-bottom: 60px;
   box-sizing: border-box;
@@ -532,7 +533,7 @@ body:not(:has(#top-bar)) .hero-split { padding-top: 72px; }
 }
 /* Decorative radial gradient behind the headline; transform/opacity only.  */
 /* prefers-reduced-motion: reduce → animation disabled, static low opacity. */
-.hero-left-panel { overflow: hidden; justify-content: center; }
+.hero-left-panel { overflow: hidden; }
 
 /* Mobile: center all hero left-panel content */
 @media (max-width: 900px) {
