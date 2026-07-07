@@ -520,21 +520,6 @@ const heroServiceOptions = serviceEntries.length > 0
   bg="var(--rs-bg)"
 />
 
-<FeatureRow
-  eyebrow={`The ${siteConfig.name} Difference`}
-  heading={`Professional ${nicheLabel.charAt(0).toUpperCase() + nicheLabel.slice(1)} You Can Count On`}
-  body={`When you choose ${siteConfig.name}, you get more than a service — you get a team committed to exceptional results. From the first call to the final job, we're with you every step of the way.`}
-  checks={features.slice(1).map((f) => ({ text: f.title }))}
-  ctaText="View Our Services"
-  ctaHref="/services"
-  image={hp?.aboutImage || siteConfig.aboutImage}
-  imageAlt={`${siteConfig.name} professional team`}
-  bg="var(--rs-surface)"
-  statValue={siteConfig.yearsInBusiness ? `${siteConfig.yearsInBusiness}+` : undefined}
-  statLabel={siteConfig.yearsInBusiness ? 'Years Experience' : undefined}
-  reverse
-/>
-
 <!-- wave: neutral → neutral (section separator) -->
 <div class="wave-divider" style="background:var(--color-neutral-50);" aria-hidden="true">
   <svg viewBox="0 0 1440 48" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,24 C360,0 1080,48 1440,24 L1440,48 L0,48 Z" fill="var(--color-neutral-50)"/></svg>
