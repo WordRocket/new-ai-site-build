@@ -594,7 +594,7 @@ const heroServiceOptions = serviceEntries.length > 0
       <div class="area-list-col">
         {areaGroups.length === 0 ? (
           <div>
-            <p class="font-bold text-base mb-1" style="color:var(--rs-text);">{siteConfig.city}, {siteConfig.state}</p>
+            <p class="font-bold text-base mb-1" style="color:var(--rs-text);">{[siteConfig.city, siteConfig.state].filter(Boolean).join(', ')}</p>
             <p class="text-sm" style="color:var(--rs-text-muted);">Service area pages coming soon.</p>
           </div>
         ) : (
@@ -609,7 +609,7 @@ const heroServiceOptions = serviceEntries.length > 0
                   <ul class="area-service-links" role="list">
                     {links.map(({ label, slug }) => (
                       <li>
-                        <a href={`/locations/${slug}`} class="area-service-link">
+                        <a href={`/${slug}`} class="area-service-link">
                           {label}
                         </a>
                       </li>
