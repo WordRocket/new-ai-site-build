@@ -40,7 +40,7 @@ const showCta      = true;
 const showTrust    = signals.length > 0;
 const showServices = services.length > 0;
 
-// Review data — appended to the trust card when configured
+// Review data — rendered as its own card below the trust card
 const reviewRating      = (siteConfig as any).reviewRating;
 const reviewCount       = (siteConfig as any).reviewCount;
 const reviewPlatform    = ((siteConfig as any).reviewPlatform  || 'Google').trim();
@@ -55,11 +55,6 @@ function formatCount(n: string | number): string {
 const ratingDisplay = hasReview ? String(reviewRating).trim() : '';
 const countDisplay  = hasReview && reviewCount ? formatCount(reviewCount) : '';
 const reviewHasUrl  = reviewPlatformUrl.length > 0;
-
-// Build label server-side to avoid JSX whitespace-collapsing bugs
-const reviewLineLabel = countDisplay
-  ? `${ratingDisplay} · ${countDisplay} ${reviewPlatform} Reviews`
-  : `${ratingDisplay} · ${reviewPlatform} Reviews`;
 
 let areasToShow: Array<{ href: string; label: string }> = [];
 if (pageType === 'service') {
@@ -119,8 +114,8 @@ const cityServicesHeading = city ? `Services in ${toTitleCase(city)}` : 'Our Ser
     </div>
   </div>
 
-  <!-- ② Trust card + review row merged — hidden on mobile -->
-  {(showTrust || hasReview) && (
+  <!-- ② Trust badges card — hidden on mobile -->
+  {showTrust && (
     <div class="sb-card sb-trust-card sb-trust-mobile-hide" aria-label="Why choose us">
       {signals.map(({ icon, label }) => (
         <div class="sb-trust-item">
@@ -130,43 +125,39 @@ const cityServicesHeading = city ? `Services in ${toTitleCase(city)}` : 'Our Ser
           <span class="sb-trust-label">{label}</span>
         </div>
       ))}
+    </div>
+  )}
 
-      {hasReview && (
-        <div class={signals.length > 0 ? 'sb-review-row sb-review-divider' : 'sb-review-row'}>
-          {reviewHasUrl ? (
-            <a
-              href={reviewPlatformUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="sb-review-link"
-              aria-label={`${reviewLineLabel} — opens in new tab`}
-            >
-              <span class="sb-review-star" aria-hidden="true">
-                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="#f59e0b"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-              </span>
-              <span class="sb-review-label">
-                <strong class="sb-review-rating">{ratingDisplay}</strong>
-                <span class="sb-review-meta"> · {countDisplay ? `${countDisplay} ` : ''}{reviewPlatform} Reviews</span>
-              </span>
-              <svg class="sb-review-ext" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            </a>
-          ) : (
-            <div class="sb-review-link sb-review-static" aria-label={reviewLineLabel}>
-              <span class="sb-review-star" aria-hidden="true">
-                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="#f59e0b"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-              </span>
-              <span class="sb-review-label">
-                <strong class="sb-review-rating">{ratingDisplay}</strong>
-                <span class="sb-review-meta"> · {countDisplay ? `${countDisplay} ` : ''}{reviewPlatform} Reviews</span>
-              </span>
-            </div>
-          )}
-        </div>
+  <!-- ③ Review card — its own card, directly below trust badges, hidden on mobile -->
+  {hasReview && (
+    <div class="sb-card sb-review-card sb-trust-mobile-hide" aria-label="Customer reviews">
+      <div class="sb-rv-stars" aria-label={`${ratingDisplay} out of 5 stars`}>
+        {Array.from({ length: 5 }).map(() => (
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="#f59e0b" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        ))}
+      </div>
+      <div class="sb-rv-header">
+        <span class="sb-rv-rating">{ratingDisplay}</span>
+        <span class="sb-rv-platform">{reviewPlatform} Rating</span>
+      </div>
+      {countDisplay && (
+        <p class="sb-rv-count">Based on {countDisplay} reviews</p>
+      )}
+      {reviewHasUrl && (
+        <a
+          href={reviewPlatformUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="sb-rv-link"
+        >
+          Read reviews
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+        </a>
       )}
     </div>
   )}
 
-  <!-- ③ Our Services -->
+  <!-- ④ Our Services -->
   {showServices && (
     <div class="sb-card sb-links-card">
       <p class="sb-block-heading">Our Services</p>
@@ -189,7 +180,7 @@ const cityServicesHeading = city ? `Services in ${toTitleCase(city)}` : 'Our Ser
     </div>
   )}
 
-  <!-- ④ Service Areas / Other Areas -->
+  <!-- ⑤ Service Areas / Other Areas -->
   {showAreas && (
     <div class="sb-card sb-links-card">
       <p class="sb-block-heading">{areasHeading}</p>
@@ -216,7 +207,7 @@ const cityServicesHeading = city ? `Services in ${toTitleCase(city)}` : 'Our Ser
     </div>
   )}
 
-  <!-- ⑤ Services in [city] -->
+  <!-- ⑥ Services in [city] -->
   {showCityServices && (
     <div class="sb-card sb-links-card">
       <p class="sb-block-heading">{cityServicesHeading}</p>
@@ -342,7 +333,7 @@ const cityServicesHeading = city ? `Services in ${toTitleCase(city)}` : 'Our Ser
     line-height: 1.5;
   }
 
-  /* ── Trust + review card ─────────────────────────────────────────────── */
+  /* ── Trust badges card ───────────────────────────────────────────────── */
   .sb-trust-card {
     padding: 1.25rem 1.5rem;
     background: var(--rs-surface);
@@ -354,7 +345,6 @@ const cityServicesHeading = city ? `Services in ${toTitleCase(city)}` : 'Our Ser
   @media (max-width: 1023px) {
     .sb-trust-mobile-hide { display: none; }
   }
-
   .sb-trust-item {
     display: flex;
     align-items: center;
@@ -373,55 +363,56 @@ const cityServicesHeading = city ? `Services in ${toTitleCase(city)}` : 'Our Ser
     line-height: 1.3;
   }
 
-  /* Review row — merged into the trust card */
-  .sb-review-row { display: flex; }
-  .sb-review-divider {
-    margin-top: 0.25rem;
-    padding-top: 0.875rem;
-    border-top: 1px solid var(--rs-border);
-  }
-  .sb-review-link {
+  /* ── Review card — its own card, same visual weight as trust card ───── */
+  .sb-review-card {
+    padding: 1.25rem 1.5rem;
+    background: var(--rs-surface);
+    border: 1px solid var(--rs-border);
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+  .sb-rv-stars {
+    display: flex;
+    gap: 0.125rem;
+    margin-bottom: 0.25rem;
+  }
+  .sb-rv-header {
+    display: flex;
+    align-items: baseline;
     gap: 0.5rem;
-    flex: 1;
-    text-decoration: none;
-    color: inherit;
-    border-radius: 6px;
-    transition: background 0.15s ease;
   }
-  a.sb-review-link:hover { color: inherit; }
-  a.sb-review-link:hover .sb-review-rating { color: var(--rs-brand-text); }
-  .sb-review-static { cursor: default; }
-  .sb-review-star {
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-  }
-  .sb-review-label {
-    flex: 1;
-    line-height: 1.2;
-  }
-  .sb-review-rating {
-    font-size: 0.9375rem;
+  .sb-rv-rating {
+    font-size: 1.625rem;
     font-weight: 800;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.03em;
     font-variant-numeric: tabular-nums;
     color: var(--rs-text);
-    transition: color 0.15s ease;
+    line-height: 1;
   }
-  .sb-review-meta {
+  .sb-rv-platform {
     font-size: 0.8125rem;
-    font-weight: 500;
+    font-weight: 600;
     color: var(--rs-text-muted);
   }
-  .sb-review-ext {
-    flex-shrink: 0;
+  .sb-rv-count {
+    font-size: 0.8125rem;
     color: var(--rs-text-muted);
-    opacity: 0.6;
+    margin: 0;
+    line-height: 1.4;
+  }
+  .sb-rv-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--rs-brand-text);
+    text-decoration: none;
     transition: opacity 0.15s ease;
   }
-  a.sb-review-link:hover .sb-review-ext { opacity: 1; }
+  .sb-rv-link:hover { opacity: 0.75; }
 
   /* ── Link list cards ─────────────────────────────────────────────────── */
   .sb-links-card {
@@ -482,8 +473,7 @@ const cityServicesHeading = city ? `Services in ${toTitleCase(city)}` : 'Our Ser
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .sb-link, .sb-phone, .sb-cta-btn, .sb-chevron,
-    .sb-review-link, .sb-review-rating, .sb-review-ext { transition: none; }
+    .sb-link, .sb-phone, .sb-cta-btn, .sb-chevron, .sb-rv-link { transition: none; }
     .sb-link:hover { padding-left: 0; }
     .sb-cta-btn:hover { transform: none; }
   }

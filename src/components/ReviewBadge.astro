@@ -11,8 +11,7 @@ if (!hasReview) return;
 
 function formatCount(n: string | number): string {
   const num = Number(n);
-  if (isNaN(num)) return String(n);
-  return num.toLocaleString('en-US');
+  return isNaN(num) ? String(n) : num.toLocaleString('en-US');
 }
 
 const ratingDisplay = String(reviewRating).trim();
@@ -23,7 +22,7 @@ const reviewLabel   = countDisplay
 const hasUrl        = reviewPlatformUrl.length > 0;
 ---
 
-{/* Frosted-glass pill — collapses to fit-content; align-self prevents flex-column stretch */}
+{/* Badge pill — matches .u-badge eyebrow style; adapts to light + dark skins */}
 {hasUrl ? (
   <a
     href={reviewPlatformUrl}
@@ -32,70 +31,63 @@ const hasUrl        = reviewPlatformUrl.length > 0;
     class="rb-hero"
     aria-label={`${ratingDisplay} stars · ${reviewLabel} — opens in new tab`}
   >
-    <svg class="rb-star" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#f59e0b" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-    <span class="rb-rating">{ratingDisplay}</span>
+    <svg class="rb-star" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="#f59e0b" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    <strong class="rb-rating">{ratingDisplay}</strong>
     <span class="rb-sep" aria-hidden="true">·</span>
     <span class="rb-text">{reviewLabel}</span>
-    <svg class="rb-ext" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
   </a>
 ) : (
   <div class="rb-hero" role="img" aria-label={`${ratingDisplay} stars · ${reviewLabel}`}>
-    <svg class="rb-star" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#f59e0b" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-    <span class="rb-rating">{ratingDisplay}</span>
+    <svg class="rb-star" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="#f59e0b" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    <strong class="rb-rating">{ratingDisplay}</strong>
     <span class="rb-sep" aria-hidden="true">·</span>
     <span class="rb-text">{reviewLabel}</span>
   </div>
 )}
 
 <style>
+  /* Matches .u-badge — brand-tinted pill, skin-adaptive */
   .rb-hero {
     align-self: flex-start;
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    margin-top: 1rem;
-    padding: 0.5rem 1.1rem;
+    margin-bottom: 1.25rem;
+    padding: 0.35rem 0.85rem;
     border-radius: var(--rs-radius-pill, 999px);
-    background: rgba(255, 255, 255, 0.12);
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.28);
-    font-size: 0.9rem;
+    background: var(--rs-brand-tint);
+    border: 1px solid var(--rs-brand-tint-border);
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.8125rem;
     font-weight: 600;
     line-height: 1;
-    color: #fff;
+    color: var(--rs-accent);
     text-decoration: none;
     cursor: default;
-    transition: background 0.18s ease, border-color 0.18s ease;
   }
-  a.rb-hero { cursor: pointer; }
-  a.rb-hero:hover {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.4);
+  a.rb-hero {
+    cursor: pointer;
+    transition: opacity 0.15s ease;
   }
-  .rb-star {
-    flex-shrink: 0;
-    filter: drop-shadow(0 0 3px rgba(245, 158, 11, 0.6));
-  }
+  a.rb-hero:hover { opacity: 0.75; }
+
+  .rb-star { flex-shrink: 0; }
+
   .rb-rating {
-    font-size: 1rem;
-    font-weight: 800;
-    letter-spacing: -0.01em;
+    font-weight: 700;
+    color: var(--rs-accent);
     font-variant-numeric: tabular-nums;
-    color: #fff;
   }
+
   .rb-sep { opacity: 0.45; font-weight: 400; }
+
   .rb-text {
+    font-weight: 500;
     white-space: nowrap;
-    color: rgba(255, 255, 255, 0.85);
-    font-weight: 600;
-    font-size: 0.875rem;
+    color: var(--rs-accent);
+    opacity: 0.85;
   }
-  .rb-ext {
-    opacity: 0.5;
-    flex-shrink: 0;
-    color: rgba(255, 255, 255, 0.7);
-  }
+
   @media (prefers-reduced-motion: reduce) {
     a.rb-hero { transition: none; }
   }
