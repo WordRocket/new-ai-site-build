@@ -22,7 +22,30 @@ function excerpt(text: string, max = 100): string {
   return text.slice(0, max).trimEnd() + '…';
 }
 
-const pageDescription = `Browse completed ${siteConfig.niche || 'projects'} by ${siteConfig.name} in ${siteConfig.city}, ${siteConfig.state}.`;
+// Normalise cost to a readable price string.
+// Input can be: "1300", "1,300", "$1300", "5000", "$5,000"
+function formatCost(raw: string): string {
+  const trimmed = raw.trim();
+  if (/^[$€£¥]/.test(trimmed)) return trimmed; // already has currency symbol
+  const num = parseFloat(trimmed.replace(/,/g, ''));
+  if (!isNaN(num)) return '$' + num.toLocaleString('en-US');
+  return '$' + trimmed;
+}
+
+const pageDescription = `Browse completed ${(siteConfig as any).niche || 'projects'} by ${siteConfig.name} in ${siteConfig.city}, ${siteConfig.state}.`;
+
+// Serialise for client-side lightbox
+const projectsJSON = projects.map(p => ({
+  id: p.slug,
+  title: p.data.title,
+  description: p.data.description,
+  images: p.data.images,
+  date: p.data.date ?? null,
+  location: p.data.location ?? null,
+  cost: p.data.cost ? formatCost(p.data.cost) : null,
+  relatedService: p.data.relatedService ?? null,
+  customerQuote: p.data.customerQuote ?? null,
+}));
 ---
 
 <BaseLayout title={`Our Work | ${siteConfig.name}`} description={pageDescription}>
@@ -64,36 +87,24 @@ const pageDescription = `Browse completed ${siteConfig.niche || 'projects'} by $
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {projects.map((project) => {
               const thumb = project.data.images[0];
-              const jsonPayload = JSON.stringify({
-                id: project.slug,
-                title: project.data.title,
-                description: project.data.description,
-                images: project.data.images,
-                date: project.data.date ?? null,
-                location: project.data.location ?? null,
-                cost: project.data.cost ?? null,
-                relatedService: project.data.relatedService ?? null,
-                customerQuote: project.data.customerQuote ?? null,
-              });
+              const costDisplay = project.data.cost ? formatCost(project.data.cost) : null;
               return (
                 <article
                   id={`project-${project.slug}`}
-                  class="pw-card rounded-[var(--radius-md)] overflow-hidden flex flex-col transition-shadow duration-200 hover:shadow-[var(--shadow-md)]"
+                  class="pw-card rounded-[var(--radius-md)] overflow-hidden flex flex-col"
                   style="background:var(--rs-surface); box-shadow:var(--shadow-sm);"
-                  data-project={JSON.stringify({ id: project.slug })}
-                  data-project-json={jsonPayload}
                 >
-                  <!-- Thumbnail -->
+                  <!-- Thumbnail trigger -->
                   <button
-                    class="pw-card-img block w-full overflow-hidden aspect-video relative text-left border-0 p-0 cursor-pointer bg-transparent"
+                    class="pw-trigger pw-card-img block w-full overflow-hidden aspect-video relative text-left border-0 p-0 cursor-pointer bg-transparent"
                     aria-label={`View project: ${project.data.title}`}
-                    data-open-project={project.slug}
+                    data-project-id={project.slug}
                   >
                     {thumb ? (
                       <img
                         src={thumb}
                         alt={project.data.title}
-                        class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        class="w-full h-full object-cover transition-transform duration-300"
                         loading="lazy"
                         decoding="async"
                       />
@@ -104,7 +115,7 @@ const pageDescription = `Browse completed ${siteConfig.niche || 'projects'} by $
                     )}
                     {project.data.images.length > 1 && (
                       <span class="pw-img-count" aria-label={`${project.data.images.length} photos`}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
                         {project.data.images.length}
                       </span>
                     )}
@@ -114,8 +125,9 @@ const pageDescription = `Browse completed ${siteConfig.niche || 'projects'} by $
                   <div class="flex flex-col flex-1 p-5 gap-2">
                     <h2 class="text-base font-semibold text-[var(--color-text)] leading-snug">
                       <button
-                        class="pw-title-btn text-left hover:text-[var(--rs-brand-text)] transition-colors w-full border-0 p-0 bg-transparent cursor-pointer font-semibold"
-                        data-open-project={project.slug}
+                        class="pw-trigger text-left hover:text-[var(--rs-brand-text)] transition-colors w-full border-0 p-0 bg-transparent cursor-pointer font-semibold text-[var(--color-text)]"
+                        style="font-size:inherit; line-height:inherit;"
+                        data-project-id={project.slug}
                       >
                         {project.data.title}
                       </button>
@@ -136,8 +148,8 @@ const pageDescription = `Browse completed ${siteConfig.niche || 'projects'} by $
                           <time datetime={project.data.date}>{formatDate(project.data.date)}</time>
                         </span>
                       )}
-                      {project.data.cost && (
-                        <span class="pw-cost-badge">{project.data.cost}</span>
+                      {costDisplay && (
+                        <span class="pw-cost-badge">{costDisplay}</span>
                       )}
                     </div>
                   </div>
@@ -152,25 +164,18 @@ const pageDescription = `Browse completed ${siteConfig.niche || 'projects'} by $
   </main>
 </BaseLayout>
 
-<!-- ─── Lightbox dialog ───────────────────────────────────────────────────── -->
-<dialog
-  id="pw-dialog"
-  aria-modal="true"
-  aria-labelledby="pw-dialog-title"
-  class="pw-dialog"
->
-  <div class="pw-dialog-box">
+<!-- ─── Lightbox dialog ─────────────────────────────────────────────────── -->
+<dialog id="pw-dialog" aria-modal="true" aria-labelledby="pw-dialog-title" class="pw-dialog">
+  <div class="pw-dialog-box" role="document">
 
-    <!-- Close button -->
+    <!-- Close -->
     <button id="pw-close" class="pw-close-btn" aria-label="Close project">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
     </button>
 
-    <!-- Image gallery -->
+    <!-- Image gallery zone -->
     <div class="pw-gallery" id="pw-gallery" aria-label="Project photos">
-      <div class="pw-gallery-track" id="pw-track">
-        <!-- Images inserted by JS -->
-      </div>
+      <div class="pw-track" id="pw-track"></div>
       <button id="pw-prev" class="pw-nav-btn pw-nav-btn--prev" aria-label="Previous photo" hidden>
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
       </button>
@@ -180,53 +185,28 @@ const pageDescription = `Browse completed ${siteConfig.niche || 'projects'} by $
       <div class="pw-dots" id="pw-dots" aria-hidden="true"></div>
     </div>
 
-    <!-- Content -->
-    <div class="pw-dialog-body">
+    <!-- Text content -->
+    <div class="pw-body">
       <h2 id="pw-dialog-title" class="pw-title"></h2>
-
-      <!-- Meta strip -->
       <div class="pw-meta" id="pw-meta"></div>
-
-      <!-- Description -->
       <p class="pw-desc" id="pw-desc"></p>
-
-      <!-- Customer quote -->
       <blockquote class="pw-quote" id="pw-quote" hidden>
         <p class="pw-quote-text" id="pw-quote-text"></p>
       </blockquote>
-
-      <!-- Related service link -->
-      <div class="pw-service-link-wrap" id="pw-service-link-wrap" hidden>
-        <a id="pw-service-link" href="#" class="pw-service-link"></a>
+      <div id="pw-svc-wrap" hidden>
+        <a id="pw-svc-link" href="#" class="pw-svc-link"></a>
       </div>
     </div>
 
   </div>
 </dialog>
 
-<!-- Embed project data for JS lookup -->
-<script id="pw-data" type="application/json" set:text={JSON.stringify(
-  projects.map(p => ({
-    id: p.slug,
-    title: p.data.title,
-    description: p.data.description,
-    images: p.data.images,
-    date: p.data.date ?? null,
-    location: p.data.location ?? null,
-    cost: p.data.cost ?? null,
-    relatedService: p.data.relatedService ?? null,
-    customerQuote: p.data.customerQuote ?? null,
-  }))
-)} />
-
 <style>
-  /* ── Gallery card ──────────────────────────────────────────────────────── */
-  .pw-card-img {
-    display: block;
-    position: relative;
-  }
-  .pw-card-img img { display: block; }
-  .pw-card-img:hover img { transform: scale(1.04); }
+  /* ── Card ──────────────────────────────────────────────────────────────── */
+  .pw-card { transition: box-shadow 0.2s ease; }
+  .pw-card:hover { box-shadow: var(--shadow-md) !important; }
+  .pw-card-img img { display: block; transition: transform 0.3s ease; }
+  .pw-card:hover .pw-card-img img { transform: scale(1.04); }
 
   .pw-img-count {
     position: absolute;
@@ -245,57 +225,61 @@ const pageDescription = `Browse completed ${siteConfig.niche || 'projects'} by $
   }
 
   .pw-cost-badge {
+    display: inline-flex;
+    align-items: center;
     padding: 0.15rem 0.55rem;
     border-radius: 999px;
     background: var(--rs-brand-tint);
-    color: var(--rs-accent);
+    color: var(--rs-brand-text);
     font-weight: 600;
     font-size: 0.75rem;
   }
 
-  .pw-title-btn { font-size: inherit; line-height: inherit; }
-
-  /* ── Dialog backdrop + box ─────────────────────────────────────────────── */
+  /* ── Dialog ────────────────────────────────────────────────────────────── */
   .pw-dialog {
+    position: fixed;
+    inset: 0;
     margin: 0;
     padding: 0;
     width: 100%;
-    height: 100%;
     max-width: 100%;
+    height: 100%;
     max-height: 100%;
-    background: transparent;
     border: none;
-    display: grid;
-    place-items: center;
+    background: transparent;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
   }
+  .pw-dialog[open] { display: flex; }
   .pw-dialog::backdrop {
-    background: rgba(0, 0, 0, 0.72);
+    background: rgba(0,0,0,0.72);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
   }
-  .pw-dialog[open] { display: grid; }
 
   .pw-dialog-box {
     position: relative;
-    width: min(680px, 96vw);
-    max-height: 90dvh;
+    width: min(680px, 94vw);
+    max-height: min(90dvh, 90vh);
     overflow-y: auto;
     overflow-x: hidden;
-    border-radius: var(--radius-lg, 16px);
-    background: var(--rs-surface);
+    border-radius: var(--radius-lg, 14px);
+    background: var(--rs-surface, #fff);
     box-shadow: 0 24px 64px -12px rgba(0,0,0,0.48);
     display: flex;
     flex-direction: column;
+    overscroll-behavior: contain;
   }
 
-  /* ── Close button ──────────────────────────────────────────────────────── */
+  /* ── Close ─────────────────────────────────────────────────────────────── */
   .pw-close-btn {
     position: absolute;
-    top: 0.75rem;
-    right: 0.75rem;
+    top: 0.625rem;
+    right: 0.625rem;
     z-index: 10;
-    width: 36px;
-    height: 36px;
+    width: 36px; height: 36px;
     border-radius: 50%;
     border: none;
     background: rgba(0,0,0,0.45);
@@ -304,49 +288,49 @@ const pageDescription = `Browse completed ${siteConfig.niche || 'projects'} by $
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: background 0.15s ease;
+    flex-shrink: 0;
+    transition: background 0.15s;
   }
-  .pw-close-btn:hover { background: rgba(0,0,0,0.68); }
+  .pw-close-btn:hover { background: rgba(0,0,0,0.72); }
 
-  /* ── Gallery ───────────────────────────────────────────────────────────── */
+  /* ── Gallery ────────────────────────────────────────────────────────────── */
   .pw-gallery {
     position: relative;
     width: 100%;
     aspect-ratio: 16/9;
-    background: var(--rs-surface-2);
+    background: #111;
     overflow: hidden;
     flex-shrink: 0;
   }
-  .pw-gallery-track {
+  .pw-track {
     display: flex;
     width: 100%;
     height: 100%;
     transition: transform 0.3s ease;
   }
-  .pw-gallery-track img {
+  .pw-track img {
     flex-shrink: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
   }
-  .pw-gallery-placeholder {
+  .pw-placeholder {
     flex-shrink: 0;
     width: 100%;
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--rs-surface-2);
+    background: var(--rs-surface-2, #f4f4f5);
   }
 
-  /* Nav arrows */
   .pw-nav-btn {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
     z-index: 5;
-    width: 40px;
-    height: 40px;
+    width: 40px; height: 40px;
     border-radius: 50%;
     border: none;
     background: rgba(0,0,0,0.48);
@@ -355,71 +339,66 @@ const pageDescription = `Browse completed ${siteConfig.niche || 'projects'} by $
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: background 0.15s ease;
+    transition: background 0.15s;
   }
   .pw-nav-btn:hover { background: rgba(0,0,0,0.72); }
-  .pw-nav-btn--prev { left: 0.75rem; }
-  .pw-nav-btn--next { right: 0.75rem; }
+  .pw-nav-btn--prev { left: 0.625rem; }
+  .pw-nav-btn--next { right: 0.625rem; }
 
-  /* Dots */
   .pw-dots {
     position: absolute;
-    bottom: 0.6rem;
+    bottom: 0.5rem;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    gap: 0.35rem;
+    gap: 0.3rem;
   }
   .pw-dot {
-    width: 6px;
-    height: 6px;
+    width: 6px; height: 6px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.45);
-    transition: background 0.15s ease, transform 0.15s ease;
+    background: rgba(255,255,255,0.4);
+    transition: background 0.15s, transform 0.15s;
   }
-  .pw-dot--active {
-    background: #fff;
-    transform: scale(1.3);
-  }
+  .pw-dot--active { background: #fff; transform: scale(1.35); }
 
-  /* ── Dialog body ───────────────────────────────────────────────────────── */
-  .pw-dialog-body {
-    padding: 1.5rem 1.75rem 2rem;
+  /* ── Body ───────────────────────────────────────────────────────────────── */
+  .pw-body {
+    padding: 1.375rem 1.625rem 1.75rem;
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
   }
 
   .pw-title {
-    font-size: 1.375rem;
+    font-size: 1.25rem;
     font-weight: 700;
     letter-spacing: -0.02em;
-    color: var(--rs-text);
+    color: var(--rs-text, #111);
     margin: 0;
-    line-height: 1.25;
+    line-height: 1.3;
+    padding-right: 2rem; /* avoid overlap with close btn */
   }
 
   .pw-meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem 1rem;
+    gap: 0.4rem 0.875rem;
     font-size: 0.8125rem;
-    color: var(--rs-text-muted);
+    color: var(--rs-text-muted, #71717a);
   }
   .pw-meta-item {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 0.3rem;
   }
-  .pw-meta-item svg { flex-shrink: 0; }
   .pw-cost-tag {
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
-    padding: 0.2rem 0.625rem;
+    padding: 0.15rem 0.6rem;
     border-radius: 999px;
     background: var(--rs-brand-tint);
-    color: var(--rs-accent);
+    color: var(--rs-brand-text);
     font-weight: 600;
     font-size: 0.8125rem;
   }
@@ -427,29 +406,28 @@ const pageDescription = `Browse completed ${siteConfig.niche || 'projects'} by $
   .pw-desc {
     font-size: 0.9375rem;
     line-height: 1.65;
-    color: var(--rs-text-muted);
+    color: var(--rs-text-muted, #52525b);
     margin: 0;
   }
 
   .pw-quote {
     margin: 0;
-    padding: 1rem 1.25rem;
+    padding: 0.875rem 1.125rem;
     border-left: 3px solid var(--rs-brand);
-    border-radius: 0 var(--radius-md) var(--radius-md) 0;
-    background: color-mix(in srgb, var(--rs-accent) 6%, var(--rs-surface));
+    border-radius: 0 var(--radius-md, 8px) var(--radius-md, 8px) 0;
+    background: color-mix(in srgb, var(--rs-brand) 6%, var(--rs-surface, #fff));
   }
   .pw-quote-text {
     margin: 0;
     font-size: 0.9375rem;
     font-style: italic;
     line-height: 1.6;
-    color: var(--rs-text);
+    color: var(--rs-text, #111);
   }
-  .pw-quote-text::before { content: '"'; }
-  .pw-quote-text::after  { content: '"'; }
+  .pw-quote-text::before { content: '\201C'; }
+  .pw-quote-text::after  { content: '\201D'; }
 
-  .pw-service-link-wrap { margin-top: 0.25rem; }
-  .pw-service-link {
+  .pw-svc-link {
     display: inline-flex;
     align-items: center;
     gap: 0.25rem;
@@ -457,71 +435,52 @@ const pageDescription = `Browse completed ${siteConfig.niche || 'projects'} by $
     font-weight: 600;
     color: var(--rs-brand-text);
     text-decoration: none;
-    transition: opacity 0.15s ease;
+    transition: opacity 0.15s;
   }
-  .pw-service-link:hover { opacity: 0.75; }
+  .pw-svc-link:hover { opacity: 0.72; }
 
   @media (max-width: 480px) {
-    .pw-dialog-body { padding: 1.25rem 1.25rem 1.5rem; }
-    .pw-title { font-size: 1.125rem; }
+    .pw-body { padding: 1.125rem 1.125rem 1.5rem; }
+    .pw-title { font-size: 1.0625rem; }
+    .pw-nav-btn { width: 34px; height: 34px; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .pw-gallery-track { transition: none; }
-    .pw-nav-btn, .pw-close-btn, .pw-dot { transition: none; }
+    .pw-track, .pw-card-img img, .pw-close-btn,
+    .pw-nav-btn, .pw-dot { transition: none !important; }
   }
 </style>
 
-<script>
-  // ── data ────────────────────────────────────────────────────────────────
-  interface ProjectData {
-    id: string;
-    title: string;
-    description: string;
-    images: string[];
-    date: string | null;
-    location: string | null;
-    cost: string | null;
-    relatedService: string | null;
-    customerQuote: string | null;
+<script define:vars={{ projectsData: projectsJSON }}>
+  // projectsData is injected at build time by define:vars.
+  // All logic below runs in the browser.
+
+  let current = null;
+  let imgIdx  = 0;
+
+  /* ── helpers ──────────────────────────────────────────────────────────── */
+  function q(id) { return document.getElementById(id); }
+
+  function byDateDesc(a, b) {
+    if (a.date && b.date) return new Date(b.date) - new Date(a.date);
+    return a.date ? -1 : b.date ? 1 : 0;
   }
 
-  function getProjectsData(): ProjectData[] {
-    const el = document.getElementById('pw-data');
-    if (!el) return [];
-    try { return JSON.parse(el.textContent ?? '[]'); } catch { return []; }
-  }
-
-  // ── state ────────────────────────────────────────────────────────────────
-  let currentProject: ProjectData | null = null;
-  let imgIndex = 0;
-
-  // ── element refs ─────────────────────────────────────────────────────────
-  function getRefs() {
-    return {
-      dialog:          document.getElementById('pw-dialog') as HTMLDialogElement | null,
-      track:           document.getElementById('pw-track'),
-      prev:            document.getElementById('pw-prev') as HTMLButtonElement | null,
-      next:            document.getElementById('pw-next') as HTMLButtonElement | null,
-      dots:            document.getElementById('pw-dots'),
-      titleEl:         document.getElementById('pw-dialog-title'),
-      meta:            document.getElementById('pw-meta'),
-      desc:            document.getElementById('pw-desc'),
-      quote:           document.getElementById('pw-quote'),
-      quoteText:       document.getElementById('pw-quote-text'),
-      serviceLinkWrap: document.getElementById('pw-service-link-wrap'),
-      serviceLink:     document.getElementById('pw-service-link') as HTMLAnchorElement | null,
-      closeBtn:        document.getElementById('pw-close'),
-    };
-  }
-
-  // ── gallery render ────────────────────────────────────────────────────────
-  function renderGallery(images: string[], idx: number) {
-    const { track, prev, next, dots } = getRefs();
+  /* ── gallery ──────────────────────────────────────────────────────────── */
+  function renderGallery(images, idx) {
+    const track = q('pw-track');
+    const prev  = q('pw-prev');
+    const next  = q('pw-next');
+    const dots  = q('pw-dots');
     if (!track) return;
 
-    if (images.length === 0) {
-      track.innerHTML = `<div class="pw-gallery-placeholder">
-        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--rs-text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+    if (!images || images.length === 0) {
+      track.innerHTML = `<div class="pw-placeholder">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+          stroke="var(--rs-text-muted,#a1a1aa)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="18" height="18" x="3" y="3" rx="2"/>
+          <circle cx="9" cy="9" r="2"/>
+          <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+        </svg>
       </div>`;
       if (prev) prev.hidden = true;
       if (next) next.hidden = true;
@@ -530,7 +489,8 @@ const pageDescription = `Browse completed ${siteConfig.niche || 'projects'} by $
     }
 
     track.innerHTML = images.map((src, i) =>
-      `<img src="${src}" alt="Project photo ${i + 1}" loading="${i === 0 ? 'eager' : 'lazy'}" decoding="async" />`
+      `<img src="${src}" alt="Project photo ${i + 1}"
+        loading="${i === 0 ? 'eager' : 'lazy'}" decoding="async" />`
     ).join('');
 
     const multi = images.length > 1;
@@ -539,153 +499,183 @@ const pageDescription = `Browse completed ${siteConfig.niche || 'projects'} by $
 
     if (dots) {
       dots.innerHTML = multi
-        ? images.map((_, i) => `<span class="pw-dot${i === idx ? ' pw-dot--active' : ''}"></span>`).join('')
+        ? images.map((_, i) =>
+            `<span class="pw-dot${i === idx ? ' pw-dot--active' : ''}"></span>`
+          ).join('')
         : '';
     }
 
     track.style.transform = `translateX(-${idx * 100}%)`;
   }
 
-  function goTo(idx: number) {
-    if (!currentProject) return;
-    const images = currentProject.images;
-    imgIndex = Math.max(0, Math.min(idx, images.length - 1));
-    const { track, dots } = getRefs();
-    if (track) track.style.transform = `translateX(-${imgIndex * 100}%)`;
+  function goTo(idx) {
+    if (!current || !current.images.length) return;
+    imgIdx = Math.max(0, Math.min(idx, current.images.length - 1));
+    const track = q('pw-track');
+    const dots  = q('pw-dots');
+    if (track) track.style.transform = `translateX(-${imgIdx * 100}%)`;
     if (dots) {
-      dots.querySelectorAll<HTMLElement>('.pw-dot').forEach((d, i) => {
-        d.classList.toggle('pw-dot--active', i === imgIndex);
+      dots.querySelectorAll('.pw-dot').forEach((d, i) => {
+        d.classList.toggle('pw-dot--active', i === imgIdx);
       });
     }
   }
 
-  // ── populate dialog ───────────────────────────────────────────────────────
-  function populateDialog(project: ProjectData) {
-    const { titleEl, meta, desc, quote, quoteText, serviceLinkWrap, serviceLink } = getRefs();
+  /* ── populate ─────────────────────────────────────────────────────────── */
+  function populate(project) {
+    const titleEl   = q('pw-dialog-title');
+    const metaEl    = q('pw-meta');
+    const descEl    = q('pw-desc');
+    const quoteEl   = q('pw-quote');
+    const quoteText = q('pw-quote-text');
+    const svcWrap   = q('pw-svc-wrap');
+    const svcLink   = q('pw-svc-link');
 
     if (titleEl) titleEl.textContent = project.title;
-    if (desc) desc.textContent = project.description;
+    if (descEl)  descEl.textContent  = project.description;
 
-    // Meta strip
-    if (meta) {
-      const parts: string[] = [];
+    if (metaEl) {
+      const parts = [];
       if (project.location) {
         parts.push(`<span class="pw-meta-item">
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          ${project.location}
-        </span>`);
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>${project.location}</span>`);
       }
       if (project.date) {
-        const formatted = new Date(project.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+        const fmt = new Date(project.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
         parts.push(`<span class="pw-meta-item">
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          <time datetime="${project.date}">${formatted}</time>
-        </span>`);
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg><time datetime="${project.date}">${fmt}</time></span>`);
       }
       if (project.cost) {
         parts.push(`<span class="pw-cost-tag">
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-          ${project.cost}
-        </span>`);
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="1" x2="12" y2="23"/>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>${project.cost}</span>`);
       }
-      meta.innerHTML = parts.join('');
+      metaEl.innerHTML = parts.join('');
     }
 
-    // Customer quote
-    if (quote && quoteText) {
+    if (quoteEl && quoteText) {
       if (project.customerQuote) {
         quoteText.textContent = project.customerQuote;
-        quote.hidden = false;
+        quoteEl.hidden = false;
       } else {
-        quote.hidden = true;
+        quoteEl.hidden = true;
       }
     }
 
-    // Related service link
-    if (serviceLinkWrap && serviceLink) {
+    if (svcWrap && svcLink) {
       if (project.relatedService) {
-        serviceLink.href = `/services/${project.relatedService}`;
-        serviceLink.innerHTML = `View ${project.relatedService.replace(/-/g, ' ')} service
-          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>`;
-        serviceLinkWrap.hidden = false;
+        const label = project.relatedService.replace(/-/g, ' ');
+        svcLink.href = `/services/${project.relatedService}`;
+        svcLink.innerHTML = `View ${label} service
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m9 18 6-6-6-6"/>
+          </svg>`;
+        svcWrap.hidden = false;
       } else {
-        serviceLinkWrap.hidden = true;
+        svcWrap.hidden = true;
       }
     }
   }
 
-  // ── open / close ──────────────────────────────────────────────────────────
-  function openProject(id: string, pushState = true) {
-    const data = getProjectsData();
-    const project = data.find(p => p.id === id);
+  /* ── open / close ─────────────────────────────────────────────────────── */
+  function openProject(id, pushState) {
+    const project = projectsData.find(p => p.id === id);
     if (!project) return;
 
-    currentProject = project;
-    imgIndex = 0;
-
+    current = project;
+    imgIdx  = 0;
     renderGallery(project.images, 0);
-    populateDialog(project);
+    populate(project);
 
-    const { dialog } = getRefs();
-    if (dialog) {
-      dialog.showModal();
-      if (pushState) history.pushState(null, '', `#project-${id}`);
+    const dialog = q('pw-dialog');
+    if (!dialog) return;
+    dialog.showModal();
+    if (pushState !== false) {
+      history.pushState(null, '', `#project-${id}`);
     }
   }
 
   function closeDialog() {
-    const { dialog } = getRefs();
-    if (dialog) dialog.close();
-    currentProject = null;
-    // Remove hash without scroll jump
+    const dialog = q('pw-dialog');
+    if (dialog && dialog.open) dialog.close();
+    current = null;
     history.replaceState(null, '', window.location.pathname + window.location.search);
   }
 
-  // ── event wiring ──────────────────────────────────────────────────────────
+  /* ── init (re-runs on every Astro page load) ─────────────────────────── */
   function init() {
-    const { dialog, prev, next, closeBtn } = getRefs();
+    const dialog  = q('pw-dialog');
+    const closeBtn = q('pw-close');
+    const prev    = q('pw-prev');
+    const next    = q('pw-next');
     if (!dialog) return;
 
-    // Close button
-    closeBtn?.addEventListener('click', closeDialog);
+    // Prevent stacking listeners: replace the node clone trick via a flag
+    if (dialog.dataset.pwReady === '1') return;
+    dialog.dataset.pwReady = '1';
 
-    // Backdrop click
-    dialog.addEventListener('click', (e) => {
+    // X button
+    closeBtn && closeBtn.addEventListener('click', closeDialog);
+
+    // Backdrop click (dialog is the backdrop; the box is a child)
+    dialog.addEventListener('click', e => {
       if (e.target === dialog) closeDialog();
     });
 
-    // Arrow buttons
-    prev?.addEventListener('click', () => goTo(imgIndex - 1));
-    next?.addEventListener('click', () => goTo(imgIndex + 1));
+    // Arrow nav
+    prev && prev.addEventListener('click', () => goTo(imgIdx - 1));
+    next && next.addEventListener('click', () => goTo(imgIdx + 1));
 
-    // Keyboard in lightbox
-    dialog.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowLeft')  goTo(imgIndex - 1);
-      if (e.key === 'ArrowRight') goTo(imgIndex + 1);
+    // Keyboard
+    dialog.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft')  goTo(imgIdx - 1);
+      if (e.key === 'ArrowRight') goTo(imgIdx + 1);
     });
 
-    // Card open triggers (buttons with data-open-project)
-    document.querySelectorAll<HTMLElement>('[data-open-project]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const id = btn.dataset.openProject!;
-        openProject(id);
-      });
+    // Back-button closes dialog
+    window.addEventListener('popstate', () => {
+      const d = q('pw-dialog');
+      if (d && d.open) d.close();
+    }, { once: true });
+
+    // Wire all card triggers
+    document.querySelectorAll('[data-project-id]').forEach(btn => {
+      btn.addEventListener('click', () => openProject(btn.dataset.projectId));
     });
 
-    // Hash deep-link on load
+    // Hash deep-link (from service page cross-links)
     const hash = window.location.hash;
     if (hash.startsWith('#project-')) {
       const id = hash.slice('#project-'.length);
-      openProject(id, false);
+      // Small delay so dialog renders after layout paint
+      requestAnimationFrame(() => openProject(id, false));
     }
-
-    // Back button closes dialog if hash was pushed
-    window.addEventListener('popstate', () => {
-      const { dialog } = getRefs();
-      if (dialog?.open) dialog.close();
-    });
   }
 
-  document.addEventListener('DOMContentLoaded', init);
-  document.addEventListener('astro:page-load', init);
+  // DOMContentLoaded for direct navigation; astro:page-load for SPA transitions
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init, { once: true });
+  } else {
+    init();
+  }
+  document.addEventListener('astro:page-load', () => {
+    // Reset the ready flag so listeners re-attach after view transitions
+    const dialog = q('pw-dialog');
+    if (dialog) delete dialog.dataset.pwReady;
+    init();
+  });
 </script>
