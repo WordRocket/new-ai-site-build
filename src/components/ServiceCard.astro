@@ -1,4 +1,6 @@
 ---
+import { imgUrl } from '../lib/image';
+
 interface Props {
   title: string;
   description?: string;
@@ -9,14 +11,15 @@ interface Props {
 }
 
 const { title, description, image, href, icon, class: className } = Astro.props;
+const optimizedImage = image ? imgUrl(image, { w: 800, h: 450 }) : undefined;
 ---
 
 <article class:list={['sc-card', className]}>
   <div class="sc-media">
-    {image ? (
+    {optimizedImage ? (
       <img
         class="sc-img"
-        src={image}
+        src={optimizedImage}
         alt=""
         role="presentation"
         loading="lazy"

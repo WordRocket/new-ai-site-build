@@ -1,5 +1,6 @@
 ---
 import Icon from './Icon.astro';
+import { imgUrl, aspectDims } from '../lib/image';
 
 interface Props {
   src?: string;
@@ -9,16 +10,22 @@ interface Props {
   class?: string;
   loading?: 'eager' | 'lazy';
   fetchpriority?: 'high' | 'auto' | 'low';
+  /** Pixel width to request from the image CDN. Defaults to 800. */
+  imgWidth?: number;
 }
 
-const { src, alt, aspect = '16/9', class: cls, loading = 'lazy', fetchpriority } = Astro.props;
+const { src, alt, aspect = '16/9', class: cls, loading = 'lazy', fetchpriority, imgWidth = 800 } = Astro.props;
 const hasImage = typeof src === 'string' && src.trim().length > 0;
+const dims = aspectDims(aspect, imgWidth);
+const optimizedSrc = hasImage ? imgUrl(src, { w: dims.width, h: dims.height }) : '';
 ---
 
 {hasImage ? (
   <img
-    src={src}
+    src={optimizedSrc}
     alt={alt}
+    width={dims.width}
+    height={dims.height}
     loading={loading}
     decoding="async"
     fetchpriority={fetchpriority}

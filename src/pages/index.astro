@@ -13,6 +13,7 @@ import LeadForm from '../components/LeadForm.astro';
 import ServiceCard from '../components/ServiceCard.astro';
 import SectionBgImage from '../components/SectionBgImage.astro';
 import ReviewBadge from '../components/ReviewBadge.astro';
+import { imgUrl, imgSrcset } from '../lib/image';
 
 const serviceEntries = await getCollection('services').catch(() => []);
 const locationEntries = await getCollection('locations').catch(() => []);
@@ -77,6 +78,9 @@ const vars = { city: siteConfig.city, niche: nicheLabel };
 
 // Compute heroImage early so it can be used as the card image fallback below.
 const heroImage = (hp?.heroImage || (siteConfig as any).heroImage || '') as string;
+// CDN-optimised hero src + responsive srcset (LCP element — served at display size, WebP)
+const heroSrc    = heroImage ? imgUrl(heroImage,    { w: 1440, q: 82 }) : '';
+const heroSrcset = heroImage ? imgSrcset(heroImage, [640, 960, 1440], { q: 82 }) : '';
 
 const placeholderServices = [
   {
@@ -220,7 +224,9 @@ const heroServiceOptions = serviceEntries.length > 0
   {hasHeroImage && (
     <img
       class="hero-cin-img"
-      src={heroImage}
+      src={heroSrc}
+      srcset={heroSrcset}
+      sizes="100vw"
       alt=""
       role="presentation"
       aria-hidden="true"
@@ -320,7 +326,9 @@ const heroServiceOptions = serviceEntries.length > 0
   {hasHeroImage && (
     <img
       class="hero-cin-img"
-      src={heroImage}
+      src={heroSrc}
+      srcset={heroSrcset}
+      sizes="100vw"
       alt=""
       role="presentation"
       aria-hidden="true"
