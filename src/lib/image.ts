@@ -23,6 +23,7 @@ export function imgUrl(src: string | null | undefined, opts: ImgOpts = {}): stri
 
   if (
     src.startsWith('data:') ||
+    src.startsWith('/') ||        // local paths — served directly, CDN unavailable in dev
     /\.svg(\?|$)/i.test(src) ||
     src.includes('/.netlify/images')
   ) {
