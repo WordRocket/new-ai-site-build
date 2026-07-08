@@ -201,7 +201,7 @@ const projectsJSON = projects.map(p => ({
   </div>
 </dialog>
 
-<style>
+<style is:global>
   /* ── Card ──────────────────────────────────────────────────────────────── */
   .pw-card { transition: box-shadow 0.2s ease; }
   .pw-card:hover { box-shadow: var(--shadow-md) !important; }
@@ -489,8 +489,7 @@ const projectsJSON = projects.map(p => ({
     }
 
     track.innerHTML = images.map((src, i) =>
-      `<img src="${src}" alt="Project photo ${i + 1}"
-        loading="${i === 0 ? 'eager' : 'lazy'}" decoding="async" />`
+      `<img src="${src}" alt="Project photo ${i + 1}" loading="eager" decoding="async" />`
     ).join('');
 
     const multi = images.length > 1;

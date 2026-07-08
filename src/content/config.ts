@@ -102,6 +102,7 @@ const projects = defineCollection({
     title: z.string(),
     description: z.string(),
     published: z.boolean().default(true),
+    featured: z.boolean().default(false),
     images: z.array(z.string()).default([]),
     date: z.string().optional(),
     location: z.string().optional(),
