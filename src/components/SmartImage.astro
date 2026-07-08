@@ -1,6 +1,6 @@
 ---
 import Icon from './Icon.astro';
-import { imgUrl, imgSrcset, aspectDims } from '../lib/image';
+import { imgUrl, variantsSrcset, aspectDims, type ImageVariants } from '../lib/image';
 
 interface Props {
   src?: string;
@@ -12,6 +12,12 @@ interface Props {
   fetchpriority?: 'high' | 'auto' | 'low';
   /** Pixel width to request from the image CDN. Defaults to 800. */
   imgWidth?: number;
+  /**
+   * Pre-generated image variants from the upload pipeline.
+   * When present, srcset is built directly from these URLs instead of
+   * CDN-transform calls (which don't apply to signed Supabase URLs).
+   */
+  variants?: ImageVariants;
   /**
    * sizes attribute for responsive image selection.
    * Default matches the FeatureRow two-column layout breakpoint (900px).
@@ -27,12 +33,13 @@ const {
   loading = 'lazy',
   fetchpriority,
   imgWidth = 800,
+  variants,
   sizes = '(min-width: 900px) 50vw, 100vw',
 } = Astro.props;
 const hasImage = typeof src === 'string' && src.trim().length > 0;
 const dims = aspectDims(aspect, imgWidth);
 const optimizedSrc = hasImage ? imgUrl(src, { w: dims.width, h: dims.height }) : '';
-const srcset = hasImage ? imgSrcset(src, [480, 800, 1200], { q: 82 }) : '';
+const srcset = variantsSrcset(variants);
 ---
 
 {hasImage ? (

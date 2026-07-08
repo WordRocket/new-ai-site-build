@@ -10,7 +10,7 @@ import {
   getBreadcrumbSchema,
   getOrganizationSchema,
 } from '../../lib/schema';
-import { imgUrl, imgSrcset } from '../../lib/image';
+import { imgUrl, variantsSrcset } from '../../lib/image';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -134,8 +134,8 @@ const relatedPosts = allPosts
           <div class="rounded-[var(--radius-lg)] overflow-hidden aspect-video mb-8" style="box-shadow:var(--shadow-md);">
             <img
               src={imgUrl(d.featuredImage, { w: 1440, q: 82 })}
-              srcset={imgSrcset(d.featuredImage, [720, 1440], { q: 82 }) || undefined}
-              sizes="(min-width: 768px) 720px, 100vw"
+              srcset={variantsSrcset(d.featuredImageVariants) || undefined}
+              sizes={d.featuredImageVariants ? '(min-width: 768px) 720px, 100vw' : undefined}
               alt={d.featuredImageAlt ?? d.title}
               class="w-full h-full object-cover"
               loading="eager"

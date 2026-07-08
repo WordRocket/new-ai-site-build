@@ -1,6 +1,7 @@
 ---
 import SmartImage from '../SmartImage.astro';
 import Icon from '../Icon.astro';
+import type { ImageVariants } from '../../lib/image';
 
 interface CheckItem {
   text: string;
@@ -14,6 +15,7 @@ interface Props {
   ctaText?: string;
   ctaHref?: string;
   image?: string;
+  imageVariants?: ImageVariants;
   imageAlt?: string;
   imageAspect?: string;
   /** Flip image/text sides on desktop. On mobile, image always stacks above text. */
@@ -32,6 +34,7 @@ const {
   ctaText,
   ctaHref,
   image,
+  imageVariants,
   imageAlt = '',
   imageAspect = '4/3',
   reverse = false,
@@ -59,7 +62,7 @@ const { main: frMain, last: frLast } = splitH(heading);
       <div class="fr-media-pos">
         <!-- fr-media-wrap clips the image to border-radius -->
         <div class="fr-media-wrap">
-          <SmartImage src={image} alt={imageAlt || heading} aspect={imageAspect} />
+          <SmartImage src={image} alt={imageAlt || heading} aspect={imageAspect} variants={imageVariants} />
         </div>
 
         {showBadge && (

@@ -1,5 +1,10 @@
 import { defineCollection, z } from 'astro:content';
 
+const imageVariantsSchema = z.record(
+  z.string(),
+  z.object({ url: z.string(), width: z.number(), height: z.number() })
+).optional();
+
 const blog = defineCollection({
   schema: z.object({
     title: z.string(),
@@ -10,8 +15,10 @@ const blog = defineCollection({
     authorBio: z.string().optional(),
     authorImage: z.string().optional(),
     heroImage: z.string().optional(),
+    heroImageVariants: imageVariantsSchema,
     sectionImage: z.string().optional(),
     featuredImage: z.string().optional(),
+    featuredImageVariants: imageVariantsSchema,
     featuredImageAlt: z.string().optional(),
     category: z.string(),
     tags: z.array(z.string()).default([]),
@@ -30,6 +37,7 @@ const pages = defineCollection({
     title: z.string(),
     description: z.string(),
     heroImage: z.string().optional(),
+    heroImageVariants: imageVariantsSchema,
     sectionImage: z.string().optional(),
     serviceImage: z.string().optional(),
     aboutImage: z.string().optional(),
@@ -61,10 +69,13 @@ const services = defineCollection({
     shortDescription: z.string(),
     icon: z.string().optional(),
     heroImage: z.string().optional(),
+    heroImageVariants: imageVariantsSchema,
     sectionImage: z.string().optional(),
+    sectionImageVariants: imageVariantsSchema,
     serviceImage: z.string().optional(),
     aboutImage: z.string().optional(),
     featuredImage: z.string().optional(),
+    featuredImageVariants: imageVariantsSchema,
     featuredImageAlt: z.string().optional(),
     areaServed: z.array(z.string()).default([]),
     faq: z.array(z.object({ question: z.string(), answer: z.string() })).default([]),
@@ -84,6 +95,7 @@ const locations = defineCollection({
     state: z.string(),
     service: z.string(),
     heroImage: z.string().optional(),
+    heroImageVariants: imageVariantsSchema,
     sectionImage: z.string().optional(),
     serviceImage: z.string().optional(),
     aboutImage: z.string().optional(),

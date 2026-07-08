@@ -18,6 +18,12 @@ export interface ImgOpts {
   fit?: 'cover' | 'contain' | 'fill';
 }
 
+/**
+ * Pre-generated image variants produced by the upload pipeline.
+ * Keys are the pixel widths as strings (e.g. "640", "960", "1440").
+ */
+export type ImageVariants = Record<string, { url: string; width: number; height: number }>;
+
 export function imgUrl(src: string | null | undefined, opts: ImgOpts = {}): string {
   if (!src) return '';
 
@@ -45,12 +51,28 @@ export function imgUrl(src: string | null | undefined, opts: ImgOpts = {}): stri
 }
 
 /**
- * Build a srcset string at multiple widths.
- * e.g. imgSrcset(src, [640, 960, 1440]) → "...640w, ...960w, ...1440w"
+ * Build a srcset string from pre-generated image variants.
+ * Returns empty string when variants are absent or empty — callers fall
+ * back to the plain src attribute with no srcset.
  *
+ * e.g. variantsSrcset({ "640": { url: "...", width: 640, height: 360 }, ... })
+ *   → "https://...640.webp 640w, https://...960.webp 960w, ..."
+ */
+export function variantsSrcset(variants: ImageVariants | null | undefined): string {
+  if (!variants) return '';
+  const entries = Object.values(variants)
+    .filter(v => v?.url && v?.width)
+    .sort((a, b) => a.width - b.width)
+    .map(v => `${v.url} ${v.width}w`);
+  return entries.length > 0 ? entries.join(', ') : '';
+}
+
+/**
+ * Build a srcset string at multiple widths via the Netlify Image CDN.
  * Returns empty string when the URL bypasses the CDN (local paths, signed
- * Supabase URLs, SVGs) — all entries would be identical, which is wasteful
- * and provides no benefit to the browser.
+ * Supabase URLs, SVGs) — all entries would be identical in that case.
+ *
+ * Prefer variantsSrcset() when pre-generated variants are available.
  */
 export function imgSrcset(
   src: string | null | undefined,

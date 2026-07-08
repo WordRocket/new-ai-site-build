@@ -169,7 +169,15 @@ const relatedProjects = [...pinned, ...unpinned].slice(0, 3);
       <article class="page-body-article">
 
         <!-- Hero image — eager LCP element -->
-        <SmartImage src={d.heroImage} alt={d.title} aspect="16/9" loading="eager" fetchpriority="high" />
+        <SmartImage
+          src={d.heroImage}
+          alt={d.title}
+          aspect="16/9"
+          loading="eager"
+          fetchpriority="high"
+          variants={d.heroImageVariants}
+          sizes="(min-width: 1024px) 65vw, 100vw"
+        />
 
         <!-- Prose markdown content -->
         <div class="prose prose-neutral prose-lg max-w-none mt-8">
@@ -298,6 +306,7 @@ const relatedProjects = [...pinned, ...unpinned].slice(0, 3);
         heading={d.title}
         body={d.shortDescription || d.description}
         image={d.sectionImage}
+        imageVariants={d.sectionImageVariants}
         imageAlt={d.title}
         imageAspect="4/3"
         ctaText={(siteConfig as any).businessType === 'local-service' ? 'Get a Free Quote' : 'Get in Touch'}

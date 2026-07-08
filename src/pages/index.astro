@@ -13,7 +13,7 @@ import LeadForm from '../components/LeadForm.astro';
 import ServiceCard from '../components/ServiceCard.astro';
 import SectionBgImage from '../components/SectionBgImage.astro';
 import ReviewBadge from '../components/ReviewBadge.astro';
-import { imgUrl, imgSrcset } from '../lib/image';
+import { imgUrl, variantsSrcset, type ImageVariants } from '../lib/image';
 
 const serviceEntries = await getCollection('services').catch(() => []);
 const locationEntries = await getCollection('locations').catch(() => []);
@@ -78,9 +78,10 @@ const vars = { city: siteConfig.city, niche: nicheLabel };
 
 // Compute heroImage early so it can be used as the card image fallback below.
 const heroImage = (hp?.heroImage || (siteConfig as any).heroImage || '') as string;
-// CDN-optimised hero src + responsive srcset (LCP element — served at display size, WebP)
-const heroSrc    = heroImage ? imgUrl(heroImage,    { w: 1440, q: 82 }) : '';
-const heroSrcset = heroImage ? imgSrcset(heroImage, [640, 960, 1440], { q: 82 }) : '';
+const heroImageVariants = (hp?.heroImageVariants ?? (siteConfig as any).heroImageVariants) as ImageVariants | undefined;
+// Hero src for the LCP <img>; srcset is built from pre-generated variants when available.
+const heroSrc    = heroImage ? imgUrl(heroImage, { w: 1440, q: 82 }) : '';
+const heroSrcset = variantsSrcset(heroImageVariants);
 
 const placeholderServices = [
   {
@@ -89,6 +90,7 @@ const placeholderServices = [
     title: `${nicheLabel.charAt(0).toUpperCase() + nicheLabel.slice(1)} Services`,
     description: `Professional ${nicheLabel} services tailored to your needs in ${siteConfig.city}, ${siteConfig.state}. Reliable results, every time.`,
     image: heroImage,
+    imageVariants: heroImageVariants,
   },
   {
     slug: null, num: '02',
@@ -96,6 +98,7 @@ const placeholderServices = [
     title: 'Free Estimates',
     description: `Honest, transparent quotes before any work begins — no surprises, no hidden fees. Call us to book your free assessment.`,
     image: heroImage,
+    imageVariants: heroImageVariants,
   },
   {
     slug: null, num: '03',
@@ -103,6 +106,7 @@ const placeholderServices = [
     title: 'Fast Response',
     description: `We respect your time. Prompt scheduling and reliable arrival — when you need us, we show up prepared and ready.`,
     image: heroImage,
+    imageVariants: heroImageVariants,
   },
 ];
 
@@ -114,6 +118,7 @@ const displayServices = serviceEntries.length > 0
       title: cleanTitle(e.data.title),
       description: e.data.description ?? '',
       image: e.data.heroImage || e.data.sectionImage || heroImage,
+      imageVariants: (e.data.heroImageVariants ?? e.data.sectionImageVariants ?? heroImageVariants) as ImageVariants | undefined,
     }))
   : placeholderServices;
 
@@ -177,6 +182,7 @@ const heroNameMain = nameParts.length > 1 ? nameParts.slice(0, -1).join(' ') : '
 const formEndpoint: string = ((siteConfig as any).formEndpoint ?? '').trim();
 const formConnected = formEndpoint !== '';
 const ctaImage: string = ((siteConfig as any).ctaImage ?? '').trim();
+const ctaImageVariants = (siteConfig as any).ctaImageVariants as ImageVariants | undefined;
 const hasCtaImage = ctaImage.length > 0;
 const hasHeroImage = !!heroImage;
 
@@ -426,11 +432,12 @@ const heroServiceOptions = serviceEntries.length > 0
       <p class="text-[var(--color-text-muted)] text-lg max-w-2xl mx-auto">{interpolate(preset.servicesSubheading, vars)}</p>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-      {displayServices.map(({ slug, icon, title, description, image }) => (
+      {displayServices.map(({ slug, icon, title, description, image, imageVariants }) => (
         <ServiceCard
           title={title}
           description={description}
           image={image || undefined}
+          variants={imageVariants}
           href={slug ? `/services/${slug}` : '#'}
           icon={icon}
           class="reveal"
@@ -453,6 +460,7 @@ const heroServiceOptions = serviceEntries.length > 0
             title={post.data.title}
             description={post.data.description}
             image={post.data.featuredImage || post.data.heroImage || undefined}
+            variants={post.data.featuredImageVariants ?? post.data.heroImageVariants}
             href={`/blog/${post.slug}`}
             class="reveal"
           />
@@ -498,6 +506,7 @@ const heroServiceOptions = serviceEntries.length > 0
   ctaText={isLocalService ? "Get a Free Estimate" : "Get in Touch"}
   ctaHref={isLocalService && siteConfig.phone ? `tel:${phoneDigits}` : '/contact'}
   image={hp?.heroImage || siteConfig.heroImage}
+  imageVariants={heroImageVariants}
   imageAlt={`${siteConfig.name} professional service`}
   bg="var(--rs-bg)"
 />
@@ -611,7 +620,7 @@ const heroServiceOptions = serviceEntries.length > 0
 
 <!-- ─── FAQ ─────────────────────────────────────────────────────────────── -->
 <section class="section-pad section-dark faq-section" aria-labelledby="faq-heading" data-bg={hasCtaImage ? 'image' : undefined}>
-  {hasCtaImage && <SectionBgImage src={ctaImage} scrim="heavy" lightScrim />}
+  {hasCtaImage && <SectionBgImage src={ctaImage} variants={ctaImageVariants} scrim="heavy" lightScrim />}
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 faq-section__inner">
     <div class="faq-header mb-14">
       <h2 id="faq-heading" class="reveal faq-heading-dark mb-4">Frequently Asked <span class="u-gradient-text">Questions</span></h2>
@@ -678,7 +687,7 @@ const heroServiceOptions = serviceEntries.length > 0
 
 <!-- ─── CTA / CONTACT SECTION — full-bleed ───────────────────────────── -->
 <section class="hp-cta-section" aria-labelledby="cta-heading" data-bg={hasCtaImage ? 'image' : undefined}>
-  {hasCtaImage && <SectionBgImage src={ctaImage} scrim="branded" />}
+  {hasCtaImage && <SectionBgImage src={ctaImage} variants={ctaImageVariants} scrim="branded" />}
   <div class="u-reveal hp-cta-inner">
 
     <!-- Left: CTA text -->

@@ -1,18 +1,19 @@
 ---
-import { imgUrl, imgSrcset } from '../lib/image';
+import { imgUrl, variantsSrcset, type ImageVariants } from '../lib/image';
 
 interface Props {
   title: string;
   description?: string;
   image?: string;
+  variants?: ImageVariants;
   href: string;
   icon?: string;
   class?: string;
 }
 
-const { title, description, image, href, icon, class: className } = Astro.props;
+const { title, description, image, variants, href, icon, class: className } = Astro.props;
 const optimizedImage = image ? imgUrl(image, { w: 800, h: 450 }) : undefined;
-const srcset = image ? imgSrcset(image, [400, 800], { q: 82 }) : '';
+const srcset = variantsSrcset(variants);
 ---
 
 <article class:list={['sc-card', className]}>

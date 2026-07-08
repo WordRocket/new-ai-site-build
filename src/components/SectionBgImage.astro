@@ -10,10 +10,12 @@
  * The parent section must have: position:relative; overflow:hidden;
  * Content inside the section must have: position:relative; z-index:2;
  */
-import { imgUrl, imgSrcset } from '../lib/image';
+import { imgUrl, variantsSrcset, type ImageVariants } from '../lib/image';
 
 interface Props {
   src: string;
+  /** Pre-generated image variants from the upload pipeline. */
+  variants?: ImageVariants;
   /** 'heavy'   = strong dark scrim (dark skin FAQ / texture)
    *  'branded' = lighter dark + brand-tinted gradient (CTA) */
   scrim?: 'heavy' | 'branded';
@@ -24,9 +26,9 @@ interface Props {
   hideOnLight?: boolean;
 }
 
-const { src, scrim = 'heavy', lightScrim = false, hideOnLight = false } = Astro.props;
+const { src, variants, scrim = 'heavy', lightScrim = false, hideOnLight = false } = Astro.props;
 const optimizedSrc = imgUrl(src, { w: 1440, q: 80 });
-const srcset = imgSrcset(src, [640, 960, 1440], { q: 80 });
+const srcset = variantsSrcset(variants);
 ---
 
 <div class:list={['sbg', { 'sbg--hide-light': hideOnLight, 'sbg--light-scrim': lightScrim }]} aria-hidden="true">
