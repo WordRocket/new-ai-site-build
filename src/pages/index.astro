@@ -462,45 +462,6 @@ const heroServiceOptions = serviceEntries.length > 0
   <svg viewBox="0 0 1440 48" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,24 C360,48 1080,0 1440,24 L1440,48 L0,48 Z" fill="white"/></svg>
 </div>
 
-<!-- ─── FEATURED PROJECTS (conditional — only renders when featured:true exists) -->
-{featuredProjects.length > 0 && (
-<section class="section-pad" style="background:var(--rs-bg);" aria-labelledby="featured-projects-heading">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-start sm:items-center justify-between gap-4 mb-12">
-      <div>
-        <h2 id="featured-projects-heading" class="reveal text-[var(--color-text)] mb-2">
-          Recent <span class="u-gradient-text">Work</span>
-        </h2>
-        <p class="text-[var(--color-text-muted)] text-base sm:text-lg">A sample of our completed projects.</p>
-      </div>
-      <a
-        href="/our-work"
-        class="hidden sm:inline-flex items-center gap-1 text-sm font-semibold whitespace-nowrap transition-opacity hover:opacity-70"
-        style="color:var(--rs-brand-text);"
-      >
-        See all projects →
-      </a>
-    </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-      {featuredProjects.map(project => (
-        <ServiceCard
-          title={project.data.title}
-          description={project.data.description}
-          image={project.data.images[0]}
-          href={`/our-work#project-${project.slug}`}
-          class="reveal"
-        />
-      ))}
-    </div>
-    <div class="mt-8 text-center sm:hidden">
-      <a href="/our-work" class="text-sm font-semibold transition-opacity hover:opacity-70" style="color:var(--rs-brand-text);">
-        See all projects →
-      </a>
-    </div>
-  </div>
-</section>
-)}
-
 {hasTestimonial && (
   <section class="section-pad" style="background:var(--rs-bg);" aria-labelledby="testimonial-heading">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -662,6 +623,45 @@ const heroServiceOptions = serviceEntries.length > 0
     </div>
   </div>
 </section>
+
+<!-- ─── FEATURED PROJECTS (conditional — only renders when featured:true exists) -->
+{featuredProjects.length > 0 && (
+<section class="section-pad" style="background:var(--rs-surface);" aria-labelledby="featured-projects-heading">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-start sm:items-center justify-between gap-4 mb-12">
+      <div>
+        <h2 id="featured-projects-heading" class="reveal text-[var(--color-text)] mb-2">
+          Recent <span class="u-gradient-text">Work</span>
+        </h2>
+        <p class="text-[var(--color-text-muted)] text-base sm:text-lg">A sample of our completed projects.</p>
+      </div>
+      <a
+        href="/our-work"
+        class="hidden sm:inline-flex items-center gap-1 text-sm font-semibold whitespace-nowrap transition-opacity hover:opacity-70"
+        style="color:var(--rs-brand-text);"
+      >
+        See all projects →
+      </a>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      {featuredProjects.map(project => (
+        <ServiceCard
+          title={project.data.title}
+          description={project.data.description}
+          image={project.data.images[0]}
+          href={`/our-work#project-${project.slug}`}
+          class="reveal"
+        />
+      ))}
+    </div>
+    <div class="mt-8 text-center sm:hidden">
+      <a href="/our-work" class="text-sm font-semibold transition-opacity hover:opacity-70" style="color:var(--rs-brand-text);">
+        See all projects →
+      </a>
+    </div>
+  </div>
+</section>
+)}
 
 <!-- wave: dark → CTA section bg (full-bleed, so wave must match section bg) -->
 <div class="wave-divider cta-wave-top" aria-hidden="true">
