@@ -23,9 +23,12 @@ export function imgUrl(src: string | null | undefined, opts: ImgOpts = {}): stri
 
   if (
     src.startsWith('data:') ||
-    src.startsWith('/') ||        // local paths — served directly, CDN unavailable in dev
+    src.startsWith('/') ||                      // local paths — served directly, CDN unavailable in dev
     /\.svg(\?|$)/i.test(src) ||
-    src.includes('/.netlify/images')
+    src.includes('/.netlify/images') ||
+    src.includes('/storage/v1/object/sign/')    // Supabase signed URLs — JWT token forwarding by CDN is undocumented;
+                                                // each new token also produces a distinct CDN cache key with no reuse,
+                                                // so serve these directly from Supabase without the CDN layer
   ) {
     return src;
   }

@@ -2,6 +2,12 @@
   command = "npm run build"
   publish = "dist"
 
+# Netlify Image CDN: allowlist for remote image sources.
+# Signed Supabase URLs (/storage/v1/object/sign/) are served directly
+# (see src/lib/image.ts) — this covers public-bucket objects on the same project.
+[images]
+  remote_images = ["https://tgqydkyggzeyaptjlqxz\\.supabase\\.co/.*"]
+
 [[redirects]]
   from = "/*"
   to = "/404.html"
