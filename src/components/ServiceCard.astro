@@ -1,5 +1,5 @@
 ---
-import { imgUrl } from '../lib/image';
+import { imgUrl, imgSrcset } from '../lib/image';
 
 interface Props {
   title: string;
@@ -12,6 +12,7 @@ interface Props {
 
 const { title, description, image, href, icon, class: className } = Astro.props;
 const optimizedImage = image ? imgUrl(image, { w: 800, h: 450 }) : undefined;
+const srcset = image ? imgSrcset(image, [400, 800], { q: 82 }) : '';
 ---
 
 <article class:list={['sc-card', className]}>
@@ -20,6 +21,8 @@ const optimizedImage = image ? imgUrl(image, { w: 800, h: 450 }) : undefined;
       <img
         class="sc-img"
         src={optimizedImage}
+        srcset={srcset || undefined}
+        sizes={srcset ? '(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw' : undefined}
         alt=""
         role="presentation"
         loading="lazy"

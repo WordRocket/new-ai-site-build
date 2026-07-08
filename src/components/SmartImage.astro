@@ -1,6 +1,6 @@
 ---
 import Icon from './Icon.astro';
-import { imgUrl, aspectDims } from '../lib/image';
+import { imgUrl, imgSrcset, aspectDims } from '../lib/image';
 
 interface Props {
   src?: string;
@@ -12,17 +12,34 @@ interface Props {
   fetchpriority?: 'high' | 'auto' | 'low';
   /** Pixel width to request from the image CDN. Defaults to 800. */
   imgWidth?: number;
+  /**
+   * sizes attribute for responsive image selection.
+   * Default matches the FeatureRow two-column layout breakpoint (900px).
+   */
+  sizes?: string;
 }
 
-const { src, alt, aspect = '16/9', class: cls, loading = 'lazy', fetchpriority, imgWidth = 800 } = Astro.props;
+const {
+  src,
+  alt,
+  aspect = '16/9',
+  class: cls,
+  loading = 'lazy',
+  fetchpriority,
+  imgWidth = 800,
+  sizes = '(min-width: 900px) 50vw, 100vw',
+} = Astro.props;
 const hasImage = typeof src === 'string' && src.trim().length > 0;
 const dims = aspectDims(aspect, imgWidth);
 const optimizedSrc = hasImage ? imgUrl(src, { w: dims.width, h: dims.height }) : '';
+const srcset = hasImage ? imgSrcset(src, [480, 800, 1200], { q: 82 }) : '';
 ---
 
 {hasImage ? (
   <img
     src={optimizedSrc}
+    srcset={srcset || undefined}
+    sizes={srcset ? sizes : undefined}
     alt={alt}
     width={dims.width}
     height={dims.height}

@@ -10,7 +10,7 @@
  * The parent section must have: position:relative; overflow:hidden;
  * Content inside the section must have: position:relative; z-index:2;
  */
-import { imgUrl } from '../lib/image';
+import { imgUrl, imgSrcset } from '../lib/image';
 
 interface Props {
   src: string;
@@ -26,12 +26,15 @@ interface Props {
 
 const { src, scrim = 'heavy', lightScrim = false, hideOnLight = false } = Astro.props;
 const optimizedSrc = imgUrl(src, { w: 1440, q: 80 });
+const srcset = imgSrcset(src, [640, 960, 1440], { q: 80 });
 ---
 
 <div class:list={['sbg', { 'sbg--hide-light': hideOnLight, 'sbg--light-scrim': lightScrim }]} aria-hidden="true">
   <img
     class="sbg__img"
     src={optimizedSrc}
+    srcset={srcset || undefined}
+    sizes={srcset ? '100vw' : undefined}
     alt=""
     role="presentation"
     loading="lazy"

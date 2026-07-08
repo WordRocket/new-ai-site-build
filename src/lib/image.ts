@@ -47,6 +47,10 @@ export function imgUrl(src: string | null | undefined, opts: ImgOpts = {}): stri
 /**
  * Build a srcset string at multiple widths.
  * e.g. imgSrcset(src, [640, 960, 1440]) → "...640w, ...960w, ...1440w"
+ *
+ * Returns empty string when the URL bypasses the CDN (local paths, signed
+ * Supabase URLs, SVGs) — all entries would be identical, which is wasteful
+ * and provides no benefit to the browser.
  */
 export function imgSrcset(
   src: string | null | undefined,
@@ -54,6 +58,9 @@ export function imgSrcset(
   opts: Omit<ImgOpts, 'w'> = {},
 ): string {
   if (!src) return '';
+  // Probe with the first width — if CDN is bypassed the URL comes back unchanged.
+  const probe = imgUrl(src, { ...opts, w: widths[0] });
+  if (probe === src) return '';
   return widths.map(w => `${imgUrl(src, { ...opts, w })} ${w}w`).join(', ');
 }
 
