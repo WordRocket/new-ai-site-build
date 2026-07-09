@@ -573,13 +573,15 @@ body:not(:has(#top-bar)) .hero-split { padding-top: 72px; }
     justify-content: center;
   }
 }
-/* Glow orb: viewport-relative position so it never moves when font-swap
-   changes .hero-left-panel's height. will-change keeps it compositor-only. */
+/* Glow orb: decorative radial gradient behind the headline.
+   position:absolute is safe here because the font fallback metrics match
+   Space Grotesk — panel height no longer changes on font-swap, so the
+   percentage-based position never recomputes. */
 .hero-left-panel::before {
   content: "";
-  position: fixed;
-  top: 45vh;
-  left: 22vw;
+  position: absolute;
+  top: 45%;
+  left: 45%;
   width: 540px;
   height: 540px;
   background: radial-gradient(
@@ -590,7 +592,6 @@ body:not(:has(#top-bar)) .hero-split { padding-top: 72px; }
   border-radius: 50%;
   pointer-events: none;
   z-index: -1;
-  will-change: transform, opacity;
   animation: hero-glow-drift 10s ease-in-out infinite;
 }
 @keyframes hero-glow-drift {
