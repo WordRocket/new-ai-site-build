@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getEntry } from 'astro:content';
+import { getBreadcrumbSchema } from '../lib/schema';
+import siteConfig from '../lib/site-config';
+
+const siteUrl = import.meta.env.SITE ?? siteConfig.url;
+const pageUrl = `${siteUrl}/privacy-policy`;
+
+const entry = await getEntry('pages', 'privacy-policy').catch(() => null);
+const d = entry?.data;
+let PageContent: any = null;
+if (entry) {
+  const rendered = await entry.render();
+  PageContent = rendered.Content;
+}
+
+const breadcrumbSchema = getBreadcrumbSchema([
+  { name: 'Home', url: siteUrl },
+  { name: 'Privacy Policy', url: pageUrl },
+]);
+---
+
+<BaseLayout
+  title={d?.title ?? `Privacy Policy | ${siteConfig.name}`}
+  description={d?.description ?? `Privacy Policy for ${siteConfig.name}.`}
+  canonical={pageUrl}
+  noindex={d?.noindex ?? true}
+  schemas={[breadcrumbSchema]}
+>
+  <main>
+    <nav aria-label="Breadcrumb" class="border-b" style="background:var(--rs-surface); border-color:var(--rs-border);">
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-3">
+        <ol class="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
+          <li><a href="/" class="hover:text-[var(--rs-brand-text)] transition-colors">Home</a></li>
+          <li aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </li>
+          <li><span class="text-[var(--color-text)] font-medium" aria-current="page">Privacy Policy</span></li>
+        </ol>
+      </div>
+    </nav>
+
+    <div class="max-w-[800px] mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+      <h1 class="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--color-text)] mb-8">
+        {d?.title ?? 'Privacy Policy'}
+      </h1>
+      {PageContent ? (
+        <div class="prose prose-neutral prose-lg max-w-none">
+          <PageContent />
+        </div>
+      ) : (
+        <p class="text-[var(--color-text-muted)]">Privacy policy content coming soon.</p>
+      )}
+    </div>
+  </main>
+</BaseLayout>

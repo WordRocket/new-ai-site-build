@@ -2,7 +2,7 @@
 import siteConfig from '../lib/site-config';
 import { formatPhone, cleanTitle } from '../lib/site-config';
 import { getPreset } from '../lib/business-presets';
-import { getCollection } from 'astro:content';
+import { getCollection, getEntry } from 'astro:content';
 const currentYear = new Date().getFullYear();
 const preset = getPreset((siteConfig as any).businessType || 'other');
 
@@ -45,6 +45,9 @@ const socialLinks = [
 ].filter(Boolean) as Array<{ label: string; href: string; icon: string }>;
 
 const phoneDigits = siteConfig.phone ? siteConfig.phone.replace(/\D/g, '') : '';
+
+const privacyEntry = await getEntry('pages', 'privacy-policy').catch(() => null);
+const termsEntry = await getEntry('pages', 'terms-and-conditions').catch(() => null);
 ---
 
 <div class="footer-gradient-line"></div>
@@ -143,10 +146,16 @@ const phoneDigits = siteConfig.phone ? siteConfig.phone.replace(/\D/g, '') : '';
   <div style="border-top: 1px solid #1e293b;">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm" style="color:#475569;">
       <span>&copy; {currentYear} {siteConfig.name}. All rights reserved.</span>
-      <div class="flex items-center gap-4">
-        <a href="/privacy-policy" class="hover:text-white transition-colors">Privacy Policy</a>
-        <a href="/terms" class="hover:text-white transition-colors">Terms</a>
-      </div>
+      {(privacyEntry || termsEntry) && (
+        <div class="flex items-center gap-4">
+          {privacyEntry && (
+            <a href="/privacy-policy" class="hover:text-white transition-colors">Privacy Policy</a>
+          )}
+          {termsEntry && (
+            <a href="/terms-and-conditions" class="hover:text-white transition-colors">Terms &amp; Conditions</a>
+          )}
+        </div>
+      )}
     </div>
   </div>
 </footer>
