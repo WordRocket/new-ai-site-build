@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 /* ── Metric-compatible font fallbacks ─────────────────────────────────────
    These @font-face rules create synthetic fallback families whose metrics
    (ascent, descent, line-gap, size-adjust) are tuned to match the real
@@ -21,8 +23,6 @@
   descent-override: 23%;
   line-gap-override: 0%;
 }
-
-@import "tailwindcss";
 
 /* ── CSS View Transitions (Astro ClientRouter handles JS lifecycle) ─────── */
 /* Fade-in only: old content stays visible until the swap, new content fades
@@ -573,11 +573,13 @@ body:not(:has(#top-bar)) .hero-split { padding-top: 72px; }
     justify-content: center;
   }
 }
+/* Glow orb: viewport-relative position so it never moves when font-swap
+   changes .hero-left-panel's height. will-change keeps it compositor-only. */
 .hero-left-panel::before {
   content: "";
-  position: absolute;
-  top: 45%;
-  left: 45%;
+  position: fixed;
+  top: 45vh;
+  left: 22vw;
   width: 540px;
   height: 540px;
   background: radial-gradient(
@@ -588,6 +590,7 @@ body:not(:has(#top-bar)) .hero-split { padding-top: 72px; }
   border-radius: 50%;
   pointer-events: none;
   z-index: -1;
+  will-change: transform, opacity;
   animation: hero-glow-drift 10s ease-in-out infinite;
 }
 @keyframes hero-glow-drift {
