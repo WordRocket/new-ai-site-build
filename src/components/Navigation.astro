@@ -58,7 +58,7 @@ const servicesActive = pathname.startsWith('/services');
       {siteConfig.logo
         ? (
           <span class="nav-logo-wrap">
-            <img src={siteConfig.logo} alt={siteConfig.name} class="nav-logo-img" />
+            <img src={siteConfig.logo} alt={siteConfig.name} class="nav-logo-img" width="160" height="40" />
           </span>
         )
         : <span class="text-xl font-bold tracking-tight text-[var(--color-text)]">{siteConfig.name}</span>
@@ -448,7 +448,7 @@ const servicesActive = pathname.startsWith('/services');
       }
     }
 
-    applyNavStyle();
+    requestAnimationFrame(applyNavStyle);
     window.addEventListener('scroll', applyNavStyle, { passive: true, signal });
 
     function openMenu(open: boolean) {

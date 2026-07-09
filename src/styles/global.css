@@ -1,3 +1,27 @@
+/* ── Metric-compatible font fallbacks ─────────────────────────────────────
+   These @font-face rules create synthetic fallback families whose metrics
+   (ascent, descent, line-gap, size-adjust) are tuned to match the real
+   webfonts.  The browser uses these on first paint so glyphs occupy the same
+   space as the loaded font, eliminating the heading FOUT that causes CLS.
+   Values derived from fontpie / Font Style Matcher for 800-weight headlines.
+   ─────────────────────────────────────────────────────────────────────── */
+@font-face {
+  font-family: 'Space Grotesk Fallback';
+  src: local('Arial');
+  size-adjust: 95%;
+  ascent-override: 95%;
+  descent-override: 25%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Arial');
+  size-adjust: 107%;
+  ascent-override: 90%;
+  descent-override: 23%;
+  line-gap-override: 0%;
+}
+
 @import "tailwindcss";
 
 /* ── CSS View Transitions (Astro ClientRouter handles JS lifecycle) ─────── */
@@ -92,9 +116,9 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
   --rs-brand: #2563eb;
   --rs-radius-sm: 8px;  --rs-radius-md: 12px;
   --rs-radius-lg: 18px; --rs-radius-pill: 999px;
-  /* Display / body font stacks — swap heading font here for per-site pickers */
-  --rs-font-display:  'Space Grotesk', system-ui, sans-serif;
-  --rs-font-body:     'Inter', system-ui, sans-serif;
+  /* Display / body font stacks — metric-adjusted fallbacks minimise FOUT CLS */
+  --rs-font-display:  'Space Grotesk', 'Space Grotesk Fallback', system-ui, sans-serif;
+  --rs-font-body:     'Inter', 'Inter Fallback', system-ui, sans-serif;
   /* Heading color: premium near-navy in light skin */
   --rs-heading-color: #0d1b2a;
   /* Brand tint — derived from --rs-brand so per-site colors work automatically */
