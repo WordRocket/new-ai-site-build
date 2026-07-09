@@ -45,5 +45,7 @@
   "reviewRating": "",
   "reviewCount": "",
   "reviewPlatform": "Google",
-  "reviewPlatformUrl": ""
+  "reviewPlatformUrl": "",
+  "headerScripts": "",
+  "footerScripts": ""
 }

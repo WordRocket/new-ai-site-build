@@ -69,11 +69,17 @@ const skin: 'light' | 'dark' =
     {schemaJsonld && (
       <script type="application/ld+json" set:html={schemaJsonld} />
     )}
+    {siteConfig.headerScripts && (
+      <Fragment set:html={siteConfig.headerScripts} />
+    )}
   </head>
   <body>
     <Navigation />
     <slot />
     <Footer />
     <StickyActionBar />
+    {siteConfig.footerScripts && (
+      <Fragment set:html={siteConfig.footerScripts} />
+    )}
   </body>
 </html>
