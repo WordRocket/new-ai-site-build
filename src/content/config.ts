@@ -3,7 +3,7 @@ import { defineCollection, z } from 'astro:content';
 const imageVariantsSchema = z.record(
   z.string(),
   z.object({ url: z.string(), width: z.number(), height: z.number() })
-).optional();
+).nullable().optional();
 
 const blog = defineCollection({
   schema: z.object({
