@@ -14,13 +14,17 @@ const serviceLinks = rawServices
   .map((s) => ({ label: cleanTitle(s.data.title), href: `/services/${s.slug}` }));
 const hasServiceDropdown = serviceLinks.length > 0;
 
-// Services item is handled separately; remaining flat links
+// Services item is handled separately; remaining flat links in fixed order:
+// Home | Services | About Us | Our Work | Blog | Contact Us
+const navVisibility = (siteConfig as any).navVisibility ?? {};
+const showOurWork = navVisibility.ourWork !== false;
+
 const navLinks = [
-  { label: 'Our Work', href: '/our-work' },
-  { label: 'Blog',    href: '/blog' },
-  { label: 'About',   href: '/about' },
+  { label: 'About Us',    href: '/about' },
+  ...(showOurWork ? [{ label: 'Our Work', href: '/our-work' }] : []),
+  { label: 'Blog',        href: '/blog' },
   ...(faqEntry ? [{ label: 'FAQ', href: '/faq' }] : []),
-  { label: 'Contact', href: '/contact' },
+  { label: 'Contact Us',  href: '/contact' },
 ];
 
 function isActive(href: string) {

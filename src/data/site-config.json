@@ -47,5 +47,8 @@
   "reviewPlatform": "Google",
   "reviewPlatformUrl": "",
   "headerScripts": "",
-  "footerScripts": ""
+  "footerScripts": "",
+  "navVisibility": {
+    "ourWork": true
+  }
 }
