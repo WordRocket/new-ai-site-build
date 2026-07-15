@@ -161,11 +161,22 @@ const termsEntry = await getEntry('pages', 'terms-and-conditions').catch(() => n
 </footer>
 
 <style>
+  /* ── Logo container — fixed HEIGHT only, auto WIDTH ────────────────────
+     Never set a fixed width: it squeezes wide wordmark logos and crushes
+     their text. max-width is a safety cap only; object-fit:contain on the
+     img keeps aspect ratio. The footer background is dark-navy on both
+     skins, so a white-background logo always needs the white chip here
+     (unlike the nav, where the chip is dark-skin-only).
+     ─────────────────────────────────────────────────────────────────────── */
   .footer-logo-wrap {
     display: block;
-    height: 32px;
-    max-width: 140px;
+    height: 44px;
+    max-width: 160px;
     flex-shrink: 0;
+    background: #ffffff;
+    border-radius: 6px;
+    padding: 4px 6px;
+    box-sizing: border-box;
   }
   .footer-logo-img {
     display: block;

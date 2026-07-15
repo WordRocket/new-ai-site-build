@@ -315,17 +315,26 @@ const servicesActive = pathname.startsWith('/services');
     touch-action: manipulation;
   }
 
-  /* ── Logo container — fixed height, never driven by native image dimensions ── */
+  /* ── Logo container ──────────────────────────────────────────────────────
+     Fixed HEIGHT only, auto WIDTH — never set a fixed width.
+     A fixed width would squeeze wide wordmark logos and crush their text.
+     object-fit:contain on the img preserves aspect ratio; the container's
+     max-width is a safety cap so an extremely wide wordmark cannot push the
+     nav off-screen, but the img still renders at its natural proportions up
+     to that cap. Square/icon logos are unaffected (40px tall = 40px wide).
+     Heights are sized for badges with internal text (e.g. a circular stamp
+     with curved words) — smaller heights made that text illegible.
+     ─────────────────────────────────────────────────────────────────────── */
   .nav-logo-wrap {
     display: block;
-    height: 32px;       /* mobile */
-    max-width: 140px;
+    height: 44px;       /* mobile */
+    max-width: 180px;
     flex-shrink: 0;
   }
   @media (min-width: 768px) {
     .nav-logo-wrap {
-      height: 40px;     /* desktop */
-      max-width: 160px;
+      height: 56px;     /* desktop */
+      max-width: 200px;
     }
   }
   .nav-logo-img {
@@ -334,6 +343,22 @@ const servicesActive = pathname.startsWith('/services');
     width: auto;
     max-width: 100%;
     object-fit: contain;
+  }
+  /* Dark-skin logo chip: logos exported with a solid (non-transparent)
+     background look like a raw white stamp on a dark nav. A rounded white
+     chip makes that intentional and legible. Only on dark skin — on light
+     skin the white nav IS the chip, so this must not apply. */
+  [data-skin="dark"] .nav-logo-wrap {
+    background: #ffffff;
+    border-radius: 6px;
+    padding: 4px 6px;
+    height: 52px;       /* mobile: content + 8px vertical padding */
+    box-sizing: border-box;
+  }
+  @media (min-width: 768px) {
+    [data-skin="dark"] .nav-logo-wrap {
+      height: 64px;     /* desktop: content + 8px vertical padding */
+    }
   }
 
   /* ── Desktop dropdown ──────────────────────────────────────── */
