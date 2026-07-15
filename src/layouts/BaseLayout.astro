@@ -5,6 +5,7 @@ import Navigation from '../components/Navigation.astro';
 import Footer from '../components/Footer.astro';
 import StickyActionBar from '../components/sections/StickyActionBar.astro';
 import siteConfig from '../data/site-config.json';
+import { getFontPreset } from '../lib/fonts.ts';
 import '../styles/global.css';
 
 interface Props {
@@ -20,26 +21,44 @@ interface Props {
 const { title, description, ogImage, canonical, noindex, schemas = [], schemaJsonld } = Astro.props;
 
 const brandColor = siteConfig.brandColor ?? '#2563eb';
-// Explicit validation: only exactly "light" or "dark" are accepted.
-// Empty string, missing, or any other value falls back to "light".
-// darkMode:true acts as a secondary opt-in if skin field is blank.
-const rawSkin = siteConfig.skin;
+// Skin: case-insensitive — Railway or the dashboard may write "Dark",
+// "DARK", or "dark"; all must resolve correctly. Empty/missing falls
+// back to "light", with darkMode:true as a secondary opt-in.
+const rawSkin = (siteConfig.skin ?? '').trim().toLowerCase();
 const skin: 'light' | 'dark' =
   rawSkin === 'dark'  ? 'dark'  :
   rawSkin === 'light' ? 'light' :
   siteConfig.darkMode ? 'dark'  : 'light';
+
+// Font: resolve siteConfig.fontStyle to a preset that supplies the
+// --rs-font-display / --rs-font-body CSS variables. Inter is the
+// default and is self-hosted; other presets load from Google Fonts.
+const fontPreset = getFontPreset(siteConfig.fontStyle);
+const fontVars = `--rs-font-display: ${fontPreset.display}; --rs-font-body: ${fontPreset.body};`;
+const isInterFont = !fontPreset.googleFontsUrl;
 ---
 
 <!doctype html>
-<html lang="en" data-skin={skin} style={`--rs-brand: ${brandColor}`}>
+<html lang="en" data-skin={skin} style={`--rs-brand: ${brandColor}; ${fontVars}`}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-    <!-- Preload the two files used above the fold: Space Grotesk (hero H1) and Inter 400 (body) -->
-    <link rel="preload" as="font" type="font/woff2" href="/fonts/space-grotesk-latin.woff2" crossorigin />
-    <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-latin.woff2" crossorigin />
+    {/* Self-hosted font preloads — only for the default Inter preset.
+        Other presets load from Google Fonts via the stylesheet link below
+        and don't need these local preloads. */}
+    {isInterFont && (
+      <>
+        <link rel="preload" as="font" type="font/woff2" href="/fonts/space-grotesk-latin.woff2" crossorigin />
+        <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-latin.woff2" crossorigin />
+      </>
+    )}
+    {/* Google Fonts stylesheet — only for non-Inter presets. Inter is
+        fully self-hosted, so no external request is made by default. */}
+    {!isInterFont && (
+      <link rel="stylesheet" href={fontPreset.googleFontsUrl} />
+    )}
     <meta name="theme-color" content={siteConfig.brandColor} />
     <meta name="geo.region" content={siteConfig.state} />
     <meta name="geo.placename" content={siteConfig.city} />
