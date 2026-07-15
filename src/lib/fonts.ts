@@ -102,3 +102,99 @@ export function getFontPreset(rawFontStyle?: string): FontPreset {
   const key = rawFontStyle.trim().toLowerCase().replace(/[^a-z-]/g, '') as FontKey;
   return FONT_PRESETS[key] ?? DEFAULT_PRESET;
 }
+
+export interface ResolvedFont {
+  /** Value for the --rs-font-display CSS variable */
+  display: string;
+  /** Value for the --rs-font-body CSS variable */
+  body: string;
+  /** Google Fonts stylesheet URL to <link>, or '' when none is needed */
+  googleFontsUrl: string;
+  /** True when the resolved preset is the self-hosted Inter default */
+  isInterFont: boolean;
+  /** True when a custom uploaded font takes priority over the preset */
+  hasCustomFont: boolean;
+  /** Inline @font-face block to inject in <head>, or '' when none */
+  customFontFace: string;
+}
+
+const CSS_ESCAPER: Record<string, string> = {
+  '\\': '\\\\',
+  '"': '\\"',
+};
+
+function escapeCssString(s: string): string {
+  return s.replace(/["\\]/g, (ch) => CSS_ESCAPER[ch] ?? ch);
+}
+
+/**
+ * Resolve the final font configuration for a site, applying custom-font
+ * priority. When customFontUrl is present it wins over any Google Fonts
+ * preset — the @font-face is emitted and both CSS variables point at the
+ * custom family name. When customFontUrl is absent, the Google Fonts
+ * preset logic runs unchanged.
+ *
+ * `customFontFamilyName` is the user-supplied font-family name used in
+ * the @font-face declaration; it falls back to "Custom Font" when blank.
+ */
+export function resolveFont(opts: {
+  fontStyle?: string;
+  customFontUrl?: string;
+  customFontFamilyName?: string;
+}): ResolvedFont {
+  const preset = getFontPreset(opts.fontStyle);
+  const customUrl = (opts.customFontUrl ?? '').trim();
+  const isInterFont = !preset.googleFontsUrl;
+
+  if (!customUrl) {
+    return {
+      display: preset.display,
+      body: preset.body,
+      googleFontsUrl: preset.googleFontsUrl,
+      isInterFont,
+      hasCustomFont: false,
+      customFontFace: '',
+    };
+  }
+
+  const familyName = (opts.customFontFamilyName ?? '').trim() || 'Custom Font';
+  const escapedName = escapeCssString(familyName);
+  const quotedEscapedName = `"${escapedName}"`;
+
+  // Detect format from the URL extension so the browser loads the right
+  // decoder.woff2/woff/ttf/otf are the realistic upload formats.
+  const ext = customUrl.split('?')[0].split('.').pop()?.toLowerCase() ?? '';
+  const formatMap: Record<string, string> = {
+    woff2: 'woff2',
+    woff: 'woff',
+    ttf: 'truetype',
+    otf: 'opentype',
+    eot: 'embedded-opentype',
+    svg: 'svg',
+  };
+  const formatHint = formatMap[ext] ?? 'woff2';
+
+  const fallback = preset.fallback;
+  const fontStack = `${quotedEscapedName}, ${fallback}`;
+
+  const customFontFace = [
+    '@font-face {',
+    `  font-family: ${quotedEscapedName};`,
+    `  src: url("${customUrl}") format("${formatHint}");`,
+    `  font-weight: 100 900;`,
+    `  font-style: normal;`,
+    `  font-display: swap;`,
+    '}',
+  ].join('\n');
+
+  return {
+    display: fontStack,
+    body: fontStack,
+    // The custom font is self-loaded via @font-face — no Google Fonts
+    // <link> needed even when the preset would have requested one.
+    googleFontsUrl: '',
+    isInterFont: false,
+    hasCustomFont: true,
+    customFontFace,
+  };
+}

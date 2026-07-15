@@ -5,7 +5,7 @@ import Navigation from '../components/Navigation.astro';
 import Footer from '../components/Footer.astro';
 import StickyActionBar from '../components/sections/StickyActionBar.astro';
 import siteConfig from '../data/site-config.json';
-import { getFontPreset } from '../lib/fonts.ts';
+import { resolveFont } from '../lib/fonts.ts';
 import '../styles/global.css';
 
 interface Props {
@@ -30,12 +30,17 @@ const skin: 'light' | 'dark' =
   rawSkin === 'light' ? 'light' :
   siteConfig.darkMode ? 'dark'  : 'light';
 
-// Font: resolve siteConfig.fontStyle to a preset that supplies the
-// --rs-font-display / --rs-font-body CSS variables. Inter is the
-// default and is self-hosted; other presets load from Google Fonts.
-const fontPreset = getFontPreset(siteConfig.fontStyle);
-const fontVars = `--rs-font-display: ${fontPreset.display}; --rs-font-body: ${fontPreset.body};`;
-const isInterFont = !fontPreset.googleFontsUrl;
+// Font: resolve the final font config. A custom uploaded font
+// (customFontUrl) takes priority over any Google Fonts preset; both
+// paths flow through the same --rs-font-display / --rs-font-body CSS
+// variables so the choice applies everywhere the existing wiring does.
+const font = resolveFont({
+  fontStyle: siteConfig.fontStyle,
+  customFontUrl: (siteConfig as any).customFontUrl,
+  customFontFamilyName: (siteConfig as any).customFontFamilyName,
+});
+const fontVars = `--rs-font-display: ${font.display}; --rs-font-body: ${font.body};`;
+const isInterFont = font.isInterFont;
 ---
 
 <!doctype html>
@@ -54,10 +59,16 @@ const isInterFont = !fontPreset.googleFontsUrl;
         <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-latin.woff2" crossorigin />
       </>
     )}
-    {/* Google Fonts stylesheet — only for non-Inter presets. Inter is
-        fully self-hosted, so no external request is made by default. */}
-    {!isInterFont && (
-      <link rel="stylesheet" href={fontPreset.googleFontsUrl} />
+    {/* Custom uploaded font — @font-face is emitted inline so it loads
+        from the user-supplied URL. Takes priority over any preset. */}
+    {font.hasCustomFont && (
+      <style set:html={font.customFontFace} />
+    )}
+    {/* Google Fonts stylesheet — only for non-Inter presets with no
+        custom font. Inter is fully self-hosted; custom fonts load via
+        the @font-face block above. */}
+    {!isInterFont && !font.hasCustomFont && (
+      <link rel="stylesheet" href={font.googleFontsUrl} />
     )}
     <meta name="theme-color" content={siteConfig.brandColor} />
     <meta name="geo.region" content={siteConfig.state} />
