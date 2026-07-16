@@ -48,6 +48,8 @@ const pages = defineCollection({
     faqCategories: z.array(z.object({ label: z.string(), items: z.array(faqItemSchema) })).optional(),
     faqPageTitle: z.string().optional(),
     faqPageDescription: z.string().optional(),
+    customEmbedHtml: z.string().optional(),
+    hideDefaultContactForm: z.boolean().default(false),
     schemaJsonld: z.string().optional(),
   }),
 });
