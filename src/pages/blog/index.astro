@@ -3,10 +3,22 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import siteConfig from '../../lib/site-config';
 
+const isLocalService = (siteConfig as any).businessType === 'local-service';
+const categories: string[] = Array.isArray((siteConfig as any).categories)
+  ? (siteConfig as any).categories
+  : [];
+
 const posts = await getCollection('blog');
 
 posts.sort((a, b) =>
   new Date(b.data.datePublished).getTime() - new Date(a.data.datePublished).getTime()
+);
+
+// Build a map of category -> post count (case-insensitive match between
+// siteConfig.categories and post.data.category).
+const postCategoryLower = posts.map((p) => (p.data.category || '').toLowerCase());
+const categoriesWithPosts = categories.filter((cat) =>
+  postCategoryLower.includes(cat.toLowerCase())
 );
 
 function excerpt(text: string, max = 120): string {
@@ -24,7 +36,11 @@ function formatDate(iso: string): string {
 
 const blogIntro: string = ((siteConfig as any).blogIntro as string | undefined)?.trim() || '';
 const blogDescription = blogIntro ||
-  `Tips, guides, and news from ${siteConfig.name} in ${siteConfig.city}, ${siteConfig.state}.`;
+  (isLocalService
+    ? `Tips, guides, and news from ${siteConfig.name} in ${siteConfig.city}, ${siteConfig.state}.`
+    : `Ideas, guides, and updates from ${siteConfig.name}.`);
+
+const showCategories = !isLocalService && categoriesWithPosts.length > 0;
 ---
 
 <BaseLayout
@@ -55,9 +71,39 @@ const blogDescription = blogIntro ||
       </div>
     </section>
 
+    <!-- Browse by Category — general-type sites only -->
+    {showCategories && (
+      <section class="py-10 border-y" style="background:var(--rs-surface); border-color:var(--rs-border);" id="category-filter">
+        <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 class="text-sm font-semibold uppercase tracking-wider mb-5 text-center text-[var(--color-text-muted)]">Browse by Category</h2>
+          <div class="flex flex-wrap justify-center gap-2.5" id="category-pills">
+            <button
+              type="button"
+              class="cat-pill is-active"
+              data-cat="all"
+              aria-pressed="true"
+            >
+              All Posts
+            </button>
+            {categoriesWithPosts.map((cat) => (
+              <button
+                type="button"
+                class="cat-pill"
+                data-cat={cat.toLowerCase()}
+                aria-pressed="false"
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
     <!-- Post grid -->
     <section class="py-16 sm:py-20">
       <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Empty state when no posts at all -->
         {posts.length === 0 ? (
           <div class="flex flex-col items-center justify-center gap-4 py-24 text-center">
             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d4d4d8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
@@ -65,60 +111,109 @@ const blogDescription = blogIntro ||
             <p class="text-sm text-[var(--color-text-muted)]">Check back shortly — we're working on great content.</p>
           </div>
         ) : (
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {posts.map((post) => (
-              <article class="rounded-[var(--radius-md)] overflow-hidden flex flex-col transition-shadow duration-200 hover:shadow-[var(--shadow-md)]" style="background:var(--rs-surface); box-shadow:var(--shadow-sm);">
-                <!-- Featured image -->
-                {post.data.featuredImage ? (
-                  <a href={`/blog/${post.slug}`} class="block overflow-hidden aspect-video" tabindex="-1" aria-hidden="true">
-                    <img
-                      src={post.data.featuredImage}
-                      alt={post.data.featuredImageAlt ?? post.data.title}
-                      class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                      loading="lazy"
-                      decoding="async"
-                      width="800"
-                      height="450"
-                    />
-                  </a>
-                ) : (
-                  <div class="aspect-video flex items-center justify-center" style="background:var(--rs-surface-2);">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--rs-text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
-                  </div>
-                )}
-                <div class="flex flex-col flex-1 p-6 gap-3">
-                  <!-- Category badge -->
-                  <span class="inline-flex self-start items-center px-2.5 py-0.5 rounded-full text-xs font-semibold" style="background:var(--rs-brand-tint); color:var(--rs-brand);">
-                    {post.data.category}
-                  </span>
-                  <h2 class="text-base font-semibold text-[var(--color-text)] leading-snug">
-                    <a href={`/blog/${post.slug}`} class="hover:text-[var(--rs-brand-text)] transition-colors">{post.data.title}</a>
-                  </h2>
-                  <p class="text-sm text-[var(--color-text-muted)] leading-relaxed flex-1">
-                    {excerpt(post.data.description)}
-                  </p>
-                  <div class="flex items-center justify-between pt-2 border-t mt-auto" style="border-color:var(--rs-border);">
-                    <div class="flex items-center gap-2 text-xs text-[var(--color-text-muted)]">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                      <span>{post.data.author}</span>
-                      <span aria-hidden="true">·</span>
-                      <time datetime={post.data.datePublished}>{formatDate(post.data.datePublished)}</time>
-                    </div>
-                    <a
-                      href={`/blog/${post.slug}`}
-                      class="text-xs font-semibold transition-colors hover:text-[var(--rs-brand-text)]"
-                      style="color:var(--rs-brand-text);"
-                      aria-label={`Read more about ${post.data.title}`}
-                    >
-                      Read more &rarr;
+          <>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" id="post-grid">
+              {posts.map((post) => (
+                <article
+                  class="blog-post-card rounded-[var(--radius-md)] overflow-hidden flex flex-col transition-shadow duration-200 hover:shadow-[var(--shadow-md)]"
+                  style="background:var(--rs-surface); box-shadow:var(--shadow-sm);"
+                  data-category={(post.data.category || '').toLowerCase()}
+                >
+                  <!-- Featured image -->
+                  {post.data.featuredImage ? (
+                    <a href={`/blog/${post.slug}`} class="block overflow-hidden aspect-video" tabindex="-1" aria-hidden="true">
+                      <img
+                        src={post.data.featuredImage}
+                        alt={post.data.featuredImageAlt ?? post.data.title}
+                        class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                        loading="lazy"
+                        decoding="async"
+                        width="800"
+                        height="450"
+                      />
                     </a>
+                  ) : (
+                    <div class="aspect-video flex items-center justify-center" style="background:var(--rs-surface-2);">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--rs-text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                    </div>
+                  )}
+                  <div class="flex flex-col flex-1 p-6 gap-3">
+                    <!-- Category badge -->
+                    <span class="inline-flex self-start items-center px-2.5 py-0.5 rounded-full text-xs font-semibold" style="background:var(--rs-brand-tint); color:var(--rs-brand);">
+                      {post.data.category}
+                    </span>
+                    <h2 class="text-base font-semibold text-[var(--color-text)] leading-snug">
+                      <a href={`/blog/${post.slug}`} class="hover:text-[var(--rs-brand-text)] transition-colors">{post.data.title}</a>
+                    </h2>
+                    <p class="text-sm text-[var(--color-text-muted)] leading-relaxed flex-1">
+                      {excerpt(post.data.description)}
+                    </p>
+                    <div class="flex items-center justify-between pt-2 border-t mt-auto" style="border-color:var(--rs-border);">
+                      <div class="flex items-center gap-2 text-xs text-[var(--color-text-muted)]">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <span>{post.data.author}</span>
+                        <span aria-hidden="true">·</span>
+                        <time datetime={post.data.datePublished}>{formatDate(post.data.datePublished)}</time>
+                      </div>
+                      <a
+                        href={`/blog/${post.slug}`}
+                        class="text-xs font-semibold transition-colors hover:text-[var(--rs-brand-text)]"
+                        style="color:var(--rs-brand-text);"
+                        aria-label={`Read more about ${post.data.title}`}
+                      >
+                        Read more &rarr;
+                      </a>
+                    </div>
                   </div>
-                </div>
-              </article>
-            ))}
-          </div>
+                </article>
+              ))}
+            </div>
+            <!-- No posts in selected category -->
+            {showCategories && (
+              <div id="no-posts-msg" class="hidden flex-col items-center justify-center gap-3 py-16 text-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--rs-text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <p class="text-[var(--color-text-muted)] text-lg font-medium">No posts in this category yet</p>
+                <p class="text-sm text-[var(--color-text-muted)]">Try another category or browse all posts.</p>
+              </div>
+            )}
+          </>
         )}
       </div>
     </section>
   </main>
+
+  {showCategories && (
+    <script>
+      (function () {
+        const pills = document.querySelectorAll('.cat-pill');
+        const cards = document.querySelectorAll('.blog-post-card');
+        const grid = document.getElementById('post-grid');
+        const noPostsMsg = document.getElementById('no-posts-msg');
+
+        pills.forEach((pill) => {
+          pill.addEventListener('click', () => {
+            const cat = pill.dataset.cat;
+
+            pills.forEach((p) => {
+              p.classList.toggle('is-active', p === pill);
+              p.setAttribute('aria-pressed', String(p === pill));
+            });
+
+            let visibleCount = 0;
+            cards.forEach((card) => {
+              const cardCat = card.dataset.category || '';
+              const show = cat === 'all' || cardCat === cat;
+              card.style.display = show ? '' : 'none';
+              if (show) visibleCount++;
+            });
+
+            if (grid) grid.style.display = visibleCount > 0 ? '' : 'none';
+            if (noPostsMsg) {
+              noPostsMsg.style.display = visibleCount > 0 ? 'none' : 'flex';
+            }
+          });
+        });
+      })();
+    </script>
+  )}
 </BaseLayout>
