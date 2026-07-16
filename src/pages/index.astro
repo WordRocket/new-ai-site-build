@@ -75,6 +75,7 @@ const primaryCta = siteConfig.phone ? `tel:${phoneDigits}` : '/contact';
 
 const preset = getPreset((siteConfig as any).businessType || 'other');
 const vars = { city: siteConfig.city, niche: nicheLabel };
+const isLocalService = (siteConfig as any).businessType === 'local-service';
 
 // Compute heroImage early so it can be used as the card image fallback below.
 const heroImage = (hp?.heroImage || (siteConfig as any).heroImage || '') as string;
@@ -122,41 +123,64 @@ const displayServices = serviceEntries.length > 0
     }))
   : placeholderServices;
 
-const features = [
+const features = isLocalService ? [
   { title: 'Same-Day Service Available', desc: 'Urgent situations happen — we respond fast and show up when it matters most.', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>` },
   { title: 'Licensed & Fully Insured',    desc: 'Full coverage for your peace of mind. We stand behind every job we do.',           icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>` },
   { title: 'Upfront Transparent Pricing', desc: 'Clear quotes before work begins — no hidden costs or surprises, ever.',           icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>` },
   { title: 'Satisfaction Guaranteed',    desc: "We don't consider the job done until you're completely happy with the results.",    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>` },
+] : [
+  { title: 'Thoughtful, Well-Crafted Work', desc: 'Every piece we publish or deliver is researched, written, and reviewed with care.', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>` },
+  { title: 'Reliable & Consistent',         desc: 'We communicate clearly and deliver on schedule, every time.',                       icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>` },
+  { title: 'Direct, Honest Communication',  desc: 'No jargon or runaround — just straightforward answers and realistic expectations.', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>` },
+  { title: 'Built Around Your Needs',       desc: "We tailor our approach to your goals, audience, and voice — not a template.",        icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>` },
 ];
 
-const defaultFaqs = [
+const defaultFaqs = isLocalService ? [
   { question: `What ${nicheLabel} services do you offer?`, answer: `${siteConfig.name} offers a full range of ${nicheLabel} services for residential and commercial clients in ${siteConfig.city}, ${siteConfig.state} and surrounding areas. Contact us to discuss your specific needs.` },
   { question: 'How do I get a free estimate?', answer: `Getting a free estimate is easy. ${siteConfig.phone ? `Call us at ${formatPhone(siteConfig.phone)} or fill` : 'Fill'} out our contact form and we'll get back to you within one business day to schedule an assessment at no cost.` },
   { question: 'Are you licensed and insured?', answer: `Yes. ${siteConfig.name} is fully licensed and insured. We carry comprehensive liability coverage so you're protected throughout every job.` },
   { question: 'What areas do you serve?', answer: `We primarily serve ${siteConfig.city}, ${siteConfig.state} and the surrounding area. Contact us to confirm service availability in your specific location.` },
   { question: 'How quickly can you respond?', answer: 'We aim to respond to all inquiries within one business day and can typically schedule an estimate within the week. For urgent situations, call us directly for faster scheduling.' },
+] : [
+  { question: `What does ${siteConfig.name} do?`, answer: `${siteConfig.name} creates ${nicheLabel || 'content'} and resources designed to inform, engage, and add value. Explore the site to learn more, or reach out with specific questions.` },
+  { question: 'How can I get in touch?', answer: `Use our contact form or ${siteConfig.email ? `email us at ${siteConfig.email}` : 'reach out via the contact page'} and we'll respond within one business day.` },
+  { question: 'Do you work with new audiences or clients?', answer: `Yes. We're always happy to explore new collaborations. ${siteConfig.phone ? `Call ${formatPhone(siteConfig.phone)} or ` : ''}send a message and we'll take it from there.` },
+  { question: 'Where can I find your latest writing?', answer: 'The blog is updated regularly with new posts, guides, and updates. Bookmark the blog page or subscribe to stay current.' },
+  { question: 'How quickly do you respond?', answer: 'We aim to respond to all inquiries within one business day. For time-sensitive matters, mention that in your message.' },
 ];
 const faqs = (hp?.faq && hp.faq.length > 0) ? hp.faq : defaultFaqs;
 const faqSchema = faqs.length > 0 ? getFAQSchema(faqs) : null;
 
-const defaultFeatureGrid = [
+const defaultFeatureGrid = isLocalService ? [
   { icon: 'clock',        title: 'Same-Day Service Available',  desc: 'Urgent situations happen — we respond fast and show up when it matters most.' },
   { icon: 'shield-check', title: 'Licensed & Fully Insured',    desc: 'Full coverage for your complete peace of mind. We stand behind every job we do.' },
   { icon: 'badge-check',  title: 'Upfront Transparent Pricing', desc: 'Clear quotes before work begins — no hidden costs or surprises, ever.' },
   { icon: 'star',         title: 'Satisfaction Guaranteed',      desc: "We don't consider the job done until you're completely happy with the results." },
   { icon: 'award',        title: 'Experienced Local Team',       desc: `Skilled professionals who know ${siteConfig.city} and the unique needs of this community.` },
   { icon: 'file-text',    title: 'Free Estimates',               desc: 'Honest, obligation-free quotes so you can make informed decisions without pressure.' },
+] : [
+  { icon: 'book-open',    title: 'Well-Researched Content',      desc: 'Every piece we publish is grounded in research, care, and real attention to detail.' },
+  { icon: 'pen-line',     title: 'Clear, Direct Writing',        desc: 'No jargon or filler — just ideas that connect and communicate clearly.' },
+  { icon: 'calendar',     title: 'Consistent Publishing',        desc: 'New posts, guides, and updates land on a regular cadence so there\'s always something fresh.' },
+  { icon: 'compass',      title: 'Thoughtful Perspectives',      desc: 'We aim to add something useful to the conversation, not just echo what\'s already out there.' },
+  { icon: 'message-square', title: 'Open to Conversation',       desc: 'Questions, feedback, and discussion are always welcome — we read and respond.' },
+  { icon: 'sparkles',     title: 'Always Improving',             desc: 'We refine our work based on feedback and what we learn along the way.' },
 ];
 const featureGridItems = ((siteConfig as any).featureGrid?.length > 0)
   ? (siteConfig as any).featureGrid
   : defaultFeatureGrid;
 
-const defaultProcessSteps = [
+const defaultProcessSteps = isLocalService ? [
   { title: 'Book & Schedule',    desc: 'Reach us by phone or the contact form. We confirm your appointment quickly and work around your schedule.' },
   { title: 'On-Site Assessment', desc: 'Our team arrives on time, evaluates the job, and walks you through exactly what needs to be done and why.' },
   { title: 'Service Delivery',   desc: 'We carry out the work with care, using quality materials and proven techniques — no shortcuts, no guesswork.' },
   { title: 'Quality Check',      desc: 'Before we pack up, we inspect the finished work against our standards and address anything that needs attention.' },
   { title: 'Final Walkthrough',  desc: "We walk you through the completed job so you're fully satisfied and know exactly what was done." },
+] : [
+  { title: 'Explore & Discover', desc: 'Browse the blog and resources to find topics that interest you and add value to your day.' },
+  { title: 'Read & Engage',      desc: 'Dive into posts, guides, and updates. Share, comment, or reach out with questions and ideas.' },
+  { title: 'Connect & Discuss',  desc: 'Have a question or a perspective to share? Get in touch — we love hearing from readers and collaborators.' },
+  { title: 'Stay Up to Date',    desc: 'Bookmark the blog or check back regularly for new content and fresh perspectives.' },
 ];
 const processStepsItems = ((siteConfig as any).processSteps?.length > 0)
   ? (siteConfig as any).processSteps
@@ -202,7 +226,6 @@ const skin: 'light' | 'dark' =
   (siteConfig as any).skin === 'dark'  ? 'dark'  :
   (siteConfig as any).skin === 'light' ? 'light' :
   (siteConfig as any).darkMode         ? 'dark'  : 'light';
-const isLocalService = (siteConfig as any).businessType === 'local-service';
 const heroServiceOptions = serviceEntries.length > 0
   ? serviceEntries.map((e) => ({ value: e.slug, label: e.data.title }))
   : [{ value: 'general-inquiry', label: 'General Inquiry' }];
@@ -252,7 +275,7 @@ const heroServiceOptions = serviceEntries.length > 0
     <div class="mb-6">
       <span class="u-badge">
         <span class="u-badge__dot" aria-hidden="true"></span>
-        {siteConfig.city}'s Trusted {nicheLabel}
+        {isLocalService ? `${siteConfig.city}'s Trusted ${nicheLabel}` : nicheLabel}
       </span>
     </div>
 
@@ -270,7 +293,7 @@ const heroServiceOptions = serviceEntries.length > 0
       <a href={primaryCta} class="u-btn u-btn-primary">
         {preset.heroCta}
       </a>
-      <a href="/services" class="u-btn u-btn-ghost">
+      <a href={isLocalService ? '/services' : '/about'} class="u-btn u-btn-ghost">
         {preset.heroCtaSecondary} →
       </a>
     </div>
@@ -353,7 +376,7 @@ const heroServiceOptions = serviceEntries.length > 0
     <div class="mb-6">
       <span class="u-badge">
         <span class="u-badge__dot" aria-hidden="true"></span>
-        {siteConfig.city}'s Trusted {nicheLabel}
+        {isLocalService ? `${siteConfig.city}'s Trusted ${nicheLabel}` : nicheLabel}
       </span>
     </div>
 
@@ -371,7 +394,7 @@ const heroServiceOptions = serviceEntries.length > 0
       <a href={primaryCta} class="u-btn u-btn-primary">
         {preset.heroCta}
       </a>
-      <a href="/services" class="u-btn u-btn-ghost">
+      <a href={isLocalService ? '/services' : '/about'} class="u-btn u-btn-ghost">
         {preset.heroCtaSecondary} →
       </a>
     </div>
@@ -499,8 +522,8 @@ const heroServiceOptions = serviceEntries.length > 0
 
 <!-- ─── FEATURE ROWS ───────────────────────────────────────────────────── -->
 <FeatureRow
-  eyebrow="Trusted Locally"
-  heading={`Why ${siteConfig.city} Trusts ${siteConfig.name}`}
+  eyebrow={isLocalService ? "Trusted Locally" : "What Sets Us Apart"}
+  heading={isLocalService ? `Why ${siteConfig.city} Trusts ${siteConfig.name}` : `Why People Read ${siteConfig.name}`}
   body={hp?.description || siteConfig.description}
   checks={features.slice(0, 3).map((f) => ({ text: f.title }))}
   ctaText={isLocalService ? "Get a Free Estimate" : "Get in Touch"}
@@ -518,8 +541,8 @@ const heroServiceOptions = serviceEntries.length > 0
 
 <!-- ─── WHAT YOU GET — feature card grid ─────────────────────────────── -->
 <FeatureGrid
-  eyebrow="What You Get"
-  heading={`Every Job, Every Time`}
+  eyebrow={isLocalService ? "What You Get" : "What to Expect"}
+  heading={isLocalService ? `Every Job, Every Time` : `What You'll Find Here`}
   items={featureGridItems}
 />
 
@@ -692,9 +715,9 @@ const heroServiceOptions = serviceEntries.length > 0
 
     <!-- Left: CTA text -->
     <div class="hp-cta-left">
-      <h2 id="cta-heading" class="hp-cta-heading">Ready to Book? Let's <span class="u-gradient-text">Talk.</span></h2>
+      <h2 id="cta-heading" class="hp-cta-heading">{isLocalService ? <>Ready to Book? Let's <span class="u-gradient-text">Talk.</span></> : <>Let's <span class="u-gradient-text">Connect.</span></>}</h2>
       <p class="text-lg leading-relaxed hp-cta-sub">
-        Contact {siteConfig.name} today for a free estimate. {preset.contactSubtext}
+        {isLocalService ? <>Contact {siteConfig.name} today for a free estimate. {preset.contactSubtext}</> : <>{preset.contactSubtext}</>}
       </p>
       {siteConfig.phone
         ? (

@@ -5,11 +5,12 @@ import { getPreset } from '../lib/business-presets';
 import { getCollection, getEntry } from 'astro:content';
 const currentYear = new Date().getFullYear();
 const preset = getPreset((siteConfig as any).businessType || 'other');
+const isLocalService = (siteConfig as any).businessType === 'local-service';
 
-// Build per-city area links from content collection; fall back to siteConfig.city
+// Build per-city area links from content collection; fall back to siteConfig.city.
+// Only relevant for local-service sites — general sites skip this entirely.
 const allLocations = await getCollection('locations').catch(() => []);
 
-// Show up to 6 location pages with clean display names; fall back to siteConfig.city
 const areaLinks = allLocations.length > 0
   ? allLocations.slice(0, 6).map(e => ({
       label: cleanTitle(e.data.title),
@@ -17,9 +18,14 @@ const areaLinks = allLocations.length > 0
     }))
   : [{ label: [siteConfig.city, siteConfig.state].filter(Boolean).join(', '), href: '/' }];
 
-const quickLinks = [
+const quickLinks = isLocalService ? [
   { label: 'Home',     href: '/' },
   { label: 'Services', href: '/services' },
+  { label: 'Blog',     href: '/blog' },
+  { label: 'About',    href: '/about' },
+  { label: 'Contact',  href: '/contact' },
+] : [
+  { label: 'Home',     href: '/' },
   { label: 'Blog',     href: '/blog' },
   { label: 'About',    href: '/about' },
   { label: 'Contact',  href: '/contact' },
@@ -68,7 +74,7 @@ const termsEntry = await getEntry('pages', 'terms-and-conditions').catch(() => n
           }
         </a>
         <p class="text-sm leading-relaxed" style="color:#94a3b8;">
-          {(siteConfig as any).footerTagline || siteConfig.description || `${siteConfig.tagline}. We deliver quality results with care, professionalism, and a commitment to the communities we serve.`}
+          {(siteConfig as any).footerTagline || siteConfig.description || (isLocalService ? `${siteConfig.tagline}. We deliver quality results with care, professionalism, and a commitment to the communities we serve.` : `${siteConfig.tagline}. We share ideas, guides, and perspectives worth your time.`)}
         </p>
         {socialLinks.length > 0 && (
           <div class="flex items-center gap-2 mt-1 flex-wrap">
@@ -98,21 +104,23 @@ const termsEntry = await getEntry('pages', 'terms-and-conditions').catch(() => n
         </ul>
       </div>
 
-      <!-- Column 3: Service areas -->
-      <div>
-        <h3 class="text-xs font-semibold uppercase tracking-wider mb-5" style="color:#64748b;">Areas We Serve</h3>
-        <ul class="flex flex-col gap-2.5">
-          {areaLinks.map(({ label, href }) => (
-            <li class="flex items-center gap-1.5">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--rs-brand-text)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              <a href={href} class="text-sm transition-colors hover:text-white" style="color:#94a3b8;">{label}</a>
+      <!-- Column 3: Service areas — local-service only -->
+      {isLocalService && (
+        <div>
+          <h3 class="text-xs font-semibold uppercase tracking-wider mb-5" style="color:#64748b;">Areas We Serve</h3>
+          <ul class="flex flex-col gap-2.5">
+            {areaLinks.map(({ label, href }) => (
+              <li class="flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--rs-brand-text)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                <a href={href} class="text-sm transition-colors hover:text-white" style="color:#94a3b8;">{label}</a>
+              </li>
+            ))}
+            <li>
+              <a href="/locations" class="text-sm transition-colors hover:text-white" style="color:#94a3b8;">View all service areas →</a>
             </li>
-          ))}
-          <li>
-            <a href="/locations" class="text-sm transition-colors hover:text-white" style="color:#94a3b8;">View all service areas →</a>
-          </li>
-        </ul>
-      </div>
+          </ul>
+        </div>
+      )}
 
       <!-- Column 4: Contact / NAP -->
       <div>

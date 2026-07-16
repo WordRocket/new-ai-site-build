@@ -51,6 +51,7 @@ const breadcrumbSchema = getBreadcrumbSchema([
 ]);
 
 const preset = getPreset((siteConfig as any).businessType || 'other');
+const isLocalService = (siteConfig as any).businessType === 'local-service';
 
 const openingHours: Array<{ days: string; hours: string }> = (siteConfig as any).openingHours || [];
 const formEndpoint: string = ((siteConfig as any).formEndpoint ?? '').trim();
@@ -165,8 +166,8 @@ const mapSrc = mapQuery ? `https://maps.google.com/maps?q=${mapQuery}&output=emb
       </div>
     </div>
 
-    <!-- Full-width map strip -->
-    {mapSrc && (
+    <!-- Full-width map strip — local-service only -->
+    {isLocalService && mapSrc && (
       <div class="contact-map-strip" aria-label="Service area map">
         <iframe
           src={mapSrc}

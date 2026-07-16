@@ -17,7 +17,8 @@ const hasServiceDropdown = serviceLinks.length > 0;
 // Services item is handled separately; remaining flat links in fixed order:
 // Home | Services | About Us | Our Work | Blog | Contact Us
 const navVisibility = (siteConfig as any).navVisibility ?? {};
-const showOurWork = navVisibility.ourWork !== false;
+const isLocalService = (siteConfig as any).businessType === 'local-service';
+const showOurWork = isLocalService && navVisibility.ourWork !== false;
 
 const navLinks = [
   { label: 'About Us',    href: '/about' },
@@ -89,8 +90,8 @@ const servicesActive = pathname.startsWith('/services');
         )}
       </a>
 
-      <!-- Services: dropdown when service pages exist, plain link otherwise -->
-      {hasServiceDropdown ? (
+      <!-- Services: dropdown when service pages exist, plain link otherwise (local-service only) -->
+      {isLocalService && (hasServiceDropdown ? (
         <div class="nav-dd">
           <a
             href="/services"
@@ -138,7 +139,7 @@ const servicesActive = pathname.startsWith('/services');
             <span class="absolute bottom-0 left-3 right-3 h-0.5 rounded-full" style="background:var(--rs-brand);"></span>
           )}
         </a>
-      )}
+      ))}
 
       <!-- All other nav links -->
       {navLinks.map(({ label, href }) => (
@@ -214,8 +215,8 @@ const servicesActive = pathname.startsWith('/services');
         Home
       </a>
 
-      <!-- Services: expandable group when service pages exist, plain link otherwise -->
-      {hasServiceDropdown ? (
+      <!-- Services: expandable group when service pages exist, plain link otherwise (local-service only) -->
+      {isLocalService && (hasServiceDropdown ? (
         <div class="mob-svc">
           <div class="mob-svc__row">
             <a
@@ -274,7 +275,7 @@ const servicesActive = pathname.startsWith('/services');
         >
           Services
         </a>
-      )}
+      ))}
 
       {navLinks.map(({ label, href }) => (
         <a

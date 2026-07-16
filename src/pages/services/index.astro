@@ -4,17 +4,30 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { iconSvg, getServiceIcon } from '../../lib/icons';
 import ServiceCard from '../../components/ServiceCard.astro';
 import siteConfig, { cleanTitle } from '../../lib/site-config';
+import { getPreset, interpolate } from '../../lib/business-presets';
 
-const all = await getCollection('services');
+const isLocalService = (siteConfig as any).businessType === 'local-service';
+
+// General-type sites are blog-first and should not have a /services route.
+// Redirect to 404 so the route effectively doesn't exist in the site tree.
+if (!isLocalService) {
+  return Astro.redirect('/404');
+}
+
+const preset = getPreset((siteConfig as any).businessType || 'other');
+const vars = { city: siteConfig.city, niche: siteConfig.niche || 'services' };
+
+const all = await getCollection('services').catch(() => []);
 const services = all.sort((a, b) => a.data.order - b.data.order);
 
 const servicesIntro: string = ((siteConfig as any).servicesIntro as string | undefined)?.trim() || '';
+const servicesHeading = interpolate(preset.servicesHeading, vars);
 const servicesDescription = servicesIntro ||
   `${siteConfig.name} provides professional ${(siteConfig as any).niche || 'services'} in ${siteConfig.city}, ${siteConfig.state}. Browse all available services below.`;
 ---
 
 <BaseLayout
-  title={`Our Services | ${siteConfig.name}`}
+  title={`${servicesHeading} | ${siteConfig.name}`}
   description={servicesDescription}
 >
   <main>
@@ -34,7 +47,7 @@ const servicesDescription = servicesIntro ||
     <!-- Header -->
     <section class="py-14 sm:py-20 text-center" style="background:var(--rs-surface);">
       <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-[var(--color-text)] mb-4">Our <span class="u-gradient-text">Services</span></h1>
+        <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-[var(--color-text)] mb-4">{servicesHeading}</h1>
         <p class="text-[var(--color-text-muted)] text-lg max-w-xl mx-auto">
           {servicesDescription}
         </p>

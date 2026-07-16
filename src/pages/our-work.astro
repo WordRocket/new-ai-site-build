@@ -3,6 +3,13 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import siteConfig from '../lib/site-config';
 
+const isLocalService = (siteConfig as any).businessType === 'local-service';
+
+// General-type sites are blog-first and should not have an /our-work route.
+if (!isLocalService) {
+  return Astro.redirect('/404');
+}
+
 const allProjects = await getCollection('projects').catch(() => []);
 const projects = allProjects
   .filter(p => p.data.published !== false)

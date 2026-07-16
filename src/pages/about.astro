@@ -46,6 +46,7 @@ const breadcrumbSchema = getBreadcrumbSchema([
 const nicheLabel = siteConfig.niche || 'service';
 const preset = getPreset((siteConfig as any).businessType || 'other');
 const vars = { city: siteConfig.city, niche: nicheLabel };
+const isLocalService = (siteConfig as any).businessType === 'local-service';
 
 const hasStats = Boolean(siteConfig.yearsInBusiness || siteConfig.clientsServed);
 
@@ -62,14 +63,21 @@ const { main: whyMain, last: whyLast } = splitH(whyTitle);
 const trustSignals = [
   siteConfig.yearsInBusiness && { value: siteConfig.yearsInBusiness, label: 'Years in Business' },
   siteConfig.clientsServed && { value: siteConfig.clientsServed, label: 'Clients Served' },
-  { value: '5★', label: 'Rated' },
-  { value: '100%', label: 'Satisfaction Guarantee' },
+  ...(isLocalService
+    ? [
+        { value: '5★', label: 'Rated' },
+        { value: '100%', label: 'Satisfaction Guarantee' },
+      ]
+    : [
+        { value: '5★', label: 'Reader Rated' },
+        { value: '100%', label: 'Original Content' },
+      ]),
 ].filter(Boolean) as Array<{ value: string; label: string }>;
 
 const teamItems: Array<{ name: string; role?: string; title?: string; bio: string; photo?: string; image?: string }> =
   Array.isArray((siteConfig as any).teamMembers) ? (siteConfig as any).teamMembers : [];
 
-const whyUs = [
+const whyUs = isLocalService ? [
   {
     title: 'Locally Owned & Operated',
     body: `${siteConfig.name} is based in ${siteConfig.city}, ${siteConfig.state} — we're your neighbors and we're invested in our community.`,
@@ -86,12 +94,29 @@ const whyUs = [
     title: 'Satisfaction Guaranteed',
     body: "We stand behind our work. If you're not satisfied, we make it right — no questions asked.",
   },
+] : [
+  {
+    title: 'Thoughtful, Original Work',
+    body: `Everything we publish is researched, written, and reviewed with care — no recycled filler, no shortcuts.`,
+  },
+  {
+    title: 'Clear, Direct Communication',
+    body: 'We write in plain language so ideas land. No jargon, no gatekeeping — just content that respects your time.',
+  },
+  {
+    title: 'Consistent & Reliable',
+    body: 'New posts and updates land on a regular cadence. You always know when to expect something fresh.',
+  },
+  {
+    title: 'Open to Conversation',
+    body: `Questions, feedback, and discussion are always welcome at ${siteConfig.name}. We read and respond.`,
+  },
 ];
 ---
 
 <BaseLayout
   title={`About Us | ${siteConfig.name}`}
-  description={`Learn about ${siteConfig.name} — your trusted ${nicheLabel} experts in ${siteConfig.city}, ${siteConfig.state}.`}
+  description={`Learn about ${siteConfig.name}${isLocalService ? ` — your trusted ${nicheLabel} experts in ${siteConfig.city}, ${siteConfig.state}.` : ` — what we do and why we do it.`}`}
   canonical={pageUrl}
   schemas={[orgSchema, breadcrumbSchema]}
 >
@@ -116,7 +141,7 @@ const whyUs = [
           {aboutMain}<span class="u-gradient-text">{aboutLast}</span>
         </h1>
         <p class="text-[var(--color-text-muted)] text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed">
-          {ap?.description || ('Your trusted ' + nicheLabel + ' experts in ' + siteConfig.city + ', ' + siteConfig.state)}
+          {ap?.description || (isLocalService ? ('Your trusted ' + nicheLabel + ' experts in ' + siteConfig.city + ', ' + siteConfig.state) : (siteConfig.description || `Ideas, stories, and perspectives from ${siteConfig.name}.`))}
         </p>
       </div>
     </section>
@@ -156,15 +181,31 @@ const whyUs = [
               </div>
             ) : (
               <>
-                <p>
-                  {siteConfig.name} is a locally owned {nicheLabel} business serving {siteConfig.city} and the surrounding area. We are committed to providing quality service with honest pricing and professional results.
-                </p>
-                <p>
-                  Our team takes pride in every job we complete — from the smallest task to the largest project. We treat every customer's home or business with the respect and care it deserves.
-                </p>
-                <p>
-                  When you choose {siteConfig.name}, you're choosing a team that stands behind its work and is dedicated to your complete satisfaction.
-                </p>
+                {isLocalService ? (
+                  <>
+                    <p>
+                      {siteConfig.name} is a locally owned {nicheLabel} business serving {siteConfig.city} and the surrounding area. We are committed to providing quality service with honest pricing and professional results.
+                    </p>
+                    <p>
+                      Our team takes pride in every job we complete — from the smallest task to the largest project. We treat every customer's home or business with the respect and care it deserves.
+                    </p>
+                    <p>
+                      When you choose {siteConfig.name}, you're choosing a team that stands behind its work and is dedicated to your complete satisfaction.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p>
+                      {siteConfig.name} is a {nicheLabel || 'content'} site dedicated to sharing ideas, guides, and perspectives worth your time. We publish work we'd want to read ourselves — researched, considered, and written with care.
+                    </p>
+                    <p>
+                      Our goal is simple: add something useful to the conversation. Whether that's a practical guide, a fresh take on a familiar topic, or a deep dive into something new, we put thought into every piece.
+                    </p>
+                    <p>
+                      Thanks for reading. If you have questions, feedback, or ideas for what we should cover next, we'd love to hear from you.
+                    </p>
+                  </>
+                )}
               </>
             )}
           </div>

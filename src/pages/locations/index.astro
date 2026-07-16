@@ -5,10 +5,17 @@ import { getBreadcrumbSchema } from '../../lib/schema';
 import siteConfig from '../../lib/site-config';
 import { toTitleCase } from '../../lib/site-config';
 
+const isLocalService = (siteConfig as any).businessType === 'local-service';
+
+// General-type sites are blog-first and should not have a /locations route.
+if (!isLocalService) {
+  return Astro.redirect('/404');
+}
+
 const siteUrl = (import.meta.env.SITE ?? siteConfig.url ?? 'https://example.com').replace(/\/+$/, '');
 const pageUrl = `${siteUrl}/locations`;
 
-const allLocations = await getCollection('locations');
+const allLocations = await getCollection('locations').catch(() => []);
 const locations = allLocations
   .map((entry) => ({
     city:    entry.data.city,

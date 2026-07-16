@@ -20,6 +20,8 @@ import {
 } from '../../lib/schema';
 
 export async function getStaticPaths() {
+  const isLocalService = (siteConfig as any).businessType === 'local-service';
+  if (!isLocalService) return [];
   const services = await getCollection('services');
   return services.map((service) => ({ params: { slug: service.slug }, props: { service } }));
 }
@@ -28,6 +30,7 @@ const { service } = Astro.props;
 const { Content } = await service.render();
 const d = service.data;
 const displayTitle = cleanTitle(d.title);
+const isLocalService = (siteConfig as any).businessType === 'local-service';
 
 const siteUrl = import.meta.env.SITE ?? 'https://example.com';
 const pageUrl = `${siteUrl}/services/${service.slug}`;
@@ -184,8 +187,8 @@ const relatedProjects = [...pinned, ...unpinned].slice(0, 3);
           <Content />
         </div>
 
-        <!-- Areas We Serve — crawlable city badge links -->
-        {d.areaServed && d.areaServed.length > 0 && (
+        <!-- Areas We Serve — crawlable city badge links (local-service only) -->
+        {isLocalService && d.areaServed && d.areaServed.length > 0 && (
           <section class="mt-12 pt-10 border-t border-neutral-100">
             <h2 class="text-xl font-bold text-[var(--color-text)] mb-4">Areas We Serve</h2>
             <div class="flex flex-wrap gap-2">

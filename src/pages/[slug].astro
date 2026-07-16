@@ -17,6 +17,8 @@ import { toTitleCase, cleanTitle } from '../lib/site-config';
 import ReviewBanner from '../components/ReviewBanner.astro';
 
 export async function getStaticPaths() {
+  const isLocalService = (siteConfig as any).businessType === 'local-service';
+  if (!isLocalService) return [];
   const locations = await getCollection('locations');
   return locations.map((location) => ({
     params: { slug: location.slug },
@@ -29,6 +31,7 @@ const { Content } = await location.render();
 const d = location.data;
 const displayCity    = toTitleCase(d.city);
 const displayService = toTitleCase(d.service);
+const isLocalService = (siteConfig as any).businessType === 'local-service';
 
 const siteUrl = (import.meta.env.SITE ?? siteConfig.url ?? 'https://example.com').replace(/\/+$/, '');
 const pageUrl = `${siteUrl}/${location.slug}`;
@@ -131,10 +134,10 @@ const sidebarLocations = allLocations.map(l => ({
           </ol>
         </nav>
         <h1 class="text-white font-extrabold tracking-tight mb-2">{displayService} in {displayCity}, {d.state}</h1>
-        <p class="text-lg mb-4" style="color:rgba(255,255,255,0.75);">Serving {displayCity} and the surrounding area</p>
+        <p class="text-lg mb-4" style="color:rgba(255,255,255,0.75);">{isLocalService ? `Serving ${displayCity} and the surrounding area` : `Learn more about ${displayService} from ${siteConfig.name}`}</p>
         <div class="flex flex-col sm:flex-row gap-3">
           <a href="/contact" class="btn-primary inline-flex items-center justify-center gap-2 px-7 py-3 rounded-[var(--radius-md)] text-base font-semibold text-white">
-            Get a Free Quote
+            {isLocalService ? 'Get a Free Quote' : 'Get in Touch'}
           </a>
           <a href="/services" class="btn-secondary inline-flex items-center justify-center gap-2 px-7 py-3 rounded-[var(--radius-md)] text-base font-semibold" style="border-color:rgba(255,255,255,0.4); color:white;">
             View Our Services →
@@ -215,7 +218,7 @@ const sidebarLocations = allLocations.map(l => ({
         image={d.sectionImage}
         imageAlt={d.title}
         imageAspect="4/3"
-        ctaText="Get a Free Quote"
+        ctaText={isLocalService ? "Get a Free Quote" : "Get in Touch"}
         ctaHref="/contact"
         bg="var(--rs-surface)"
         reverse

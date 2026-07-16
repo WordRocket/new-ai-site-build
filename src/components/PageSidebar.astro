@@ -27,6 +27,7 @@ interface Props {
 const { pageType, currentSlug, serviceTitle, city, services, locations } = Astro.props;
 
 const preset = getPreset((siteConfig as any).businessType || 'other');
+const isLocalService = (siteConfig as any).businessType === 'local-service';
 const signals = preset.trustSignals;
 
 const phoneDigits = siteConfig.phone ? siteConfig.phone.replace(/\D/g, '') : '';
@@ -69,8 +70,8 @@ if (pageType === 'service') {
 }
 
 const showAreas =
-  areasToShow.length > 0 ||
-  ((siteConfig as any).businessType === 'local-service' && pageType === 'service' && locations.length === 0 && !!siteConfig.city);
+  (isLocalService && (areasToShow.length > 0 ||
+    (pageType === 'service' && locations.length === 0 && !!siteConfig.city)));
 
 const showCityServices = pageType === 'location' && services.length > 0;
 
