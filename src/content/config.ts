@@ -127,4 +127,27 @@ const projects = defineCollection({
   }),
 });
 
-export const collections = { blog, pages, services, locations, projects };
+const categories = defineCollection({
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    shortDescription: z.string().default(''),
+    published: z.boolean().default(false),
+    icon: z.string().optional(),
+    heroImage: z.string().optional(),
+    heroImageVariants: imageVariantsSchema,
+    sectionImage: z.string().optional(),
+    sectionImageVariants: imageVariantsSchema,
+    featuredImage: z.string().optional(),
+    featuredImageVariants: imageVariantsSchema,
+    featuredImageAlt: z.string().optional(),
+    faq: z.array(z.object({ question: z.string(), answer: z.string() })).default([]),
+    order: z.number().default(0),
+    steps: z.array(stepSchema).optional(),
+    features: z.array(featureSchema).optional(),
+    testimonials: z.array(testimonialSchema).optional(),
+    schemaJsonld: z.string().optional(),
+  }),
+});
+
+export const collections = { blog, pages, services, locations, projects, categories };

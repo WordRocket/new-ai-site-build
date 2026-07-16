@@ -16,14 +16,22 @@ const hasServiceDropdown = serviceLinks.length > 0;
 
 const isLocalService = (siteConfig as any).businessType === 'local-service';
 
-// Categories dropdown — general-type sites only, mirrors the Services dropdown.
-const categories: string[] = Array.isArray((siteConfig as any).categories)
-  ? (siteConfig as any).categories
-  : [];
-const categoryLinks = categories.map((c) => ({
-  label: c,
-  href: `/blog?category=${encodeURIComponent(c.toLowerCase())}`,
-}));
+// Categories dropdown — general-type sites only.
+// Reads from the categories collection (published rows), linking to /category/[slug].
+// Falls back to the legacy siteConfig.categories string array when the collection
+// is empty (dual-write backward compat).
+const rawCategories = await getCollection('categories').catch(() => []);
+const publishedCategories = rawCategories
+  .filter((c) => c.data.published !== false)
+  .sort((a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title));
+const categoryLinks = publishedCategories.length > 0
+  ? publishedCategories.map((c) => ({ label: cleanTitle(c.data.title), href: `/category/${c.slug}` }))
+  : (Array.isArray((siteConfig as any).categories)
+      ? (siteConfig as any).categories.map((c: string) => ({
+          label: c,
+          href: `/blog?category=${encodeURIComponent(c.toLowerCase())}`,
+        }))
+      : []);
 const hasCategoryDropdown = !isLocalService && categoryLinks.length > 0;
 
 // Services item is handled separately; remaining flat links in fixed order:

@@ -1,0 +1,136 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import siteConfig, { cleanTitle } from '../../lib/site-config';
+
+const isGeneral = (siteConfig as any).businessType === 'general';
+if (!isGeneral) {
+  return Astro.redirect('/404');
+}
+
+const all = await getCollection('categories');
+const categories = all
+  .filter((c) => c.data.published !== false)
+  .sort((a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title));
+
+const siteUrl = import.meta.env.SITE ?? 'https://example.com';
+
+const blogIntro: string = ((siteConfig as any).blogIntro as string | undefined)?.trim() || '';
+const description = blogIntro ||
+  `Browse all categories from ${siteConfig.name}.`;
+---
+
+<BaseLayout
+  title={`Categories | ${siteConfig.name}`}
+  description={description}
+>
+  <main>
+    <!-- Breadcrumb -->
+    <nav aria-label="Breadcrumb" class="border-b" style="background:var(--rs-surface); border-color:var(--rs-border);">
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-3">
+        <ol class="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
+          <li><a href="/" class="hover:text-[var(--rs-brand-text)] transition-colors">Home</a></li>
+          <li aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </li>
+          <li><span class="text-[var(--color-text)] font-medium" aria-current="page">Categories</span></li>
+        </ol>
+      </div>
+    </nav>
+
+    <!-- Header -->
+    <section class="py-14 sm:py-20 text-center" style="background:var(--rs-surface);">
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-[var(--color-text)] mb-4">Categories</h1>
+        <p class="text-[var(--color-text-muted)] text-lg max-w-xl mx-auto">
+          {description}
+        </p>
+      </div>
+    </section>
+
+    <!-- Category grid -->
+    <section class="py-16 sm:py-20">
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+        {categories.length === 0 ? (
+          <div class="flex flex-col items-center justify-center gap-4 py-24 text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d4d4d8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg>
+            <p class="text-[var(--color-text-muted)] text-lg font-medium">Categories coming soon</p>
+            <p class="text-sm text-[var(--color-text-muted)]">Check back shortly — we're organizing our content.</p>
+          </div>
+        ) : (
+          <ul class="cat-grid" role="list">
+            {categories.map((cat) => {
+              const desc = cat.data.shortDescription || cat.data.description;
+              const image = cat.data.heroImage || cat.data.sectionImage;
+              return (
+                <li>
+                  <a
+                    href={`/category/${cat.slug}`}
+                    class="cat-card"
+                    style="background:var(--rs-surface); box-shadow:var(--shadow-sm); text-decoration:none;"
+                  >
+                    <div class="aspect-video overflow-hidden" style="background:var(--rs-surface-2);">
+                      {image ? (
+                        <img
+                          src={image}
+                          alt={cat.data.title}
+                          class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      ) : (
+                        <div class="w-full h-full flex items-center justify-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--rs-text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg>
+                        </div>
+                      )}
+                    </div>
+                    <div class="px-5 py-4">
+                      <p class="text-base font-semibold text-[var(--color-text)] leading-snug">{cleanTitle(cat.data.title)}</p>
+                      {desc && (
+                        <p class="text-sm mt-1.5 text-[var(--color-text-muted)] leading-relaxed line-clamp-2">{desc}</p>
+                      )}
+                    </div>
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .cat-card {
+    display: block;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  .cat-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+  .cat-grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+  @media (min-width: 640px) {
+    .cat-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .cat-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

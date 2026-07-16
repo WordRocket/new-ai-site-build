@@ -1,0 +1,201 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SmartImage from '../../components/SmartImage.astro';
+import CtaBand from '../../components/sections/CtaBand.astro';
+import siteConfig from '../../lib/site-config';
+import { cleanTitle } from '../../lib/site-config';
+import {
+  getBreadcrumbSchema,
+  getOrganizationSchema,
+  getFAQSchema,
+} from '../../lib/schema';
+
+export async function getStaticPaths() {
+  const isGeneral = (siteConfig as any).businessType === 'general';
+  if (!isGeneral) return [];
+
+  const all = await getCollection('categories');
+  return all
+    .filter((cat) => cat.data.published !== false)
+    .map((cat) => ({ params: { slug: cat.slug }, props: { cat } }));
+}
+
+const { cat } = Astro.props;
+const { Content } = await cat.render();
+const d = cat.data;
+const displayTitle = cleanTitle(d.title);
+
+const siteUrl = import.meta.env.SITE ?? 'https://example.com';
+const pageUrl = `${siteUrl}/category/${cat.slug}`;
+
+const breadcrumbSchema = getBreadcrumbSchema([
+  { name: 'Home', url: siteUrl },
+  { name: 'Categories', url: `${siteUrl}/category` },
+  { name: displayTitle, url: pageUrl },
+]);
+const orgSchema = getOrganizationSchema({
+  name: siteConfig.name,
+  url: siteUrl,
+  logo: `${siteUrl}/favicon.svg`,
+  ...(siteConfig.description ? { description: siteConfig.description } : {}),
+});
+const hasFaq = d.faq && d.faq.length > 0;
+const faqSchema = hasFaq ? getFAQSchema(d.faq) : null;
+const schemas = [breadcrumbSchema, orgSchema, ...(faqSchema ? [faqSchema] : [])];
+
+// Related Articles: blog posts whose `category` field matches this category's title (case-insensitive)
+const allPosts = await getCollection('blog');
+const catNameLower = d.title.trim().toLowerCase();
+const relatedPosts = allPosts
+  .filter((p) => (p.data.category || '').trim().toLowerCase() === catNameLower)
+  .sort((a, b) => new Date(b.data.datePublished).getTime() - new Date(a.data.datePublished).getTime())
+  .slice(0, 6);
+
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+
+function excerpt(text: string, max = 120): string {
+  if (text.length <= max) return text;
+  return text.slice(0, max).trimEnd() + '…';
+}
+---
+
+<BaseLayout
+  title={d.title.includes(' | ') ? d.title : `${d.title} | ${siteConfig.name}`}
+  description={d.description}
+  canonical={pageUrl}
+  schemas={schemas}
+>
+  <main>
+
+    <!-- ─── Hero band ──────────────────────────────────────────────────── -->
+    <div class="page-hero">
+      {d.featuredImage && (
+        <>
+          <img
+            src={d.featuredImage}
+            alt=""
+            role="presentation"
+            aria-hidden="true"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+            style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:0;pointer-events:none;"
+          />
+          <div style="position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(100deg,rgba(8,12,26,.88) 0%,rgba(8,12,26,.65) 55%,rgba(8,12,26,.40) 100%);" aria-hidden="true"></div>
+        </>
+      )}
+      <div class="relative z-10 max-w-[1200px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <nav aria-label="Breadcrumb" class="mb-2">
+          <ol class="flex items-center gap-2 text-sm flex-wrap" style="color:rgba(255,255,255,0.6);">
+            <li><a href="/" class="hover:text-white transition-colors">Home</a></li>
+            <li aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></li>
+            <li><a href="/category" class="hover:text-white transition-colors">Categories</a></li>
+            <li aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></li>
+            <li class="text-white font-medium">{displayTitle}</li>
+          </ol>
+        </nav>
+        <h1 class="text-white font-extrabold tracking-tight mb-2">{displayTitle}</h1>
+        <p class="text-lg mb-4 max-w-xl" style="color:rgba(255,255,255,0.75);">{d.description}</p>
+      </div>
+    </div>
+
+    <!-- ─── Two-column body: article (left) + spacing (right) ────────── -->
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <article class="max-w-[800px] mx-auto">
+
+        {d.heroImage && (
+          <SmartImage
+            src={d.heroImage}
+            alt={d.title}
+            aspect="16/9"
+            loading="eager"
+            fetchpriority="high"
+            variants={d.heroImageVariants}
+            sizes="(min-width: 1024px) 65vw, 100vw"
+          />
+        )}
+
+        <!-- Prose markdown content -->
+        <div class="prose prose-neutral prose-lg max-w-none mt-8">
+          <Content />
+        </div>
+
+        <!-- FAQ accordion -->
+        {hasFaq && (
+          <section id="faq" class="mt-12 pt-10 border-t border-neutral-100 pb-4">
+            <h2 class="text-2xl font-bold tracking-tight text-[var(--color-text)] mb-8">Frequently Asked Questions</h2>
+            <div class="flex flex-col" id="cat-faq-list">
+              {d.faq.map((item: { question: string; answer: string }, i: number) => (
+                <details class="rs-faq-item">
+                  <summary class="rs-faq-q">
+                    <h3 class="text-base font-semibold m-0">{item.question}</h3>
+                    <svg class="rs-faq-chevron" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                  </summary>
+                  <div class="rs-faq-a"><div><p>{item.answer}</p></div></div>
+                </details>
+              ))}
+            </div>
+          </section>
+        )}
+
+      </article>
+    </div>
+
+    <!-- ─── Related Articles ─────────────────────────────────────────── -->
+    {relatedPosts.length > 0 && (
+      <section class="py-16" style="background:var(--rs-surface-2); border-top:1px solid var(--rs-border); border-bottom:1px solid var(--rs-border);">
+        <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 class="text-2xl font-bold tracking-tight text-[var(--color-text)] mb-8">Related Articles</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {relatedPosts.map((post) => (
+              <article
+                class="blog-post-card rounded-[var(--radius-md)] overflow-hidden flex flex-col transition-shadow duration-200 hover:shadow-[var(--shadow-md)]"
+                style="background:var(--rs-surface); box-shadow:var(--shadow-sm);"
+              >
+                {post.data.featuredImage ? (
+                  <a href={`/blog/${post.slug}`} class="block overflow-hidden aspect-video" tabindex="-1" aria-hidden="true">
+                    <img
+                      src={post.data.featuredImage}
+                      alt={post.data.featuredImageAlt ?? post.data.title}
+                      class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                      loading="lazy"
+                      decoding="async"
+                      width="800"
+                      height="450"
+                    />
+                  </a>
+                ) : (
+                  <div class="aspect-video flex items-center justify-center" style="background:var(--rs-surface-2);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--rs-text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                  </div>
+                )}
+                <div class="flex flex-col flex-1 p-6 gap-3">
+                  <h3 class="text-base font-semibold text-[var(--color-text)] leading-snug">
+                    <a href={`/blog/${post.slug}`} class="hover:text-[var(--rs-brand-text)] transition-colors">{post.data.title}</a>
+                  </h3>
+                  <p class="text-sm text-[var(--color-text-muted)] leading-relaxed flex-1">
+                    {excerpt(post.data.description)}
+                  </p>
+                  <div class="flex items-center gap-2 text-xs text-[var(--color-text-muted)] pt-2 border-t mt-auto" style="border-color:var(--rs-border);">
+                    <time datetime={post.data.datePublished}>{formatDate(post.data.datePublished)}</time>
+                    <a href={`/blog/${post.slug}`} class="font-semibold ml-auto transition-colors hover:text-[var(--rs-brand-text)]" style="color:var(--rs-brand-text);">Read →</a>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <CtaBand />
+
+  </main>
+</BaseLayout>

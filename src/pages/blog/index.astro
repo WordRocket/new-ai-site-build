@@ -1,12 +1,16 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import siteConfig from '../../lib/site-config';
+import siteConfig, { cleanTitle } from '../../lib/site-config';
 
 const isLocalService = (siteConfig as any).businessType === 'local-service';
-const categories: string[] = Array.isArray((siteConfig as any).categories)
-  ? (siteConfig as any).categories
-  : [];
+
+// Categories — read from the categories collection (published rows) when available.
+// Falls back to the legacy siteConfig.categories string array for backward compat.
+const rawCategories = await getCollection('categories').catch(() => []);
+const publishedCategories = rawCategories
+  .filter((c) => c.data.published !== false)
+  .sort((a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title));
 
 const posts = await getCollection('blog');
 
@@ -14,12 +18,25 @@ posts.sort((a, b) =>
   new Date(b.data.datePublished).getTime() - new Date(a.data.datePublished).getTime()
 );
 
-// Build a map of category -> post count (case-insensitive match between
-// siteConfig.categories and post.data.category).
+// When using the collection, build category links to /category/[slug].
+// When falling back to legacy array, keep the client-side filter behavior.
+const useCollectionCategories = publishedCategories.length > 0;
+const legacyCategories: string[] = Array.isArray((siteConfig as any).categories)
+  ? (siteConfig as any).categories
+  : [];
+
 const postCategoryLower = posts.map((p) => (p.data.category || '').toLowerCase());
-const categoriesWithPosts = categories.filter((cat) =>
+
+// Legacy: filter to categories that actually have posts
+const legacyCategoriesWithPosts = legacyCategories.filter((cat) =>
   postCategoryLower.includes(cat.toLowerCase())
 );
+
+// Collection: all published categories (hub pages exist regardless of post count)
+const collectionCategoryLinks = publishedCategories.map((c) => ({
+  label: cleanTitle(c.data.title),
+  href: `/category/${c.slug}`,
+}));
 
 function excerpt(text: string, max = 120): string {
   if (text.length <= max) return text;
@@ -40,7 +57,10 @@ const blogDescription = blogIntro ||
     ? `Tips, guides, and news from ${siteConfig.name} in ${siteConfig.city}, ${siteConfig.state}.`
     : `Ideas, guides, and updates from ${siteConfig.name}.`);
 
-const showCategories = !isLocalService && categoriesWithPosts.length > 0;
+// Show the section for general-type sites only, when there are categories to show
+const showCollectionCategories = !isLocalService && useCollectionCategories && collectionCategoryLinks.length > 0;
+const showLegacyCategories = !isLocalService && !useCollectionCategories && legacyCategoriesWithPosts.length > 0;
+const showCategories = showCollectionCategories || showLegacyCategories;
 ---
 
 <BaseLayout
@@ -77,15 +97,17 @@ const showCategories = !isLocalService && categoriesWithPosts.length > 0;
         <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
           <h2 class="text-sm font-semibold uppercase tracking-wider mb-5 text-center text-[var(--color-text-muted)]">Browse by Category</h2>
           <div class="flex flex-wrap justify-center gap-2.5" id="category-pills">
-            <button
-              type="button"
-              class="cat-pill is-active"
-              data-cat="all"
-              aria-pressed="true"
-            >
-              All Posts
-            </button>
-            {categoriesWithPosts.map((cat) => (
+            {showLegacyCategories && (
+              <button
+                type="button"
+                class="cat-pill is-active"
+                data-cat="all"
+                aria-pressed="true"
+              >
+                All Posts
+              </button>
+            )}
+            {showLegacyCategories && legacyCategoriesWithPosts.map((cat) => (
               <button
                 type="button"
                 class="cat-pill"
@@ -94,6 +116,12 @@ const showCategories = !isLocalService && categoriesWithPosts.length > 0;
               >
                 {cat}
               </button>
+            ))}
+            {showCollectionCategories && (
+              <a href="/blog" class="cat-pill is-active">All Posts</a>
+            )}
+            {showCollectionCategories && collectionCategoryLinks.map((cat) => (
+              <a href={cat.href} class="cat-pill">{cat.label}</a>
             ))}
           </div>
         </div>
@@ -169,7 +197,7 @@ const showCategories = !isLocalService && categoriesWithPosts.length > 0;
               ))}
             </div>
             <!-- No posts in selected category -->
-            {showCategories && (
+            {showLegacyCategories && (
               <div id="no-posts-msg" class="hidden flex-col items-center justify-center gap-3 py-16 text-center">
                 <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--rs-text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                 <p class="text-[var(--color-text-muted)] text-lg font-medium">No posts in this category yet</p>
@@ -182,7 +210,7 @@ const showCategories = !isLocalService && categoriesWithPosts.length > 0;
     </section>
   </main>
 
-  {showCategories && (
+  {showLegacyCategories && (
     <script>
       (function () {
         const pills = document.querySelectorAll('.cat-pill');
