@@ -14,10 +14,21 @@ const serviceLinks = rawServices
   .map((s) => ({ label: cleanTitle(s.data.title), href: `/services/${s.slug}` }));
 const hasServiceDropdown = serviceLinks.length > 0;
 
+const isLocalService = (siteConfig as any).businessType === 'local-service';
+
+// Categories dropdown — general-type sites only, mirrors the Services dropdown.
+const categories: string[] = Array.isArray((siteConfig as any).categories)
+  ? (siteConfig as any).categories
+  : [];
+const categoryLinks = categories.map((c) => ({
+  label: c,
+  href: `/blog?category=${encodeURIComponent(c.toLowerCase())}`,
+}));
+const hasCategoryDropdown = !isLocalService && categoryLinks.length > 0;
+
 // Services item is handled separately; remaining flat links in fixed order:
 // Home | Services | About Us | Our Work | Blog | Contact Us
 const navVisibility = (siteConfig as any).navVisibility ?? {};
-const isLocalService = (siteConfig as any).businessType === 'local-service';
 const showOurWork = isLocalService && navVisibility.ourWork !== false;
 
 const navLinks = [
@@ -35,6 +46,7 @@ function isActive(href: string) {
 
 const phoneDigits = siteConfig.phone ? siteConfig.phone.replace(/\D/g, '') : '';
 const servicesActive = pathname.startsWith('/services');
+const blogActive = pathname.startsWith('/blog');
 ---
 
 <!-- Top emergency bar (hidden if no phone or preset disables it) -->
@@ -140,6 +152,38 @@ const servicesActive = pathname.startsWith('/services');
           )}
         </a>
       ))}
+
+      <!-- Categories: dropdown when category links exist (general-type sites only) -->
+      {hasCategoryDropdown && (
+        <div class="relative nav-dd">
+          <button
+            type="button"
+            class="flex items-center gap-1 px-3 py-2 text-sm font-medium transition-colors text-[var(--color-text)] hover:text-[var(--color-brand)]"
+            aria-expanded="false"
+            aria-controls="cat-dd-menu"
+            data-nav-dd-trigger
+          >
+            Categories
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div
+            id="cat-dd-menu"
+            class="nav-dd-menu absolute left-0 top-full pt-2 opacity-0 invisible transition-all duration-150 z-50"
+            data-nav-dd-menu
+          >
+            <div class="rounded-[var(--radius-md)] overflow-hidden py-1 min-w-[200px]" style="background:var(--rs-surface); box-shadow:var(--shadow-lg); border:1px solid var(--rs-border);">
+              {categoryLinks.map(({ label, href }) => (
+                <a
+                  href={href}
+                  class="block px-4 py-2 text-sm transition-colors hover:bg-[var(--color-brand-soft)] text-[var(--color-text)] hover:text-[var(--color-brand)]"
+                >
+                  {label}
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       <!-- All other nav links -->
       {navLinks.map(({ label, href }) => (
@@ -276,6 +320,38 @@ const servicesActive = pathname.startsWith('/services');
           Services
         </a>
       ))}
+
+      <!-- Categories: expandable group (general-type sites, mobile) -->
+      {hasCategoryDropdown && (
+        <div class="border-b" style="border-color:var(--rs-border);">
+          <div class="flex items-center justify-between">
+            <span class="px-3 py-2 text-sm font-medium text-[var(--color-text)]">Categories</span>
+            <button
+              type="button"
+              id="mob-cat-toggle"
+              class="mob-cat__caret px-2 py-2 rounded-md transition-colors hover:bg-neutral-100"
+              style="color:var(--color-text);"
+              aria-expanded="false"
+              aria-controls="mob-cat-submenu"
+              aria-label="Toggle category links"
+            >
+              <svg id="mob-cat-chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transition:transform 0.2s ease;"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+          </div>
+          <ul id="mob-cat-submenu" class="mob-cat__submenu" aria-hidden="true">
+            {categoryLinks.map(({ label, href }) => (
+              <li>
+                <a
+                  href={href}
+                  class="block pl-6 pr-3 py-2 rounded-md text-sm font-medium transition-colors text-[var(--color-text-muted)] hover:text-[var(--rs-brand-text)] hover:bg-neutral-100"
+                >
+                  {label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {navLinks.map(({ label, href }) => (
         <a
@@ -441,6 +517,15 @@ const servicesActive = pathname.startsWith('/services');
     max-height: 0;
     transition: max-height 0.25s ease;
   }
+
+  .mob-cat__submenu {
+    list-style: none;
+    margin: 2px 0 0;
+    padding: 0;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.25s ease;
+  }
 </style>
 
 <script>
@@ -530,6 +615,21 @@ const servicesActive = pathname.startsWith('/services');
         mobSubmenu.setAttribute('aria-hidden', String(!open));
         mobSubmenu.style.maxHeight = open ? mobSubmenu.scrollHeight + 'px' : '0';
         if (mobChevron) (mobChevron as HTMLElement).style.transform = open ? 'rotate(180deg)' : '';
+      }, { signal });
+    }
+
+    // Mobile categories submenu (mirrors services toggle)
+    const mobCatToggle  = document.getElementById('mob-cat-toggle');
+    const mobCatSubmenu = document.getElementById('mob-cat-submenu');
+    const mobCatChevron = document.getElementById('mob-cat-chevron');
+
+    if (mobCatToggle && mobCatSubmenu) {
+      mobCatToggle.addEventListener('click', () => {
+        const open = mobCatToggle.getAttribute('aria-expanded') !== 'true';
+        mobCatToggle.setAttribute('aria-expanded', String(open));
+        mobCatSubmenu.setAttribute('aria-hidden', String(!open));
+        mobCatSubmenu.style.maxHeight = open ? mobCatSubmenu.scrollHeight + 'px' : '0';
+        if (mobCatChevron) (mobCatChevron as HTMLElement).style.transform = open ? 'rotate(180deg)' : '';
       }, { signal });
     }
   }
