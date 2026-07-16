@@ -155,33 +155,23 @@ const blogActive = pathname.startsWith('/blog');
 
       <!-- Categories: dropdown when category links exist (general-type sites only) -->
       {hasCategoryDropdown && (
-        <div class="relative nav-dd">
+        <div class="nav-dd">
           <button
             type="button"
-            class="flex items-center gap-1 px-3 py-2 text-sm font-medium transition-colors text-[var(--color-text)] hover:text-[var(--color-brand)]"
+            class="nav-dd__trigger px-3 py-2 text-sm font-medium transition-colors relative inline-flex items-center gap-1 text-[var(--color-text)] hover:text-[var(--color-brand)]"
+            aria-haspopup="true"
             aria-expanded="false"
-            aria-controls="cat-dd-menu"
-            data-nav-dd-trigger
           >
             Categories
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            <svg class="nav-dd__chevron" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
           </button>
-          <div
-            id="cat-dd-menu"
-            class="nav-dd-menu absolute left-0 top-full pt-2 opacity-0 invisible transition-all duration-150 z-50"
-            data-nav-dd-menu
-          >
-            <div class="rounded-[var(--radius-md)] overflow-hidden py-1 min-w-[200px]" style="background:var(--rs-surface); box-shadow:var(--shadow-lg); border:1px solid var(--rs-border);">
-              {categoryLinks.map(({ label, href }) => (
-                <a
-                  href={href}
-                  class="block px-4 py-2 text-sm transition-colors hover:bg-[var(--color-brand-soft)] text-[var(--color-text)] hover:text-[var(--color-brand)]"
-                >
-                  {label}
-                </a>
-              ))}
-            </div>
-          </div>
+          <ul class="nav-dd__menu" aria-label="Blog categories">
+            {categoryLinks.map(({ label, href }) => (
+              <li>
+                <a href={href} class="nav-dd__item">{label}</a>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 
@@ -323,9 +313,13 @@ const blogActive = pathname.startsWith('/blog');
 
       <!-- Categories: expandable group (general-type sites, mobile) -->
       {hasCategoryDropdown && (
-        <div class="border-b" style="border-color:var(--rs-border);">
-          <div class="flex items-center justify-between">
-            <span class="px-3 py-2 text-sm font-medium text-[var(--color-text)]">Categories</span>
+        <div class="mob-cat">
+          <div class="mob-cat__row">
+            <span
+              class="mob-cat__label px-3 py-2 rounded-md text-sm font-medium transition-colors flex-1 text-[var(--color-text)]"
+            >
+              Categories
+            </span>
             <button
               type="button"
               id="mob-cat-toggle"
@@ -516,6 +510,13 @@ const blogActive = pathname.startsWith('/blog');
     overflow: hidden;
     max-height: 0;
     transition: max-height 0.25s ease;
+  }
+
+  /* ── Mobile categories group ───────────────────────────────── */
+  .mob-cat__row {
+    display: flex;
+    align-items: center;
+    gap: 2px;
   }
 
   .mob-cat__submenu {

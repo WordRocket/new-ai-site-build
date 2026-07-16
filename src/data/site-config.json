@@ -25,7 +25,7 @@
   "yearsInBusiness": "",
   "clientsServed": "",
   "tagline2": "",
-  "businessType": "general",
+  "businessType": "local-service",
   "heroImage": "",
   "aboutImage": "",
   "ctaImage": "/image.png",
@@ -51,5 +51,5 @@
   "navVisibility": {
     "ourWork": true
   },
-  "categories": ["Marketing", "Health", "Education", "Technology"]
+  "categories": []
 }
