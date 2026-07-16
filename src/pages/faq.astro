@@ -3,9 +3,15 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { getFAQSchema, getBreadcrumbSchema } from '../lib/schema';
 import siteConfig from '../lib/site-config';
 import { getEntry } from 'astro:content';
+import SectionBgImage from '../components/SectionBgImage.astro';
+import type { ImageVariants } from '../lib/image';
 
 const siteUrl = import.meta.env.SITE ?? siteConfig.url;
 const pageUrl = `${siteUrl}/faq`;
+
+const faqImage: string = ((siteConfig as any).faqImage ?? '').trim();
+const faqImageVariants = (siteConfig as any).faqImageVariants as ImageVariants | undefined;
+const hasFaqImage = faqImage.length > 0;
 
 const entry = await getEntry('pages', 'faq').catch(() => undefined);
 if (!entry) return Astro.redirect('/404', 404);
@@ -67,47 +73,80 @@ const schemas = [breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])];
     </section>
 
     <!-- FAQ body -->
-    <div class="max-w-[800px] mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 flex flex-col gap-14">
-      {categories.length === 0 ? (
-        <p class="text-center text-[var(--color-text-muted)]">No questions available yet.</p>
-      ) : (
-        categories.map((cat) => (
-          <section aria-labelledby={cat.label ? `cat-${cat.id}` : undefined}>
-            {cat.label && (
-              <h2 id={`cat-${cat.id}`} class="text-xl font-bold text-[var(--color-text)] mb-6 pb-3" style="border-bottom:1px solid var(--rs-border);">
-                {cat.label}
-              </h2>
-            )}
-            <div class="flex flex-col">
-              {cat.items.map((item, i) => {
-                return (
-                  <details class="rs-faq-item">
-                    <summary class="rs-faq-q">
-                      <h3 class="text-base font-semibold m-0">{item.question}</h3>
-                      <svg class="rs-faq-chevron" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
-                    </summary>
-                    <div class="rs-faq-a"><div><p>{item.answer}</p></div></div>
-                  </details>
-                );
-              })}
-            </div>
-          </section>
-        ))
-      )}
+    <section
+      class:list={["faq-body", { "faq-body--bg": hasFaqImage }]}
+    >
+      {hasFaqImage && <SectionBgImage src={faqImage} variants={faqImageVariants} scrim="heavy" lightScrim />}
+      <div class:list={["max-w-[800px] mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 flex flex-col gap-14", { "faq-body__inner": hasFaqImage }]}>
+        {categories.length === 0 ? (
+          <p class="text-center text-[var(--color-text-muted)]">No questions available yet.</p>
+        ) : (
+          categories.map((cat) => (
+            <section aria-labelledby={cat.label ? `cat-${cat.id}` : undefined}>
+              {cat.label && (
+                <h2 id={`cat-${cat.id}`} class="text-xl font-bold text-[var(--color-text)] mb-6 pb-3" style="border-bottom:1px solid var(--rs-border);">
+                  {cat.label}
+                </h2>
+              )}
+              <div class="flex flex-col">
+                {cat.items.map((item, i) => {
+                  return (
+                    <details class="rs-faq-item">
+                      <summary class="rs-faq-q">
+                        <h3 class="text-base font-semibold m-0">{item.question}</h3>
+                        <svg class="rs-faq-chevron" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                      </summary>
+                      <div class="rs-faq-a"><div><p>{item.answer}</p></div></div>
+                    </details>
+                  );
+                })}
+              </div>
+            </section>
+          ))
+        )}
 
-      <!-- CTA -->
-      <div class="text-center py-10 px-6 rounded-[var(--radius-lg)]" style="background:var(--rs-surface-2); border:1px solid var(--rs-border);">
-        <p class="text-base font-semibold text-[var(--color-text)] mb-1">Have another question?</p>
-        <p class="text-sm text-[var(--color-text-muted)] mb-5">Our team usually responds within one business day.</p>
-        <a
-          href="/contact"
-          class="inline-flex items-center gap-2 px-6 py-3 rounded-[var(--radius-md)] text-sm font-semibold transition-opacity hover:opacity-90"
-          style="background-color:var(--rs-accent); color:var(--rs-on-brand);"
-        >
-          Contact Us
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
-        </a>
+        <!-- CTA -->
+        <div class="text-center py-10 px-6 rounded-[var(--radius-lg)]" style="background:var(--rs-surface-2); border:1px solid var(--rs-border);">
+          <p class="text-base font-semibold text-[var(--color-text)] mb-1">Have another question?</p>
+          <p class="text-sm text-[var(--color-text-muted)] mb-5">Our team usually responds within one business day.</p>
+          <a
+            href="/contact"
+            class="inline-flex items-center gap-2 px-6 py-3 rounded-[var(--radius-md)] text-sm font-semibold transition-opacity hover:opacity-90"
+            style="background-color:var(--rs-accent); color:var(--rs-on-brand);"
+          >
+            Contact Us
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+          </a>
+        </div>
       </div>
-    </div>
+    </section>
   </main>
 </BaseLayout>
+
+<style>
+  .faq-body--bg {
+    position: relative;
+    overflow: hidden;
+    min-height: 520px;
+  }
+  @media (min-width: 768px) {
+    .faq-body--bg { min-height: 640px; }
+  }
+  .faq-body__inner {
+    position: relative;
+    z-index: 2;
+  }
+  /* Ensure FAQ text stays readable over the background image */
+  :global([data-skin="dark"]) .faq-body--bg .rs-faq-item {
+    background: rgba(8, 12, 26, 0.55);
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+  :global([data-skin="light"]) .faq-body--bg .rs-faq-item {
+    background: rgba(255, 255, 255, 0.78);
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+  :global([data-skin="dark"]) .faq-body--bg .rs-faq-q { color: #fff; }
+  :global([data-skin="dark"]) .faq-body--bg .rs-faq-a > div > p { color: rgba(255, 255, 255, 0.82); }
+  :global([data-skin="light"]) .faq-body--bg .rs-faq-q { color: var(--color-text); }
+  :global([data-skin="light"]) .faq-body--bg .rs-faq-a > div > p { color: var(--color-text-muted); }
+</style>
