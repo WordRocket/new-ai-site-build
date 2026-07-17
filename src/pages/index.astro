@@ -252,7 +252,7 @@ const heroServiceOptions = serviceEntries.length > 0
 
 <!-- ── HERO: form variant (endpoint configured) ─────────────────────── -->
 <section
-  class={`hero-split hero-split--form u-glow-bg cinematic-hero${hasHeroImage ? ' cinematic-hero--img' : ''}`}
+  class={`hero-split hero-split--form u-glow-bg cinematic-hero${hasHeroImage ? ' cinematic-hero--img' : ''}${isLocalService ? '' : ' hero-split--general'}`}
   style={!hasHeroImage ? 'background: linear-gradient(135deg, color-mix(in srgb, var(--rs-accent) 18%, var(--rs-bg)) 0%, var(--rs-bg) 100%);' : ''}
   data-hero-skin={skin}
   aria-label="Hero"
@@ -355,7 +355,7 @@ const heroServiceOptions = serviceEntries.length > 0
 
 <!-- ── HERO: original variant (no endpoint) ──────────────────────────── -->
 <section
-  class={`hero-split u-glow-bg cinematic-hero${hasHeroImage ? ' cinematic-hero--img' : ''}`}
+  class={`hero-split u-glow-bg cinematic-hero${hasHeroImage ? ' cinematic-hero--img' : ''}${isLocalService ? '' : ' hero-split--general'}`}
   style={!hasHeroImage ? 'background: linear-gradient(135deg, color-mix(in srgb, var(--rs-accent) 18%, var(--rs-bg)) 0%, var(--rs-bg) 100%);' : ''}
   data-hero-skin={skin}
   aria-label="Hero"
@@ -829,6 +829,19 @@ const heroServiceOptions = serviceEntries.length > 0
      sites without a top-bar the hero simply starts 36px earlier (fine).     */
   .hero-split {
     margin-top: -100px;
+  }
+
+  /* ── General (blog) template hero: shorter + vertically centered ───────
+     The local-service hero carries a denser right panel (float cards, trust
+     content) so a near-full-height hero reads full. The general template's
+     right panel is sparser, so the base min-height leaves dead space at the
+     bottom. Lower the min-height and center the grid so content sits a bit
+     lower and balances. Desktop only — mobile (≤900px) already collapses. */
+  @media (min-width: 901px) {
+    .hero-split--general {
+      min-height: calc(100vh - 240px);
+      align-items: center;
+    }
   }
 
   /* ── Cinematic hero — full-bleed background image treatment ─────────────
