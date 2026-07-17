@@ -17,6 +17,10 @@ import { imgUrl, variantsSrcset, type ImageVariants } from '../lib/image';
 
 const serviceEntries = await getCollection('services').catch(() => []);
 const locationEntries = await getCollection('locations').catch(() => []);
+const categoryEntries = await getCollection('categories').catch(() => []);
+const publishedCategoryEntries = categoryEntries
+  .filter((c) => c.data.published !== false)
+  .sort((a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title));
 const allBlogPosts = await getCollection('blog').catch(() => []);
 const allProjectEntries = await getCollection('projects').catch(() => []);
 const featuredProjects = allProjectEntries
@@ -475,6 +479,37 @@ const heroServiceOptions = serviceEntries.length > 0
   </div>
 </section>
 ) : (
+<>
+{/* ─── CATEGORIES GRID (general sites only) ──────────────────────────── */}
+{publishedCategoryEntries.length > 0 && (
+<section class="section-pad" style="background:var(--rs-surface);" aria-labelledby="categories-heading">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-16">
+      <h2 id="categories-heading" class="reveal text-[var(--color-text)] mb-4">Explore <span class="u-gradient-text">Topics</span></h2>
+      <p class="text-[var(--color-text-muted)] text-lg max-w-2xl mx-auto">Browse our content by category.</p>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      {publishedCategoryEntries.map((cat) => (
+        <ServiceCard
+          title={cleanTitle(cat.data.title)}
+          description={cat.data.shortDescription || cat.data.description}
+          image={cat.data.heroImage || cat.data.sectionImage || undefined}
+          variants={cat.data.heroImageVariants ?? cat.data.sectionImageVariants}
+          href={`/category/${cat.slug}`}
+          class="reveal"
+        />
+      ))}
+    </div>
+  </div>
+</section>
+)}
+
+{/* wave: neutral → white */}
+<div class="wave-divider" style="background:var(--color-neutral-50);" aria-hidden="true">
+  <svg viewBox="0 0 1440 48" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,24 C360,48 1080,0 1440,24 L1440,48 L0,48 Z" fill="white"/></svg>
+</div>
+
+{/* ─── BLOG GRID (general sites) ─────────────────────────────────────── */}
 <section class="section-pad" style="background:var(--rs-surface);" aria-labelledby="blog-grid-heading">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center mb-16">
@@ -499,6 +534,7 @@ const heroServiceOptions = serviceEntries.length > 0
     )}
   </div>
 </section>
+</>
 )}
 
 <!-- wave: neutral → white -->
