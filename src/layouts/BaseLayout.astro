@@ -47,10 +47,15 @@ const font = resolveFont({
 });
 const fontVars = `--rs-font-display: ${font.display}; --rs-font-body: ${font.body};`;
 const isInterFont = font.isInterFont;
+
+// Uniform font mode: when true, the accent labels that are normally
+// monospace (eyebrows, badges, stat labels, review pill) inherit the
+// display font instead. Default false — missing/null stays monospace.
+const uniformFontMode = (siteConfig as any).uniformFontMode === true;
 ---
 
 <!doctype html>
-<html lang="en" data-skin={skin} style={`--rs-brand: ${brandColor}; --rs-brand-secondary: ${brandColorSecondary}; --rs-brand-accent: ${brandColorAccent}; ${fontVars}`}>
+<html lang="en" data-skin={skin} class:list={[uniformFontMode && 'uniform-fonts']} style={`--rs-brand: ${brandColor}; --rs-brand-secondary: ${brandColorSecondary}; --rs-brand-accent: ${brandColorAccent}; ${fontVars}`}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

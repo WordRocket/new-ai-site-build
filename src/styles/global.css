@@ -146,6 +146,18 @@ h2 { font-size: clamp(1.8rem, 3vw, 2.8rem); font-weight: 700; letter-spacing: -0
 .stat-label {
   font-family: 'JetBrains Mono', ui-monospace, monospace;
 }
+
+/* ── Uniform font mode ────────────────────────────────────────────────────
+   Opt-in (uniformFontMode in publish payload → <html class="uniform-fonts">).
+   When on, the accent labels above + the review badge pill inherit the
+   display font instead of monospace. Default (flag off) is unchanged.
+   `.prose code` is intentionally NOT included — code stays monospace. */
+.uniform-fonts .u-eyebrow,
+.uniform-fonts .u-badge,
+.uniform-fonts .stat-label,
+.uniform-fonts .rb-hero {
+  font-family: var(--rs-font-display);
+}
 h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0.015em; line-height: 1.25; }
 
 /* ── Scroll Reveal ─────────────────────────────────────────────────────── */
