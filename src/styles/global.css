@@ -184,6 +184,11 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
 /* ── RS Theme Tokens ───────────────────────────────────────────────────── */
 :root {
   --rs-brand: #2563eb;
+  /* Secondary + accent brand tokens. BaseLayout overrides these from the
+     publish payload (brandColorSecondary / brandColorAccent); the fallbacks
+     here keep --rs-brand so sites without them render unchanged. */
+  --rs-brand-secondary: var(--rs-brand);
+  --rs-brand-accent:    var(--rs-brand);
   --rs-radius-sm: 8px;  --rs-radius-md: 12px;
   --rs-radius-lg: 18px; --rs-radius-pill: 999px;
   /* Display / body font stacks — metric-adjusted fallbacks minimise FOUT CLS */
@@ -197,7 +202,7 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
   /* LIGHT skin (default) */
   --rs-bg: #ffffff; --rs-surface: #f8f9fb; --rs-surface-2: #f1f5f9;
   --rs-border: #e6e8ec; --rs-text: #0f172a; --rs-text-muted: #51607a;
-  --rs-accent: var(--rs-brand); --rs-accent-contrast: var(--rs-on-brand);
+  --rs-accent: var(--rs-brand-accent); --rs-accent-contrast: var(--rs-on-brand);
   /* Derived brand tokens — adapt to any --rs-brand hue automatically */
   --rs-on-brand: oklch(from var(--rs-brand) clamp(0,(0.62 - l)*1000,1) 0 0);
   --rs-brand-subtle: color-mix(in srgb, var(--rs-brand) 12%, var(--rs-surface));
@@ -772,7 +777,10 @@ details[open] .rs-faq-a {
 .rs-faq-a > div > p {
   font-size: 0.875rem;
   line-height: 1.6;
-  color: var(--rs-text-muted);
+  /* Standard body text token — NOT the muted variant. A faded color here
+     made answer text (esp. the last item) render too light against the
+     FAQ surface. Body token keeps contrast consistent across all items. */
+  color: var(--rs-text);
   margin: 0;
   padding-bottom: 1rem;
 }

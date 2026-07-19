@@ -21,6 +21,12 @@ interface Props {
 const { title, description, ogImage, canonical, noindex, schemas = [], schemaJsonld } = Astro.props;
 
 const brandColor = siteConfig.brandColor ?? '#2563eb';
+// Secondary + accent brand colors. Both fall back to the primary brand
+// color when the publish payload doesn't include them, so existing sites
+// render unchanged. Flow into --rs-brand-secondary / --rs-brand-accent so
+// sections can reference them consistently alongside --rs-brand.
+const brandColorSecondary = (siteConfig as any).brandColorSecondary ?? brandColor;
+const brandColorAccent = (siteConfig as any).brandColorAccent ?? brandColor;
 // Skin: case-insensitive — Railway or the dashboard may write "Dark",
 // "DARK", or "dark"; all must resolve correctly. Empty/missing falls
 // back to "light", with darkMode:true as a secondary opt-in.
@@ -35,6 +41,9 @@ const skin: 'light' | 'dark' =
 // paths flow through the same --rs-font-display / --rs-font-body CSS
 // variables so the choice applies everywhere the existing wiring does.
 const font = resolveFont({
+  // `fontFamily` is the dashboard's body-font selector; `fontStyle` is the
+  // legacy key. Accept either so both old and new payloads resolve.
+  fontFamily: (siteConfig as any).fontFamily,
   fontStyle: siteConfig.fontStyle,
   customFontUrl: (siteConfig as any).customFontUrl,
   customFontFamilyName: (siteConfig as any).customFontFamilyName,
@@ -44,7 +53,7 @@ const isInterFont = font.isInterFont;
 ---
 
 <!doctype html>
-<html lang="en" data-skin={skin} style={`--rs-brand: ${brandColor}; ${fontVars}`}>
+<html lang="en" data-skin={skin} style={`--rs-brand: ${brandColor}; --rs-brand-secondary: ${brandColorSecondary}; --rs-brand-accent: ${brandColorAccent}; ${fontVars}`}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -64,10 +73,11 @@ const isInterFont = font.isInterFont;
     {font.hasCustomFont && (
       <style set:html={font.customFontFace} />
     )}
-    {/* Google Fonts stylesheet — only for non-Inter presets with no
-        custom font. Inter is fully self-hosted; custom fonts load via
-        the @font-face block above. */}
-    {!isInterFont && !font.hasCustomFont && (
+    {/* Google Fonts stylesheet — for non-Inter presets. Needed for the
+        body font whenever the preset isn't Inter, even when a custom
+        uploaded font overrides headings (custom = display only, preset
+        = body). Inter is fully self-hosted and needs no <link>. */}
+    {!isInterFont && (
       <link rel="stylesheet" href={font.googleFontsUrl} />
     )}
     <meta name="theme-color" content={siteConfig.brandColor} />

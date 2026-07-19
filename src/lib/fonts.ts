@@ -138,11 +138,14 @@ function escapeCssString(s: string): string {
  * the @font-face declaration; it falls back to "Custom Font" when blank.
  */
 export function resolveFont(opts: {
+  fontFamily?: string;
   fontStyle?: string;
   customFontUrl?: string;
   customFontFamilyName?: string;
 }): ResolvedFont {
-  const preset = getFontPreset(opts.fontStyle);
+  // `fontFamily` (dashboard body-font selector) takes priority over the
+  // legacy `fontStyle` key; either resolves through the same preset table.
+  const preset = getFontPreset(opts.fontFamily || opts.fontStyle);
   const customUrl = (opts.customFontUrl ?? '').trim();
   const isInterFont = !preset.googleFontsUrl;
 
@@ -177,6 +180,10 @@ export function resolveFont(opts: {
   const fallback = preset.fallback;
   const fontStack = `${quotedEscapedName}, ${fallback}`;
 
+  // Custom uploaded font overrides HEADINGS (display) only. Body copy stays
+  // on the selected preset's body font (fontFamily), so a site can pair a
+  // custom display face with a readable body face. The preset's Google
+  // Fonts stylesheet is still loaded so the body font renders correctly.
   const customFontFace = [
     '@font-face {',
     `  font-family: ${quotedEscapedName};`,
@@ -189,11 +196,12 @@ export function resolveFont(opts: {
 
   return {
     display: fontStack,
-    body: fontStack,
-    // The custom font is self-loaded via @font-face — no Google Fonts
-    // <link> needed even when the preset would have requested one.
-    googleFontsUrl: '',
-    isInterFont: false,
+    body: preset.body,
+    // Load the preset's Google Fonts stylesheet so the body font (which the
+    // custom font no longer overrides) still renders. Empty for Inter since
+    // it's self-hosted.
+    googleFontsUrl: preset.googleFontsUrl,
+    isInterFont,
     hasCustomFont: true,
     customFontFace,
   };
