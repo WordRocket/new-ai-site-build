@@ -180,10 +180,6 @@ export function resolveFont(opts: {
   const fallback = preset.fallback;
   const fontStack = `${quotedEscapedName}, ${fallback}`;
 
-  // Custom uploaded font overrides HEADINGS (display) only. Body copy stays
-  // on the selected preset's body font (fontFamily), so a site can pair a
-  // custom display face with a readable body face. The preset's Google
-  // Fonts stylesheet is still loaded so the body font renders correctly.
   const customFontFace = [
     '@font-face {',
     `  font-family: ${quotedEscapedName};`,
@@ -196,12 +192,11 @@ export function resolveFont(opts: {
 
   return {
     display: fontStack,
-    body: preset.body,
-    // Load the preset's Google Fonts stylesheet so the body font (which the
-    // custom font no longer overrides) still renders. Empty for Inter since
-    // it's self-hosted.
-    googleFontsUrl: preset.googleFontsUrl,
-    isInterFont,
+    body: fontStack,
+    // The custom font is self-loaded via @font-face — no Google Fonts
+    // <link> needed even when the preset would have requested one.
+    googleFontsUrl: '',
+    isInterFont: false,
     hasCustomFont: true,
     customFontFace,
   };

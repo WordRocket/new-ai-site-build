@@ -41,9 +41,6 @@ const skin: 'light' | 'dark' =
 // paths flow through the same --rs-font-display / --rs-font-body CSS
 // variables so the choice applies everywhere the existing wiring does.
 const font = resolveFont({
-  // `fontFamily` is the dashboard's body-font selector; `fontStyle` is the
-  // legacy key. Accept either so both old and new payloads resolve.
-  fontFamily: (siteConfig as any).fontFamily,
   fontStyle: siteConfig.fontStyle,
   customFontUrl: (siteConfig as any).customFontUrl,
   customFontFamilyName: (siteConfig as any).customFontFamilyName,
@@ -73,11 +70,10 @@ const isInterFont = font.isInterFont;
     {font.hasCustomFont && (
       <style set:html={font.customFontFace} />
     )}
-    {/* Google Fonts stylesheet — for non-Inter presets. Needed for the
-        body font whenever the preset isn't Inter, even when a custom
-        uploaded font overrides headings (custom = display only, preset
-        = body). Inter is fully self-hosted and needs no <link>. */}
-    {!isInterFont && (
+    {/* Google Fonts stylesheet — only for non-Inter presets with no
+        custom font. Inter is fully self-hosted; custom fonts load via
+        the @font-face block above. */}
+    {!isInterFont && !font.hasCustomFont && (
       <link rel="stylesheet" href={font.googleFontsUrl} />
     )}
     <meta name="theme-color" content={siteConfig.brandColor} />
