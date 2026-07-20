@@ -1,0 +1,171 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getBreadcrumbSchema } from '../../lib/schema';
+import siteConfig from '../../lib/site-config';
+import { toTitleCase } from '../../lib/site-config';
+
+// Industries index is gated on the same condition as industry pages:
+// the site must have services in active use AND a non-empty industries list.
+const services = await getCollection('services').catch(() => []);
+const allIndustries = await getCollection('industries').catch(() => []);
+
+if (services.length === 0 || allIndustries.length === 0) {
+  return Astro.redirect('/404');
+}
+
+const siteUrl = (import.meta.env.SITE ?? siteConfig.url ?? 'https://example.com').replace(/\/+$/, '');
+const pageUrl = `${siteUrl}/industries`;
+
+const industries = allIndustries
+  .map((entry) => ({
+    industry: entry.data.industry,
+    service:  entry.data.service,
+    slug:     entry.slug.replace(/^\/+/, ''),
+  }))
+  .sort((a, b) => a.industry.localeCompare(b.industry));
+
+const industryCount = new Set(industries.map((i) => i.industry)).size;
+
+const breadcrumbSchema = getBreadcrumbSchema([
+  { name: 'Home', url: siteUrl },
+  { name: 'Industries', url: pageUrl },
+]);
+---
+
+<BaseLayout
+  title={`Industries We Serve | ${siteConfig.name}`}
+  description={`${siteConfig.name} serves customers across multiple industries. Browse all our industry-specific services.`}
+  canonical={pageUrl}
+  schemas={[breadcrumbSchema]}
+>
+  <main>
+    <div class="page-hero">
+      <div class="relative z-10 max-w-[1200px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <nav aria-label="Breadcrumb" class="mb-2">
+          <ol class="flex items-center gap-2 text-sm" style="color:rgba(255,255,255,0.6);">
+            <li><a href="/" class="hover:text-white transition-colors">Home</a></li>
+            <li aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></li>
+            <li class="text-white font-medium">Industries</li>
+          </ol>
+        </nav>
+        <h1 class="text-white font-extrabold tracking-tight mb-2">Industries We Serve</h1>
+        <p class="text-lg" style="color:rgba(255,255,255,0.75);">
+          Browse all {industries.length} industry {industries.length === 1 ? 'service' : 'services'} across {industryCount} {industryCount === 1 ? 'industry' : 'industries'}.
+        </p>
+      </div>
+    </div>
+
+    <section class="loc-section" aria-label="Industries served">
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-18">
+        {industries.length === 0 ? (
+          <div class="flex flex-col items-center gap-4 py-20 text-center">
+            <p class="text-[var(--color-text-muted)] text-lg font-medium">Industry pages coming soon</p>
+            <p class="text-sm text-[var(--color-text-muted)]">
+              <a href="/contact" class="underline hover:text-[var(--color-brand)] transition-colors">Contact us</a> to learn about our industry-specific services.
+            </p>
+          </div>
+        ) : (
+          <ul class="loc-grid" role="list">
+            {industries.map(({ industry, service, slug }) => (
+              <li>
+                <a
+                  href={`/${slug}`}
+                  class="loc-card u-card"
+                  aria-label={`${toTitleCase(industry)} – ${toTitleCase(service)}`}
+                >
+                  <div class="loc-card__icon" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>
+                  </div>
+                  <h2 class="loc-card__city">{toTitleCase(industry)}</h2>
+                  <p class="loc-card__service">{toTitleCase(service)}</p>
+                  <span class="loc-card__cta" aria-hidden="true">
+                    View details
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .loc-grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+  @media (min-width: 640px) {
+    .loc-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .loc-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .loc-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.5rem;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .loc-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px -4px rgba(0, 0, 0, 0.12), 0 4px 10px -2px rgba(0, 0, 0, 0.07);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .loc-card { transition: box-shadow 0.2s ease; }
+    .loc-card:hover { transform: none; }
+  }
+
+  .loc-card__icon {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: color-mix(in srgb, var(--rs-brand) 10%, transparent);
+    color: var(--rs-brand-text);
+    margin-bottom: 0.25rem;
+  }
+
+  .loc-card__city {
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--color-text);
+    margin: 0;
+  }
+
+  .loc-card__service {
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    margin: 0;
+    flex: 1;
+    line-height: 1.5;
+  }
+
+  .loc-card__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-brand);
+    margin-top: auto;
+    padding-top: 0.75rem;
+  }
+</style>

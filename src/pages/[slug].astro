@@ -30,9 +30,20 @@ export async function getStaticPaths() {
   const paths: any[] = [];
 
   if (isLocalService) {
-    const locations = await getCollection('locations');
+    const locations = await getCollection('locations').catch(() => []);
     for (const location of locations) {
       paths.push({ params: { slug: location.slug }, props: { kind: 'location', location } });
+    }
+  }
+
+  // Industry pages: gated on the site having BOTH a services collection in
+  // active use AND a non-empty industries list. Not gated on business type —
+  // any site that uses per-service pages can opt in by populating industries.
+  const servicesForGating = await getCollection('services').catch(() => []);
+  const industries = await getCollection('industries').catch(() => []);
+  if (servicesForGating.length > 0 && industries.length > 0) {
+    for (const industry of industries) {
+      paths.push({ params: { slug: industry.slug }, props: { kind: 'industry', industry } });
     }
   }
 
@@ -47,7 +58,8 @@ export async function getStaticPaths() {
   return paths;
 }
 
-const { kind, location, page } = Astro.props;
+const { kind, location, industry, page } = Astro.props;
+const isIndustryPage = kind === 'industry';
 
 // ── Generic page branch (all business types) ──────────────────────────────
 let PageContent: any = null;
@@ -90,6 +102,7 @@ let Content: any = null;
 let d: any = null;
 let displayCity = '';
 let displayService = '';
+let displayIndustry = '';
 let isLocalService = false;
 let siteUrl = '';
 let schemas: object[] = [];
@@ -100,6 +113,7 @@ let hasFaq = false;
 let reviewTestimonial: any = null;
 let sidebarServices: any[] = [];
 let sidebarLocations: any[] = [];
+let sidebarIndustries: any[] = [];
 
 if (kind === 'location') {
   const locRendered = await location.render();
@@ -170,6 +184,57 @@ if (kind === 'location') {
     slug: l.slug,
     city: l.data.city,
     service: l.data.service,
+  }));
+}
+
+// ── Industry branch (any site with services + industries) ──────────────────
+if (kind === 'industry') {
+  const indRendered = await industry.render();
+  Content = indRendered.Content;
+  d = industry.data;
+  displayService  = toTitleCase(d.service);
+  displayIndustry = toTitleCase(d.industry);
+  isLocalService = (siteConfig as any).businessType === 'local-service';
+
+  siteUrl = (import.meta.env.SITE ?? siteConfig.url ?? 'https://example.com').replace(/\/+$/, '');
+  pageUrl = `${siteUrl}/${industry.slug}`;
+
+  const breadcrumbSchema = getBreadcrumbSchema([
+    { name: 'Home', url: siteUrl },
+    { name: d.service, url: `${siteUrl}/services` },
+    { name: `${d.service} for ${d.industry}`, url: pageUrl },
+  ]);
+
+  hasFaq = d.faq && d.faq.length > 0;
+  const faqSchema = hasFaq ? getFAQSchema(d.faq) : null;
+  const autoSchemas: object[] = [breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])];
+  schemas = d.schemaJsonld ? [] : autoSchemas;
+
+  testimonials = d.testimonials ?? (siteConfig as any).testimonials ?? [];
+  pageHeaderImage = d.heroImage || null;
+
+  rawTestimonials = (() => {
+    if (testimonials.length > 0) return testimonials;
+    const text = (siteConfig as any).testimonial_text as string | undefined;
+    if (!text?.trim()) return [];
+    return [{
+      quote: text,
+      name: ((siteConfig as any).testimonial_author as string) ?? 'Happy Customer',
+      role: ((siteConfig as any).testimonial_neighborhood as string) ?? siteConfig.city,
+    }];
+  })().filter((t: any) => t.quote?.trim());
+
+  reviewTestimonial = rawTestimonials.length > 0
+    ? rawTestimonials[industry.slug.split('').reduce((acc: number, c: string) => acc + c.charCodeAt(0), 0) % rawTestimonials.length]
+    : null;
+
+  const allServices  = await getCollection('services').catch(() => []);
+  const allIndustries = await getCollection('industries').catch(() => []);
+  sidebarServices  = allServices.map(s => ({ slug: s.slug, title: cleanTitle(s.data.title) }));
+  sidebarIndustries = allIndustries.map(i => ({
+    slug: i.slug,
+    industry: i.data.industry,
+    service: i.data.service,
   }));
 }
 ---
@@ -288,11 +353,11 @@ if (kind === 'location') {
             <li aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></li>
             <li><a href="/services" class="hover:text-white transition-colors">{displayService}</a></li>
             <li aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></li>
-            <li class="text-white font-medium">{displayCity}</li>
+            <li class="text-white font-medium">{isIndustryPage ? `${displayService} for ${displayIndustry}` : displayCity}</li>
           </ol>
         </nav>
-        <h1 class="text-white font-extrabold tracking-tight mb-2">{displayService} in {displayCity}, {d.state}</h1>
-        <p class="text-lg mb-4" style="color:rgba(255,255,255,0.75);">{isLocalService ? `Serving ${displayCity} and the surrounding area` : `Learn more about ${displayService} from ${siteConfig.name}`}</p>
+        <h1 class="text-white font-extrabold tracking-tight mb-2">{isIndustryPage ? `${displayService} for ${displayIndustry}` : `${displayService} in ${displayCity}, ${d.state}`}</h1>
+        <p class="text-lg mb-4" style="color:rgba(255,255,255,0.75);">{isIndustryPage ? (d.description || `Specialized ${displayService} tailored to the ${displayIndustry} industry.`) : (isLocalService ? `Serving ${displayCity} and the surrounding area` : `Learn more about ${displayService} from ${siteConfig.name}`)}</p>
         <div class="flex flex-col sm:flex-row gap-3">
           <a href="/contact" class="btn-primary inline-flex items-center justify-center gap-2 px-7 py-3 rounded-[var(--radius-md)] text-base font-semibold text-white">
             {isLocalService ? 'Get a Free Quote' : 'Get in Touch'}
@@ -346,7 +411,7 @@ if (kind === 'location') {
             </div>
           ) : (
             <p class="text-sm text-[var(--color-text-muted)]">
-              Have questions about {displayService} in {displayCity}? <a href="/contact" class="underline hover:text-[var(--color-brand)]">Contact us directly.</a>
+              Have questions about {isIndustryPage ? `${displayService} for ${displayIndustry}` : `${displayService} in ${displayCity}`}? <a href="/contact" class="underline hover:text-[var(--color-brand)]">Contact us directly.</a>
             </p>
           )}
         </section>
@@ -356,12 +421,14 @@ if (kind === 'location') {
       <!-- Sticky sidebar — flows below article on mobile -->
       <aside class="page-body-sidebar" aria-label="Quick contact and navigation">
         <PageSidebar
-          pageType="location"
-          currentSlug={location.slug}
+          pageType={isIndustryPage ? 'industry' : 'location'}
+          currentSlug={isIndustryPage ? industry.slug : location.slug}
           serviceTitle={d.service}
           city={d.city}
+          industry={d.industry}
           services={sidebarServices}
           locations={sidebarLocations}
+          industries={sidebarIndustries}
         />
       </aside>
 

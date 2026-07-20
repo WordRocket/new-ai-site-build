@@ -29,7 +29,14 @@ export async function GET() {
     priority: '0.7',
   }));
 
-  const allPaths = [...staticPaths, ...locationPaths];
+  const industries = await getCollection('industries').catch(() => []);
+  const industryPaths = industries.map((entry) => ({
+    path: `/${entry.slug.replace(/^\/+/, '')}`,
+    changefreq: 'monthly',
+    priority: '0.7',
+  }));
+
+  const allPaths = [...staticPaths, ...locationPaths, ...industryPaths];
 
   const entries = allPaths
     .map(

@@ -152,4 +152,23 @@ const categories = defineCollection({
   }),
 });
 
-export const collections = { blog, pages, services, locations, projects, categories };
+const industries = defineCollection({
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    service: z.string(),
+    industry: z.string(),
+    heroImage: z.string().optional(),
+    heroImageVariants: imageVariantsSchema,
+    sectionImage: z.string().optional(),
+    serviceImage: z.string().optional(),
+    aboutImage: z.string().optional(),
+    faq: z.array(z.object({ question: z.string(), answer: z.string() })).default([]),
+    steps: z.array(stepSchema).optional(),
+    features: z.array(featureSchema).optional(),
+    testimonials: z.array(testimonialSchema).optional(),
+    schemaJsonld: z.string().optional(),
+  }),
+});
+
+export const collections = { blog, pages, services, locations, projects, categories, industries };
