@@ -75,8 +75,22 @@ const customPageLinksFooter = allPagesForFooter
   .map((p) => ({ label: cleanTitle(p.data.title), href: `/${p.slug}` }));
 
 const MAX_NAV_ITEMS = 6;
-const coreNavCount = isLocalService ? 5 : 4;
-const overflowPageLinks = customPageLinksFooter.slice(Math.max(0, MAX_NAV_ITEMS - coreNavCount));
+// Mirror Navigation.astro's cap formula exactly so overflow is the true complement of what's in nav.
+const faqEntryForNav = await getEntry('pages', 'faq').catch(() => null);
+const rawCategoriesForNav = await getCollection('categories').catch(() => []);
+const hasCategoryDropdownForNav = !isLocalService && rawCategoriesForNav.filter((c: any) => c.data.published !== false).length > 0;
+const navVisibilityForNav = (siteConfig as any).navVisibility ?? {};
+const showOurWorkForNav = isLocalService && navVisibilityForNav.ourWork !== false;
+const coreNavLinksCount = [
+  true,               // About Us
+  showOurWorkForNav,  // Our Work (local-service only)
+  true,               // Blog
+  !!faqEntryForNav,   // FAQ if page exists
+  true,               // Contact Us
+].filter(Boolean).length;
+const hardcodedNavCount = 1 + (hasCategoryDropdownForNav ? 1 : 0) + (isLocalService ? 1 : 0);
+const visibleCustomPageCount = Math.max(0, MAX_NAV_ITEMS - coreNavLinksCount - hardcodedNavCount);
+const overflowPageLinks = customPageLinksFooter.slice(visibleCustomPageCount);
 ---
 
 <div class="footer-gradient-line"></div>

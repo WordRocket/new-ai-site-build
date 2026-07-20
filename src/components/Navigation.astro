@@ -64,7 +64,10 @@ const customPageLinks = rawPages
   .map((p) => ({ label: cleanTitle(p.data.title), href: `/${p.slug}` }));
 
 const MAX_NAV_ITEMS = 6;
-const visiblePageLinks = customPageLinks.slice(0, Math.max(0, MAX_NAV_ITEMS - navLinks.length));
+// Home is always rendered as a hardcoded item outside allNavLinks.
+// Categories and Services are also hardcoded when present — count them so the cap is accurate.
+const hardcodedNavCount = 1 + (hasCategoryDropdown ? 1 : 0) + (isLocalService ? 1 : 0);
+const visiblePageLinks = customPageLinks.slice(0, Math.max(0, MAX_NAV_ITEMS - navLinks.length - hardcodedNavCount));
 const overflowPageLinks = customPageLinks.slice(visiblePageLinks.length);
 const allNavLinks = [...navLinks, ...visiblePageLinks];
 
