@@ -16,94 +16,252 @@ import siteConfig from '../lib/site-config';
 import { toTitleCase, cleanTitle } from '../lib/site-config';
 import ReviewBanner from '../components/ReviewBanner.astro';
 
+// Reserved top-level routes handled by dedicated .astro files — pages
+// collection entries with these slugs are skipped here to avoid conflicts.
 export async function getStaticPaths() {
+  // Reserved top-level routes handled by dedicated .astro files — pages
+  // collection entries with these slugs are skipped here to avoid conflicts.
+  const RESERVED_SLUGS = new Set([
+    '', 'index', 'home', 'about', 'contact', 'faq',
+    'privacy-policy', 'terms-and-conditions',
+    'blog', 'services', 'locations', 'our-work', 'category',
+  ]);
   const isLocalService = (siteConfig as any).businessType === 'local-service';
-  if (!isLocalService) return [];
-  const locations = await getCollection('locations');
-  return locations.map((location) => ({
-    params: { slug: location.slug },
-    props: { location },
-  }));
+  const paths: any[] = [];
+
+  if (isLocalService) {
+    const locations = await getCollection('locations');
+    for (const location of locations) {
+      paths.push({ params: { slug: location.slug }, props: { kind: 'location', location } });
+    }
+  }
+
+  // Generic pages render for ALL business types — no isLocalService guard.
+  // Skip reserved slugs that already have dedicated routes.
+  const pages = await getCollection('pages');
+  for (const page of pages) {
+    if (RESERVED_SLUGS.has(page.slug)) continue;
+    paths.push({ params: { slug: page.slug }, props: { kind: 'page', page } });
+  }
+
+  return paths;
 }
 
-const { location } = Astro.props;
-const { Content } = await location.render();
-const d = location.data;
-const displayCity    = toTitleCase(d.city);
-const displayService = toTitleCase(d.service);
-const isLocalService = (siteConfig as any).businessType === 'local-service';
+const { kind, location, page } = Astro.props;
 
-const siteUrl = (import.meta.env.SITE ?? siteConfig.url ?? 'https://example.com').replace(/\/+$/, '');
-const pageUrl = `${siteUrl}/${location.slug}`;
+// ── Generic page branch (all business types) ──────────────────────────────
+let PageContent: any = null;
+let pageData: any = null;
+let displayTitle = '';
+let heroImage: string | null = null;
+let heroImageVariants: any = undefined;
+let ogImage = '';
+let pageUrl = '';
+let pageSchemas: object[] = [];
+let hasPageFaq = false;
 
-const localBusinessSchema = getLocalBusinessSchema({
-  name: `${siteConfig.name} — ${d.service} in ${d.city}`,
-  url: pageUrl,
-  logo: siteConfig.logo || `${siteUrl}/favicon.svg`,
-  description: d.description,
-  telephone: siteConfig.phone,
-  address: {
-    streetAddress: siteConfig.address || '',
-    addressLocality: d.city,
-    addressRegion: d.state,
-    postalCode: siteConfig.zip || '',
-    addressCountry: siteConfig.country || 'US',
-  },
-  ...(d.latitude && d.longitude
-    ? { geo: { latitude: d.latitude, longitude: d.longitude } }
-    : {}),
-});
+if (kind === 'page') {
+  const rendered = await page.render();
+  PageContent = rendered.Content;
+  pageData = page.data;
+  displayTitle = cleanTitle(pageData.title);
+  const pSiteUrl = (import.meta.env.SITE ?? siteConfig.url ?? 'https://example.com').replace(/\/+$/, '');
+  pageUrl = `${pSiteUrl}/${page.slug}`;
+  heroImage = pageData.heroImage || null;
+  heroImageVariants = (pageData as any).heroImageVariants;
+  ogImage = heroImage || `${pSiteUrl}/og-default.svg`;
+  const pBreadcrumb = getBreadcrumbSchema([
+    { name: 'Home', url: pSiteUrl },
+    { name: displayTitle, url: pageUrl },
+  ]);
+  const pOrg = getLocalBusinessSchema({
+    name: siteConfig.name,
+    url: pSiteUrl,
+    logo: siteConfig.logo || `${pSiteUrl}/favicon.svg`,
+    description: siteConfig.description || '',
+  });
+  hasPageFaq = pageData.faq && pageData.faq.length > 0;
+  const pFaq = hasPageFaq ? getFAQSchema(pageData.faq) : null;
+  pageSchemas = [pBreadcrumb, pOrg, ...(pFaq ? [pFaq] : [])];
+}
 
-const breadcrumbSchema = getBreadcrumbSchema([
-  { name: 'Home', url: siteUrl },
-  { name: d.service, url: `${siteUrl}/services` },
-  { name: `${d.service} in ${d.city}`, url: pageUrl },
-]);
+// ── Location branch (local-service only) ──────────────────────────────────
+let Content: any = null;
+let d: any = null;
+let displayCity = '';
+let displayService = '';
+let isLocalService = false;
+let siteUrl = '';
+let schemas: object[] = [];
+let testimonials: any[] = [];
+let pageHeaderImage: string | null = null;
+let rawTestimonials: any[] = [];
+let hasFaq = false;
+let reviewTestimonial: any = null;
+let sidebarServices: any[] = [];
+let sidebarLocations: any[] = [];
 
-const hasFaq = d.faq && d.faq.length > 0;
-const faqSchema = hasFaq ? getFAQSchema(d.faq) : null;
+if (kind === 'location') {
+  const locRendered = await location.render();
+  Content = locRendered.Content;
+  d = location.data;
+  displayCity    = toTitleCase(d.city);
+  displayService = toTitleCase(d.service);
+  isLocalService = (siteConfig as any).businessType === 'local-service';
 
-const autoSchemas: object[] = [localBusinessSchema, breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])];
-const schemas: object[] = d.schemaJsonld ? [] : autoSchemas;
+  siteUrl = (import.meta.env.SITE ?? siteConfig.url ?? 'https://example.com').replace(/\/+$/, '');
+  pageUrl = `${siteUrl}/${location.slug}`;
 
-const testimonials = d.testimonials ?? (siteConfig as any).testimonials ?? [];
-const pageHeaderImage = d.heroImage || null;
+  const localBusinessSchema = getLocalBusinessSchema({
+    name: `${siteConfig.name} — ${d.service} in ${d.city}`,
+    url: pageUrl,
+    logo: siteConfig.logo || `${siteUrl}/favicon.svg`,
+    description: d.description,
+    telephone: siteConfig.phone,
+    address: {
+      streetAddress: siteConfig.address || '',
+      addressLocality: d.city,
+      addressRegion: d.state,
+      postalCode: siteConfig.zip || '',
+      addressCountry: siteConfig.country || 'US',
+    },
+    ...(d.latitude && d.longitude
+      ? { geo: { latitude: d.latitude, longitude: d.longitude } }
+      : {}),
+  });
 
-// Resolve single-testimonial fallback (mirrors Testimonials.astro logic)
-const rawTestimonials = (() => {
-  if (testimonials.length > 0) return testimonials;
-  const text = (siteConfig as any).testimonial_text as string | undefined;
-  if (!text?.trim()) return [];
-  return [{
-    quote: text,
-    name: ((siteConfig as any).testimonial_author as string) ?? 'Happy Customer',
-    role: ((siteConfig as any).testimonial_neighborhood as string) ?? siteConfig.city,
-  }];
-})().filter((t: any) => t.quote?.trim());
+  const breadcrumbSchema = getBreadcrumbSchema([
+    { name: 'Home', url: siteUrl },
+    { name: d.service, url: `${siteUrl}/services` },
+    { name: `${d.service} in ${d.city}`, url: pageUrl },
+  ]);
 
-// Deterministic selection: sum of slug char codes mod array length
-const reviewTestimonial = rawTestimonials.length > 0
-  ? rawTestimonials[location.slug.split('').reduce((acc: number, c: string) => acc + c.charCodeAt(0), 0) % rawTestimonials.length]
-  : null;
+  hasFaq = d.faq && d.faq.length > 0;
+  const faqSchema = hasFaq ? getFAQSchema(d.faq) : null;
 
-// Sidebar data
-const allServices  = await getCollection('services').catch(() => []);
-const allLocations = await getCollection('locations').catch(() => []);
-const sidebarServices  = allServices.map(s => ({ slug: s.slug, title: cleanTitle(s.data.title) }));
-const sidebarLocations = allLocations.map(l => ({
-  slug: l.slug,
-  city: l.data.city,
-  service: l.data.service,
-}));
+  const autoSchemas: object[] = [localBusinessSchema, breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])];
+  schemas = d.schemaJsonld ? [] : autoSchemas;
+
+  testimonials = d.testimonials ?? (siteConfig as any).testimonials ?? [];
+  pageHeaderImage = d.heroImage || null;
+
+  // Resolve single-testimonial fallback (mirrors Testimonials.astro logic)
+  rawTestimonials = (() => {
+    if (testimonials.length > 0) return testimonials;
+    const text = (siteConfig as any).testimonial_text as string | undefined;
+    if (!text?.trim()) return [];
+    return [{
+      quote: text,
+      name: ((siteConfig as any).testimonial_author as string) ?? 'Happy Customer',
+      role: ((siteConfig as any).testimonial_neighborhood as string) ?? siteConfig.city,
+    }];
+  })().filter((t: any) => t.quote?.trim());
+
+  // Deterministic selection: sum of slug char codes mod array length
+  reviewTestimonial = rawTestimonials.length > 0
+    ? rawTestimonials[location.slug.split('').reduce((acc: number, c: string) => acc + c.charCodeAt(0), 0) % rawTestimonials.length]
+    : null;
+
+  // Sidebar data
+  const allServices  = await getCollection('services').catch(() => []);
+  const allLocations = await getCollection('locations').catch(() => []);
+  sidebarServices  = allServices.map(s => ({ slug: s.slug, title: cleanTitle(s.data.title) }));
+  sidebarLocations = allLocations.map(l => ({
+    slug: l.slug,
+    city: l.data.city,
+    service: l.data.service,
+  }));
+}
 ---
 
-<BaseLayout
-  title={d.title.includes(' | ') ? d.title : `${d.title} | ${siteConfig.name}`}
-  description={d.description}
-  canonical={pageUrl}
-  schemas={schemas}
-  schemaJsonld={d.schemaJsonld}
->
+{kind === 'page' ? (
+  <BaseLayout
+    title={pageData.title.includes(' | ') ? pageData.title : `${pageData.title} | ${siteConfig.name}`}
+    description={pageData.description}
+    canonical={pageUrl}
+    ogImage={ogImage}
+    noindex={pageData.noindex}
+    schemas={pageData.schemaJsonld ? [] : pageSchemas}
+    schemaJsonld={pageData.schemaJsonld}
+  >
+    <main>
+      <div class="page-hero">
+        {heroImage && (
+          <>
+            <img
+              src={heroImage}
+              alt=""
+              role="presentation"
+              aria-hidden="true"
+              loading="eager"
+              fetchpriority="high"
+              decoding="async"
+              style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:0;pointer-events:none;"
+            />
+            <div style="position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(100deg,rgba(8,12,26,.88) 0%,rgba(8,12,26,.65) 55%,rgba(8,12,26,.40) 100%);" aria-hidden="true"></div>
+          </>
+        )}
+        <div class="relative z-10 max-w-[1200px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <nav aria-label="Breadcrumb" class="mb-2">
+            <ol class="flex items-center gap-2 text-sm flex-wrap" style="color:rgba(255,255,255,0.6);">
+              <li><a href="/" class="hover:text-white transition-colors">Home</a></li>
+              <li aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></li>
+              <li class="text-white font-medium">{displayTitle}</li>
+            </ol>
+          </nav>
+          <h1 class="text-white font-extrabold tracking-tight mb-2">{displayTitle}</h1>
+          {pageData.description && (
+            <p class="text-lg mb-4 max-w-xl" style="color:rgba(255,255,255,0.75);">{pageData.description}</p>
+          )}
+        </div>
+      </div>
+
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <article class="max-w-[800px] mx-auto">
+          {heroImage && (
+            <SmartImage
+              src={heroImage}
+              alt={displayTitle}
+              aspect="16/9"
+              loading="eager"
+              fetchpriority="high"
+              variants={heroImageVariants}
+              sizes="(min-width: 1024px) 65vw, 100vw"
+            />
+          )}
+          <div class="prose prose-neutral prose-lg max-w-none mt-8">
+            <PageContent />
+          </div>
+          {hasPageFaq && (
+            <section id="faq" class="mt-12 pt-10 border-t border-neutral-100 pb-4">
+              <h2 class="text-2xl font-bold tracking-tight text-[var(--color-text)] mb-8">Frequently Asked Questions</h2>
+              <div class="flex flex-col">
+                {pageData.faq.map((item: { question: string; answer: string }, i: number) => (
+                  <details class="rs-faq-item">
+                    <summary class="rs-faq-q">
+                      <h3 class="text-base font-semibold m-0">{item.question}</h3>
+                      <svg class="rs-faq-chevron" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                    </summary>
+                    <div class="rs-faq-a"><div><p>{item.answer}</p></div></div>
+                  </details>
+                ))}
+              </div>
+            </section>
+          )}
+        </article>
+      </div>
+
+      <CtaBand />
+    </main>
+  </BaseLayout>
+) : (
+  <BaseLayout
+    title={d.title.includes(' | ') ? d.title : `${d.title} | ${siteConfig.name}`}
+    description={d.description}
+    canonical={pageUrl}
+    schemas={schemas}
+    schemaJsonld={d.schemaJsonld}
+  >
   <main>
 
     <!-- ─── Hero band ──────────────────────────────────────────────────── -->
@@ -230,3 +388,4 @@ const sidebarLocations = allLocations.map(l => ({
 
   </main>
 </BaseLayout>
+)

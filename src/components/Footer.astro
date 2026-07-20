@@ -58,6 +58,25 @@ const phoneDigits = siteConfig.phone ? siteConfig.phone.replace(/\D/g, '') : '';
 
 const privacyEntry = await getEntry('pages', 'privacy-policy').catch(() => null);
 const termsEntry = await getEntry('pages', 'terms-and-conditions').catch(() => null);
+
+// Overflow custom pages that didn't fit in the capped primary nav.
+// Mirrors Navigation.astro's logic — same reserved slugs, same sort order.
+const RESERVED_NAV_SLUGS = new Set([
+  'home', 'about', 'contact', 'faq', 'privacy-policy', 'terms-and-conditions',
+]);
+const allPagesForFooter = await getCollection('pages').catch(() => []);
+const customPageLinksFooter = allPagesForFooter
+  .filter((p) => p.data.showInNav !== false && !RESERVED_NAV_SLUGS.has(p.slug))
+  .sort((a, b) => {
+    const ao = typeof a.data.navOrder === 'number' ? a.data.navOrder : 9999;
+    const bo = typeof b.data.navOrder === 'number' ? b.data.navOrder : 9999;
+    return ao - bo || a.data.title.localeCompare(b.data.title);
+  })
+  .map((p) => ({ label: cleanTitle(p.data.title), href: `/${p.slug}` }));
+
+const MAX_NAV_ITEMS = 6;
+const coreNavCount = isLocalService ? 5 : 4;
+const overflowPageLinks = customPageLinksFooter.slice(Math.max(0, MAX_NAV_ITEMS - coreNavCount));
 ---
 
 <div class="footer-gradient-line"></div>
@@ -101,6 +120,11 @@ const termsEntry = await getEntry('pages', 'terms-and-conditions').catch(() => n
         <h3 class="text-xs font-semibold uppercase tracking-wider mb-5" style="color:#64748b;">Quick Links</h3>
         <ul class="flex flex-col gap-2.5">
           {quickLinks.map(({ label, href }) => (
+            <li>
+              <a href={href} class="text-sm transition-colors hover:text-white" style="color:#94a3b8;">{label}</a>
+            </li>
+          ))}
+          {overflowPageLinks.map(({ label, href }) => (
             <li>
               <a href={href} class="text-sm transition-colors hover:text-white" style="color:#94a3b8;">{label}</a>
             </li>
@@ -158,16 +182,14 @@ const termsEntry = await getEntry('pages', 'terms-and-conditions').catch(() => n
   <div style="border-top: 1px solid #1e293b;">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm" style="color:#475569;">
       <span>&copy; {currentYear} {siteConfig.name}. All rights reserved.</span>
-      {(privacyEntry || termsEntry) && (
-        <div class="flex items-center gap-4">
-          {privacyEntry && (
-            <a href="/privacy-policy" class="hover:text-white transition-colors">Privacy Policy</a>
-          )}
-          {termsEntry && (
-            <a href="/terms-and-conditions" class="hover:text-white transition-colors">Terms &amp; Conditions</a>
-          )}
-        </div>
-      )}
+      <div class="flex items-center gap-4 flex-wrap justify-center">
+        {privacyEntry && (
+          <a href="/privacy-policy" class="hover:text-white transition-colors">Privacy Policy</a>
+        )}
+        {termsEntry && (
+          <a href="/terms-and-conditions" class="hover:text-white transition-colors">Terms &amp; Conditions</a>
+        )}
+      </div>
     </div>
   </div>
 </footer>

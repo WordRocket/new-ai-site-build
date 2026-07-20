@@ -51,6 +51,8 @@ const pages = defineCollection({
     customEmbedHtml: z.string().optional(),
     hideDefaultContactForm: z.boolean().default(false),
     schemaJsonld: z.string().optional(),
+    showInNav: z.boolean().default(true),
+    navOrder: z.number().optional(),
   }),
 });
 
