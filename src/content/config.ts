@@ -52,7 +52,7 @@ const pages = defineCollection({
     hideDefaultContactForm: z.boolean().default(false),
     schemaJsonld: z.string().optional(),
     showInNav: z.boolean().default(true),
-    navOrder: z.number().optional(),
+    navOrder: z.number().nullish(),
   }),
 });
 
