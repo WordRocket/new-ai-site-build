@@ -214,7 +214,9 @@ const ctaImageVariants = (siteConfig as any).ctaImageVariants as ImageVariants |
 const hasCtaImage = ctaImage.length > 0;
 const faqImage: string = ((siteConfig as any).faqImage ?? '').trim();
 const faqImageVariants = (siteConfig as any).faqImageVariants as ImageVariants | undefined;
-const hasFaqBgImage = faqImage.length > 0;
+const faqBgImage: string = faqImage.length > 0 ? faqImage : ctaImage;
+const faqBgVariants = faqImage.length > 0 ? faqImageVariants : ctaImageVariants;
+const hasFaqBgImage = faqBgImage.length > 0;
 const hasHeroImage = !!heroImage;
 
 function splitH(h: string): { main: string; last: string } {
@@ -682,7 +684,7 @@ const heroServiceOptions = serviceEntries.length > 0
 
 <!-- ─── FAQ ─────────────────────────────────────────────────────────────── -->
 <section class="section-pad section-dark faq-section" aria-labelledby="faq-heading" data-bg={hasFaqBgImage ? 'image' : undefined}>
-  {hasFaqBgImage && <SectionBgImage src={faqImage} variants={faqImageVariants} scrim="heavy" lightScrim />}
+  {hasFaqBgImage && <SectionBgImage src={faqBgImage} variants={faqBgVariants} scrim="heavy" lightScrim />}
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 faq-section__inner">
     <div class="faq-header mb-14">
       <h2 id="faq-heading" class="reveal faq-heading-dark mb-4">Frequently Asked <span class="u-gradient-text">Questions</span></h2>

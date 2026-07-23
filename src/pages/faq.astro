@@ -11,7 +11,11 @@ const pageUrl = `${siteUrl}/faq`;
 
 const faqImage: string = ((siteConfig as any).faqImage ?? '').trim();
 const faqImageVariants = (siteConfig as any).faqImageVariants as ImageVariants | undefined;
-const hasFaqImage = faqImage.length > 0;
+const ctaImage: string = ((siteConfig as any).ctaImage ?? '').trim();
+const ctaImageVariants = (siteConfig as any).ctaImageVariants as ImageVariants | undefined;
+const faqBgImage: string = faqImage.length > 0 ? faqImage : ctaImage;
+const faqBgVariants = faqImage.length > 0 ? faqImageVariants : ctaImageVariants;
+const hasFaqImage = faqBgImage.length > 0;
 
 const entry = await getEntry('pages', 'faq').catch(() => undefined);
 if (!entry) return Astro.redirect('/404', 404);
@@ -76,7 +80,7 @@ const schemas = [breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])];
     <section
       class:list={["faq-body", { "faq-body--bg": hasFaqImage }]}
     >
-      {hasFaqImage && <SectionBgImage src={faqImage} variants={faqImageVariants} scrim="heavy" lightScrim />}
+      {hasFaqImage && <SectionBgImage src={faqBgImage} variants={faqBgVariants} scrim="heavy" lightScrim />}
       <div class:list={["max-w-[800px] mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 flex flex-col gap-14", { "faq-body__inner": hasFaqImage }]}>
         {categories.length === 0 ? (
           <p class="text-center text-[var(--color-text-muted)]">No questions available yet.</p>
