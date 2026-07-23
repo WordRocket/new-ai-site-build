@@ -72,9 +72,9 @@ const srcset = variantsSrcset(variants);
     background:
       linear-gradient(
         160deg,
-        rgba(4, 8, 20, 0.92) 0%,
-        rgba(4, 8, 20, 0.87) 50%,
-        rgba(4, 8, 20, 0.92) 100%
+        rgba(4, 8, 20, 0.62) 0%,
+        rgba(4, 8, 20, 0.55) 50%,
+        rgba(4, 8, 20, 0.62) 100%
       );
   }
 
@@ -95,7 +95,7 @@ const srcset = variantsSrcset(variants);
   /* lightScrim: on light-skin pages swap heavy dark scrim for a soft white overlay
      so the photo bleeds through as subtle background texture, not a full backdrop. */
   :global([data-skin="light"]) .sbg--light-scrim .sbg__scrim {
-    background: rgba(245, 249, 255, 0.82) !important;
+    background: rgba(245, 249, 255, 0.55) !important;
   }
 
   /* hideOnLight: suppress the entire component on light-skin pages */
