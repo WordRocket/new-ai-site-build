@@ -1,20 +1,19 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getFAQSchema, getBreadcrumbSchema } from '../lib/schema';
-import siteConfig from '../lib/site-config';
+import siteConfig, { resolveSiteImage } from '../lib/site-config';
 import { getEntry } from 'astro:content';
 import SectionBgImage from '../components/SectionBgImage.astro';
-import type { ImageVariants } from '../lib/image';
 
 const siteUrl = import.meta.env.SITE ?? siteConfig.url;
 const pageUrl = `${siteUrl}/faq`;
 
-const faqImage: string = ((siteConfig as any).faqImage ?? '').trim();
-const faqImageVariants = (siteConfig as any).faqImageVariants as ImageVariants | undefined;
-const ctaImage: string = ((siteConfig as any).ctaImage ?? '').trim();
-const ctaImageVariants = (siteConfig as any).ctaImageVariants as ImageVariants | undefined;
-const faqBgImage: string = faqImage.length > 0 ? faqImage : ctaImage;
-const faqBgVariants = faqImage.length > 0 ? faqImageVariants : ctaImageVariants;
+const faqBg = resolveSiteImage(
+  ['faqImage', 'faq_image', 'faqBackground', 'faqBackgroundImage', 'faqSectionImage'],
+  ['faqImageVariants', 'faq_image_variants', 'faqBackgroundVariants', 'faqBackgroundImageVariants', 'faqSectionImageVariants'],
+);
+const faqBgImage = faqBg.src;
+const faqBgVariants = faqBg.variants;
 const hasFaqImage = faqBgImage.length > 0;
 
 const entry = await getEntry('pages', 'faq').catch(() => undefined);

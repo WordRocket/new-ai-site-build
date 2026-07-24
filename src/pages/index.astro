@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import siteConfig, { formatPhone, cleanTitle } from '../lib/site-config';
+import siteConfig, { formatPhone, cleanTitle, resolveSiteImage } from '../lib/site-config';
 import { getCollection, getEntry } from 'astro:content';
 import { getPreset, interpolate } from '../lib/business-presets';
 import Icon from '../components/Icon.astro';
@@ -212,10 +212,12 @@ const formConnected = formEndpoint !== '';
 const ctaImage: string = ((siteConfig as any).ctaImage ?? '').trim();
 const ctaImageVariants = (siteConfig as any).ctaImageVariants as ImageVariants | undefined;
 const hasCtaImage = ctaImage.length > 0;
-const faqImage: string = ((siteConfig as any).faqImage ?? '').trim();
-const faqImageVariants = (siteConfig as any).faqImageVariants as ImageVariants | undefined;
-const faqBgImage: string = faqImage.length > 0 ? faqImage : ctaImage;
-const faqBgVariants = faqImage.length > 0 ? faqImageVariants : ctaImageVariants;
+const faqBg = resolveSiteImage(
+  ['faqImage', 'faq_image', 'faqBackground', 'faqBackgroundImage', 'faqSectionImage'],
+  ['faqImageVariants', 'faq_image_variants', 'faqBackgroundVariants', 'faqBackgroundImageVariants', 'faqSectionImageVariants'],
+);
+const faqBgImage = faqBg.src;
+const faqBgVariants = faqBg.variants;
 const hasFaqBgImage = faqBgImage.length > 0;
 const hasHeroImage = !!heroImage;
 

@@ -1,4 +1,5 @@
 import siteConfig from '../data/site-config.json'
+import type { ImageVariants } from './image'
 export default siteConfig
 export type SiteConfig = typeof siteConfig
 
@@ -15,6 +16,28 @@ export function toTitleCase(str: string): string {
 export function cleanTitle(str: string): string {
   const clean = str.includes(' | ') ? str.split(' | ')[0].trim() : str;
   return toTitleCase(clean);
+}
+
+/** Read a site-config image under the first non-empty key spelling.
+ *  Lovable's publish payload may write the FAQ background under several
+ *  aliases (faqImage, faq_image, faqBackground, faqBackgroundImage,
+ *  faqSectionImage) — resolve whichever one is populated. */
+export function resolveSiteImage(
+  keys: string[],
+  variantKeys: string[],
+): { src: string; variants?: ImageVariants } {
+  for (const key of keys) {
+    const val = ((siteConfig as any)[key] ?? '').trim();
+    if (val.length > 0) {
+      let variants: ImageVariants | undefined;
+      for (const vk of variantKeys) {
+        const v = (siteConfig as any)[vk];
+        if (v && typeof v === 'object') { variants = v as ImageVariants; break; }
+      }
+      return { src: val, variants };
+    }
+  }
+  return { src: '' };
 }
 
 /** Normalise and format a phone number for display.
