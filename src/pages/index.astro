@@ -11,6 +11,7 @@ import ProcessTimeline from '../components/sections/ProcessTimeline.astro';
 import { getFAQSchema } from '../lib/schema';
 import LeadForm from '../components/LeadForm.astro';
 import ServiceCard from '../components/ServiceCard.astro';
+import SmartImage from '../components/SmartImage.astro';
 import SectionBgImage from '../components/SectionBgImage.astro';
 import ReviewBadge from '../components/ReviewBadge.astro';
 import { imgUrl, variantsSrcset, type ImageVariants } from '../lib/image';
@@ -245,12 +246,44 @@ const heroServiceOptions = serviceEntries.length > 0
 >
 <body class="homepage">
 
-<!-- ─── HERO SPLIT ────────────────────────────────────────────────────── -->
-{formConnected ? (
+<!-- ─── HERO ─────────────────────────────────────────────────────────── -->
+{!isLocalService ? (
+
+<!-- ── HERO: general template (centered, AstroWind-inspired) ─────────── -->
+<section class="hero-general" aria-label="Hero">
+  <div class="hero-general__inner">
+    <div class="hero-general__content">
+      <p class="hero-general__tagline reveal">{nicheLabel}</p>
+      <h1 class="hero-general__title reveal">
+        {heroNameMain ? `${heroNameMain} ` : ''}<span class="u-gradient-text">{heroNameLast}</span>
+      </h1>
+      <p class="hero-general__subtitle reveal">{siteConfig.tagline}</p>
+      <div class="hero-general__actions reveal">
+        <a href={primaryCta} class="u-btn u-btn-primary">{preset.heroCta}</a>
+        <a href="/about" class="u-btn u-btn-ghost">{preset.heroCtaSecondary} &rarr;</a>
+      </div>
+    </div>
+  </div>
+  {hasHeroImage && (
+    <div class="hero-general__image-wrap reveal">
+      <SmartImage
+        src={heroSrc}
+        alt={`${siteConfig.name} — ${nicheLabel}`}
+        aspect="16/9"
+        imgWidth={1024}
+        loading="eager"
+        fetchpriority="high"
+        sizes="(max-width: 767px) 100vw, (max-width: 1023px) 768px, 1024px"
+      />
+    </div>
+  )}
+</section>
+
+) : formConnected ? (
 
 <!-- ── HERO: form variant (endpoint configured) ─────────────────────── -->
 <section
-  class={`hero-split hero-split--form u-glow-bg cinematic-hero${hasHeroImage ? ' cinematic-hero--img' : ''}${isLocalService ? '' : ' hero-split--general'}`}
+  class={`hero-split hero-split--form u-glow-bg cinematic-hero${hasHeroImage ? ' cinematic-hero--img' : ''}`}
   style={!hasHeroImage ? 'background: linear-gradient(135deg, color-mix(in srgb, var(--rs-accent) 18%, var(--rs-bg)) 0%, var(--rs-bg) 100%);' : ''}
   data-hero-skin={skin}
   aria-label="Hero"
@@ -353,7 +386,7 @@ const heroServiceOptions = serviceEntries.length > 0
 
 <!-- ── HERO: original variant (no endpoint) ──────────────────────────── -->
 <section
-  class={`hero-split u-glow-bg cinematic-hero${hasHeroImage ? ' cinematic-hero--img' : ''}${isLocalService ? '' : ' hero-split--general'}`}
+  class={`hero-split u-glow-bg cinematic-hero${hasHeroImage ? ' cinematic-hero--img' : ''}`}
   style={!hasHeroImage ? 'background: linear-gradient(135deg, color-mix(in srgb, var(--rs-accent) 18%, var(--rs-bg)) 0%, var(--rs-bg) 100%);' : ''}
   data-hero-skin={skin}
   aria-label="Hero"
@@ -553,6 +586,7 @@ const heroServiceOptions = serviceEntries.length > 0
   eyebrow={isLocalService ? "What You Get" : "What to Expect"}
   heading={isLocalService ? `Every Job, Every Time` : `What You'll Find Here`}
   items={featureGridItems}
+  variant={isLocalService ? 'cards' : 'rows'}
 />
 
 <!-- ─── HOW IT WORKS — process timeline ─────────────────────────────── -->
