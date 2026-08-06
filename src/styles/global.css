@@ -1107,6 +1107,40 @@ body:not(:has(#top-bar)) .hero-split { padding-top: 72px; }
   .blog-gen-card__img :global(.si-img), .cat-gen-card__img :global(.si-img) { transition: none; }
 }
 
+/* ── Category index card extensions ─────────────────────────────────────── */
+.cat-gen-card__count {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--rs-radius-pill);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  backdrop-filter: blur(6px);
+  z-index: 1;
+}
+.cat-gen-card__img { position: relative; }
+.cat-gen-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--rs-brand-text);
+  transition: gap 0.15s ease;
+}
+.cat-gen-card:hover .cat-gen-card__cta { gap: 0.5rem; }
+.cat-gen-card__cta svg { transition: transform 0.15s ease; }
+.cat-gen-card:hover .cat-gen-card__cta svg { transform: translateX(2px); }
+@media (prefers-reduced-motion: reduce) {
+  .cat-gen-card__cta, .cat-gen-card__cta svg { transition: none; }
+}
+
 /* ── Dark section ──────────────────────────────────────────────────────── */
 .section-dark { background: var(--color-dark-navy); color: white; }
 .section-dark h1, .section-dark h2, .section-dark h3 { color: white; }
