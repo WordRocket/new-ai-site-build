@@ -12,9 +12,10 @@
  *
  *  Model B — AI synthesis (opt-in, user supplies their own API key)
  *    Same retrieval layer runs first, then the top matches + the user's
- *    question are sent to the AI endpoint for a grounded, conversational
- *    answer. The key is stored in site config and used only for this
- *    site's chatbot. No key → silently falls back to Model A.
+ *    question are sent to the RankSite AI proxy endpoint for a grounded,
+ *    conversational answer. The customer's API key is held server-side
+ *    by the proxy — it never ships to the browser. No key configured →
+ *    silently falls back to Model A.
  *
  * The widget is entirely client-side: embeddings are fetched once on
  * open, search is in-browser, and chat history lives in memory only.
@@ -30,8 +31,7 @@ const introMessage: string =
   (siteConfig as any).chatbotIntroMessage?.trim() ||
   'Hi! Ask me about our services.';
 const enableAi = (siteConfig as any).chatbotEnableAi === true;
-const openRouterKey: string = (siteConfig as any).chatbotOpenRouterKey?.trim() || '';
-const aiActive = enableAi && openRouterKey.length > 0;
+const aiActive = enableAi;
 ---
 
 {enabled && (
@@ -117,7 +117,7 @@ const aiActive = enableAi && openRouterKey.length > 0;
     </div>
 
     {/* ── Client logic ──────────────────────────────────────────────── */}
-    <script type="module" define:vars={{ aiActive, openRouterKey, introMessage }}>
+    <script type="module" define:vars={{ aiActive, introMessage }}>
       (() => {
         'use strict';
 
@@ -264,43 +264,29 @@ const aiActive = enableAi && openRouterKey.length > 0;
         }
 
         // ── AI synthesis (Model B) ─────────────────────────────────────
+        // AI calls route through the RankSite proxy endpoint so the
+        // customer's API key never reaches the browser. The proxy holds
+        // the key server-side; the browser only sends the question +
+        // retrieved context chunks.
+        const AI_PROXY_URL = 'https://api.ranksite.com/v1/chatbot/synthesize';
+
         async function synthesizeAnswer(query, matches) {
           const context = matches.map((m, i) =>
             `[${i+1}] ${m.title || m.section || ''}\n${m.text}`
           ).join('\n\n');
 
-          const systemPrompt =
-            'You are a helpful assistant for a business website. ' +
-            'Answer the visitor question using ONLY the provided site content. ' +
-            'If the content does not contain the answer, say you don\'t have that information ' +
-            'and suggest they contact the business. ' +
-            'Keep answers concise (2-4 sentences). Be friendly and professional.';
-
-          const userPrompt =
-            `Site content:\n${context}\n\nVisitor question: ${query}`;
-
-          const body = {
-            model: 'anthropic/claude-3.5-sonnet',
-            messages: [
-              { role: 'system', content: systemPrompt },
-              { role: 'user', content: userPrompt }
-            ],
-            max_tokens: 300,
-            temperature: 0.3
-          };
-
-          const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+          const res = await fetch(AI_PROXY_URL, {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${openRouterKey}`
-            },
-            body: JSON.stringify(body)
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              question: query,
+              context
+            })
           });
 
-          if (!res.ok) throw new Error(`AI request failed: ${res.status}`);
+          if (!res.ok) throw new Error(`AI proxy request failed: ${res.status}`);
           const data = await res.json();
-          const answer = data?.choices?.[0]?.message?.content?.trim();
+          const answer = data?.answer?.trim();
           if (!answer) throw new Error('Empty AI response');
           return answer;
         }

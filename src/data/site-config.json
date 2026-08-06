@@ -51,7 +51,7 @@
   "chatbotEnabled": false,
   "chatbotIntroMessage": "Hi! Ask me about our services.",
   "chatbotEnableAi": false,
-  "chatbotOpenRouterKey": "",
+  "chatbotOpenrouterKey": "",
   "headerScripts": "",
   "footerScripts": "",
   "navVisibility": {
