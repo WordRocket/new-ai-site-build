@@ -32,6 +32,7 @@ const blog = defineCollection({
 
 const faqItemSchema = z.object({ question: z.string(), answer: z.string() });
 const featureSchema = z.object({ title: z.string(), desc: z.string(), icon: z.string().optional() });
+const stepSchema = z.object({ title: z.string(), desc: z.string(), icon: z.string().optional() });
 
 const pages = defineCollection({
   schema: z.object({
@@ -48,6 +49,8 @@ const pages = defineCollection({
     faq: z.array(faqItemSchema).default([]),
     whatWeDoIntro: z.string().optional(),
     featureGrid: z.array(featureSchema).default([]),
+    processHeading: z.string().optional(),
+    processSteps: z.array(stepSchema).default([]),
     faqCategories: z.array(z.object({ label: z.string(), items: z.array(faqItemSchema) })).optional(),
     faqPageTitle: z.string().optional(),
     faqPageDescription: z.string().optional(),
@@ -59,7 +62,6 @@ const pages = defineCollection({
   }),
 });
 
-const stepSchema = z.object({ title: z.string(), desc: z.string(), icon: z.string().optional() });
 const testimonialSchema = z.object({
   quote: z.string().optional(),
   name: z.string().optional(),
