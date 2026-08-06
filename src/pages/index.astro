@@ -496,6 +496,32 @@ const heroServiceOptions = serviceEntries.length > 0
 
 )}
 
+{/* ─── CREDIBILITY STATS STRIP (general sites only) ──────────────────────── */}
+{!isLocalService && (
+<section class="gen-stats" aria-label="At a glance">
+  <div class="gen-stats__inner">
+    {siteConfig.yearsInBusiness && (
+      <div class="gen-stats__item">
+        <span class="gen-stats__value">{siteConfig.yearsInBusiness}+</span>
+        <span class="gen-stats__label">Years Experience</span>
+      </div>
+    )}
+    <div class="gen-stats__item">
+      <span class="gen-stats__value">{serviceEntries.length > 0 ? serviceEntries.length : 'Multi'}</span>
+      <span class="gen-stats__label">{serviceEntries.length > 0 ? 'Services Offered' : 'Service Areas'}</span>
+    </div>
+    <div class="gen-stats__item">
+      <span class="gen-stats__value">{siteConfig.city}</span>
+      <span class="gen-stats__label">Based In</span>
+    </div>
+    <div class="gen-stats__item">
+      <span class="gen-stats__value">100%</span>
+      <span class="gen-stats__label">Commitment</span>
+    </div>
+  </div>
+</section>
+)}
+
 <!-- ─── SERVICES GRID / BLOG GRID ─────────────────────────────────────── -->
 {isLocalService ? (
 <section class="section-pad" style="background:var(--rs-surface);" aria-labelledby="services-heading">
@@ -794,21 +820,23 @@ const heroServiceOptions = serviceEntries.length > 0
 </section>
 )}
 
+{isLocalService ? (
+<>
 <!-- wave: dark → CTA section bg (full-bleed, so wave must match section bg) -->
 <div class="wave-divider cta-wave-top" aria-hidden="true">
   <svg viewBox="0 0 1440 48" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,24 C360,0 1080,48 1440,24 L1440,48 L0,48 Z" fill="white"/></svg>
 </div>
 
-<!-- ─── CTA / CONTACT SECTION — full-bleed ───────────────────────────── -->
+<!-- ─── CTA / CONTACT SECTION — full-bleed (local-service) ──────────── -->
 <section class="hp-cta-section" aria-labelledby="cta-heading" data-bg={hasCtaImage ? 'image' : undefined}>
   {hasCtaImage && <SectionBgImage src={ctaImage} variants={ctaImageVariants} scrim="branded" />}
   <div class="u-reveal hp-cta-inner">
 
     <!-- Left: CTA text -->
     <div class="hp-cta-left">
-      <h2 id="cta-heading" class="hp-cta-heading">{isLocalService ? <>Ready to Book? Let's <span class="u-gradient-text">Talk.</span></> : <>Let's <span class="u-gradient-text">Connect.</span></>}</h2>
+      <h2 id="cta-heading" class="hp-cta-heading">Ready to Book? Let's <span class="u-gradient-text">Talk.</span></h2>
       <p class="text-lg leading-relaxed hp-cta-sub">
-        {isLocalService ? <>Contact {siteConfig.name} today for a free estimate. {preset.contactSubtext}</> : <>{preset.contactSubtext}</>}
+        Contact {siteConfig.name} today for a free estimate. {preset.contactSubtext}
       </p>
       {siteConfig.phone
         ? (
@@ -868,6 +896,30 @@ const heroServiceOptions = serviceEntries.length > 0
 
   </div>
 </section>
+</>
+) : (
+<!-- ─── CTA — centered card (general sites) ──────────────────────────── -->
+<section class="gen-cta-card section-pad" aria-labelledby="cta-heading">
+  <div class="gen-cta-card__inner u-reveal">
+    <h2 id="cta-heading" class="gen-cta-card__heading">
+      Let's <span class="u-gradient-text">Connect.</span>
+    </h2>
+    <p class="gen-cta-card__sub">{preset.contactSubtext}</p>
+    <div class="gen-cta-card__btns">
+      <a href="/contact" class="u-btn u-btn-primary gen-cta-card__primary">
+        {preset.contactCta}
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+      {siteConfig.phone && (
+        <a href={`tel:${phoneDigits}`} class="u-btn u-btn-ghost">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.36a2 2 0 0 1 1.99-2.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.06 6.06l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          {formatPhone(siteConfig.phone)}
+        </a>
+      )}
+    </div>
+  </div>
+</section>
+)}
 
 </body>
 </BaseLayout>
