@@ -500,18 +500,16 @@ const heroServiceOptions = serviceEntries.length > 0
 {!isLocalService && (
 <section class="gen-stats" aria-label="At a glance">
   <div class="gen-stats__inner">
-    {siteConfig.yearsInBusiness && (
-      <div class="gen-stats__item">
-        <span class="gen-stats__value">{siteConfig.yearsInBusiness}+</span>
-        <span class="gen-stats__label">Years Experience</span>
-      </div>
-    )}
     <div class="gen-stats__item">
-      <span class="gen-stats__value">{serviceEntries.length > 0 ? serviceEntries.length : 'Multi'}</span>
-      <span class="gen-stats__label">{serviceEntries.length > 0 ? 'Services Offered' : 'Service Areas'}</span>
+      <span class="gen-stats__value">{siteConfig.yearsInBusiness ? `${siteConfig.yearsInBusiness}+` : 'Pro'}</span>
+      <span class="gen-stats__label">{siteConfig.yearsInBusiness ? 'Years Experience' : 'Professional'}</span>
     </div>
     <div class="gen-stats__item">
-      <span class="gen-stats__value">{siteConfig.city}</span>
+      <span class="gen-stats__value">{serviceEntries.length > 0 ? String(serviceEntries.length) : 'Full'}</span>
+      <span class="gen-stats__label">{serviceEntries.length > 0 ? 'Services Offered' : 'Service Range'}</span>
+    </div>
+    <div class="gen-stats__item">
+      <span class="gen-stats__value">{siteConfig.city && siteConfig.city !== 'Your City' ? siteConfig.city : 'Global'}</span>
       <span class="gen-stats__label">Based In</span>
     </div>
     <div class="gen-stats__item">

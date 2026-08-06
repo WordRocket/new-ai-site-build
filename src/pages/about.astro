@@ -50,6 +50,21 @@ const isLocalService = (siteConfig as any).businessType === 'local-service';
 
 const hasStats = Boolean(siteConfig.yearsInBusiness || siteConfig.clientsServed);
 
+// Capability highlights shown on the About page for general/business sites.
+// These describe the broad service focus so the page reads as a real company
+// profile even before the operator fills in custom content.
+const capabilities: Array<{ title: string; body: string; icon: string }> = isLocalService ? [
+  { title: 'Locally Owned', body: `Based in ${siteConfig.city}, ${siteConfig.state} — we're your neighbors.`, icon: 'map' },
+  { title: 'Licensed & Insured', body: 'Full licensing and insurance on every project.', icon: 'shield' },
+  { title: 'Transparent Pricing', body: 'Honest, upfront quotes with no hidden fees.', icon: 'tag' },
+  { title: 'Satisfaction Guaranteed', body: "If you're not satisfied, we make it right.", icon: 'check' },
+] : [
+  { title: 'Engineering & Construction', body: 'Power generation, infrastructure, and civil works delivered with technical rigor.', icon: 'bolt' },
+  { title: 'Renewable Energy', body: 'Solar and green-energy systems designed for efficiency and long-term savings.', icon: 'sun' },
+  { title: 'Drainage & Irrigation', body: 'Water management, drainage, and irrigation systems built for local conditions.', icon: 'droplet' },
+  { title: 'Project Delivery', body: 'End-to-end execution from planning and design through installation and handover.', icon: 'compass' },
+];
+
 function splitH(h: string): { main: string; last: string } {
   const words = h.trim().split(/\s+/);
   if (words.length === 1) return { main: '', last: words[0] };
@@ -69,8 +84,8 @@ const trustSignals = [
         { value: '100%', label: 'Satisfaction Guarantee' },
       ]
     : [
-        { value: '5★', label: 'Reader Rated' },
-        { value: '100%', label: 'Original Content' },
+        { value: 'Full', label: 'Service Range' },
+        { value: '100%', label: 'Project Commitment' },
       ]),
 ].filter(Boolean) as Array<{ value: string; label: string }>;
 
@@ -96,20 +111,20 @@ const whyUs = isLocalService ? [
   },
 ] : [
   {
-    title: 'Thoughtful, Original Work',
-    body: `Everything we publish is researched, written, and reviewed with care — no recycled filler, no shortcuts.`,
+    title: 'Technical Expertise',
+    body: `Engineering and construction experience across power, infrastructure, and renewable energy — every project is grounded in real technical depth.`,
   },
   {
-    title: 'Clear, Direct Communication',
-    body: 'We write in plain language so ideas land. No jargon, no gatekeeping — just content that respects your time.',
+    title: 'End-to-End Delivery',
+    body: 'From initial planning and design through installation and handover, we manage the full project lifecycle so nothing falls through the cracks.',
   },
   {
-    title: 'Consistent & Reliable',
-    body: 'New posts and updates land on a regular cadence. You always know when to expect something fresh.',
+    title: 'Local Knowledge',
+    body: `We understand the conditions, regulations, and logistics of working in ${siteConfig.city || 'our region'} — and we build solutions that fit.`,
   },
   {
-    title: 'Open to Conversation',
-    body: `Questions, feedback, and discussion are always welcome at ${siteConfig.name}. We read and respond.`,
+    title: 'Reliable Execution',
+    body: `Projects delivered on schedule and built to last. ${siteConfig.name} takes pride in work that holds up long after handover.`,
   },
 ];
 ---
@@ -141,7 +156,7 @@ const whyUs = isLocalService ? [
           {aboutMain}<span class="u-gradient-text">{aboutLast}</span>
         </h1>
         <p class="text-[var(--color-text-muted)] text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed">
-          {ap?.description || (isLocalService ? ('Your trusted ' + nicheLabel + ' experts in ' + siteConfig.city + ', ' + siteConfig.state) : (siteConfig.description || `Ideas, stories, and perspectives from ${siteConfig.name}.`))}
+          {ap?.description || (isLocalService ? ('Your trusted ' + nicheLabel + ' experts in ' + siteConfig.city + ', ' + siteConfig.state) : (siteConfig.description || `Engineering, construction, and energy solutions built to deliver real results.`))}
         </p>
       </div>
     </section>
@@ -196,19 +211,42 @@ const whyUs = isLocalService ? [
                 ) : (
                   <>
                     <p>
-                      {siteConfig.name} is a {nicheLabel || 'content'} site dedicated to sharing ideas, guides, and perspectives worth your time. We publish work we'd want to read ourselves — researched, considered, and written with care.
+                      {siteConfig.name} delivers engineering, construction, and energy solutions with a focus on quality and reliability. From power generation and infrastructure to renewable energy and water management, we take on projects that demand technical depth and careful execution.
                     </p>
                     <p>
-                      Our goal is simple: add something useful to the conversation. Whether that's a practical guide, a fresh take on a familiar topic, or a deep dive into something new, we put thought into every piece.
+                      Our approach is straightforward: understand the problem, design a practical solution, and execute it to a standard that lasts. We work closely with clients at every stage — from initial planning through final delivery — so nothing is left to chance.
                     </p>
                     <p>
-                      Thanks for reading. If you have questions, feedback, or ideas for what we should cover next, we'd love to hear from you.
+                      Whether it's a complex engineering challenge or a straightforward installation, {siteConfig.name} brings the experience and discipline to get it done right.
                     </p>
                   </>
                 )}
               </>
             )}
           </div>
+        </div>
+      </section>
+
+      <!-- Capabilities overview -->
+      <section>
+        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--color-text)] mb-8 text-center">What We <span class="u-gradient-text">Do</span></h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {capabilities.map((cap) => (
+            <div class="flex flex-col gap-3 p-6 rounded-[var(--radius-md)]" style="background:var(--rs-surface); box-shadow:var(--rs-shadow-card); border:1px solid var(--rs-border);">
+              <div class="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center" style="background:color-mix(in srgb, var(--rs-accent) 12%, transparent);">
+                {cap.icon === 'bolt' && <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--rs-brand-text)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>}
+                {cap.icon === 'sun' && <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--rs-brand-text)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>}
+                {cap.icon === 'droplet' && <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--rs-brand-text)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>}
+                {cap.icon === 'compass' && <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--rs-brand-text)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>}
+                {cap.icon === 'map' && <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--rs-brand-text)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>}
+                {cap.icon === 'shield' && <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--rs-brand-text)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>}
+                {cap.icon === 'tag' && <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--rs-brand-text)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2z"/><path d="M7 7h.01"/></svg>}
+                {cap.icon === 'check' && <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--rs-brand-text)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>}
+              </div>
+              <h3 class="text-sm font-semibold text-[var(--color-text)]">{cap.title}</h3>
+              <p class="text-sm text-[var(--color-text-muted)] leading-relaxed">{cap.body}</p>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -255,5 +293,22 @@ const whyUs = isLocalService ? [
       </section>
 
     </div>
+
+    <!-- Closing CTA -->
+    <section class="py-16 sm:py-20 text-center" style="background:var(--rs-surface); border-top:1px solid var(--rs-border);">
+      <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center gap-5">
+        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--color-text)]">
+          Let's Build <span class="u-gradient-text">Something.</span>
+        </h2>
+        <p class="text-[var(--color-text-muted)] text-lg leading-relaxed">
+          Have a project in mind? We're ready to discuss how {siteConfig.name} can help.
+        </p>
+        <a href="/contact" class="u-btn u-btn-primary" style="padding:.875rem 2rem; font-size:1rem;">
+          Get in Touch
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+      </div>
+    </section>
+
   </main>
 </BaseLayout>

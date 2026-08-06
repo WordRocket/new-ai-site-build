@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { getEntry, getCollection } from 'astro:content';
 import { getBreadcrumbSchema } from '../lib/schema';
 import siteConfig from '../lib/site-config';
+import { formatPhone } from '../lib/site-config';
 import { getPreset } from '../lib/business-presets';
 import LeadForm from '../components/LeadForm.astro';
 
@@ -52,6 +53,7 @@ const breadcrumbSchema = getBreadcrumbSchema([
 
 const preset = getPreset((siteConfig as any).businessType || 'other');
 const isLocalService = (siteConfig as any).businessType === 'local-service';
+const phoneDigits = siteConfig.phone ? siteConfig.phone.replace(/\D/g, '') : '';
 
 const openingHours: Array<{ days: string; hours: string }> = (siteConfig as any).openingHours || [];
 const formEndpoint: string = ((siteConfig as any).formEndpoint ?? '').trim();
@@ -92,8 +94,49 @@ const mapSrc = mapQuery ? `https://maps.google.com/maps?q=${mapQuery}&output=emb
       <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-[var(--color-text)] mb-4">{cp?.title || 'Get In Touch'}</h1>
         <p class="text-[var(--color-text-muted)] text-lg max-w-xl mx-auto">
-          {cp?.description || (preset.contactSubtext + ' We respond to all inquiries within one business day.')}
+          {cp?.description || (isLocalService
+            ? (preset.contactSubtext + ' We respond to all inquiries within one business day.')
+            : `Tell us about your project and we'll get back to you within one business day.`)}
         </p>
+      </div>
+    </section>
+
+    <!-- Quick-contact band -->
+    <section class="border-y" style="background:var(--rs-bg); border-color:var(--rs-border);">
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 sm:grid-cols-3 gap-6">
+        {siteConfig.phone && (
+          <a href={`tel:${phoneDigits}`} class="flex items-center gap-4 group">
+            <span class="flex-shrink-0 w-11 h-11 rounded-lg flex items-center justify-center" style="background:color-mix(in srgb, var(--rs-accent) 12%, transparent);">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--rs-brand-text)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.36a2 2 0 0 1 1.99-2.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.06 6.06l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </span>
+            <span class="flex flex-col">
+              <span class="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Call Us</span>
+              <span class="text-sm font-semibold text-[var(--color-text)] group-hover:opacity-80 transition-opacity">{formatPhone(siteConfig.phone)}</span>
+            </span>
+          </a>
+        )}
+        {siteConfig.email && (
+          <a href={`mailto:${siteConfig.email}`} class="flex items-center gap-4 group">
+            <span class="flex-shrink-0 w-11 h-11 rounded-lg flex items-center justify-center" style="background:color-mix(in srgb, var(--rs-accent) 12%, transparent);">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--rs-brand-text)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            </span>
+            <span class="flex flex-col">
+              <span class="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Email Us</span>
+              <span class="text-sm font-semibold text-[var(--color-text)] group-hover:opacity-80 transition-opacity">{siteConfig.email}</span>
+            </span>
+          </a>
+        )}
+        {siteConfig.address && (
+          <div class="flex items-center gap-4">
+            <span class="flex-shrink-0 w-11 h-11 rounded-lg flex items-center justify-center" style="background:color-mix(in srgb, var(--rs-accent) 12%, transparent);">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--rs-brand-text)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+            </span>
+            <span class="flex flex-col">
+              <span class="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Visit Us</span>
+              <span class="text-sm font-semibold text-[var(--color-text)]">{siteConfig.address}, {siteConfig.city}, {siteConfig.state}</span>
+            </span>
+          </div>
+        )}
       </div>
     </section>
 
@@ -103,9 +146,17 @@ const mapSrc = mapQuery ? `https://maps.google.com/maps?q=${mapQuery}&output=emb
 
         <!-- Left: Contact form and/or custom embed -->
         <div class="flex flex-col gap-10">
+          <div>
+            <h2 class="text-xl font-bold text-[var(--color-text)] mb-2">{isLocalService ? 'Send Us a Message' : 'Tell Us About Your Project'}</h2>
+            <p class="text-sm text-[var(--color-text-muted)] mb-6 leading-relaxed">
+              {isLocalService
+                ? 'Fill out the form below and we\'ll get back to you within one business day.'
+                : 'Share a few details about your project — scope, timeline, location — and we\'ll follow up within one business day.'}
+            </p>
+          </div>
+
           {showLeadForm && (
             <div>
-              <h2 class="text-xl font-bold text-[var(--color-text)] mb-6">Send Us a Message</h2>
               <LeadForm
                 formId="contact-form"
                 endpoint={formEndpoint}
@@ -121,6 +172,33 @@ const mapSrc = mapQuery ? `https://maps.google.com/maps?q=${mapQuery}&output=emb
 
           {showCustomEmbed && (
             <div class="contact-custom-embed" set:html={customEmbedHtml} />
+          )}
+
+          {/* Fallback when no form endpoint and no custom embed are configured */}
+          {!showLeadForm && !showCustomEmbed && (
+            <div class="flex flex-col gap-4 p-8 rounded-[var(--radius-lg)] text-center" style="background:var(--rs-surface); border:1px solid var(--rs-border);">
+              <div class="flex-shrink-0 w-12 h-12 mx-auto rounded-full flex items-center justify-center" style="background:color-mix(in srgb, var(--rs-accent) 12%, transparent);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--rs-brand-text)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              </div>
+              <h3 class="text-lg font-semibold text-[var(--color-text)]">We'd love to hear from you</h3>
+              <p class="text-sm text-[var(--color-text-muted)] leading-relaxed max-w-md mx-auto">
+                Our online form is being set up. In the meantime, please reach out directly — we respond within one business day.
+              </p>
+              <div class="flex flex-wrap gap-3 justify-center mt-2">
+                {siteConfig.phone && (
+                  <a href={`tel:${phoneDigits}`} class="u-btn u-btn-primary" style="padding:.75rem 1.5rem; font-size:.875rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.36a2 2 0 0 1 1.99-2.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.06 6.06l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    Call {formatPhone(siteConfig.phone)}
+                  </a>
+                )}
+                {siteConfig.email && (
+                  <a href={`mailto:${siteConfig.email}`} class="u-btn u-btn-ghost" style="padding:.75rem 1.5rem; font-size:.875rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                    Email Us
+                  </a>
+                )}
+              </div>
+            </div>
           )}
         </div>
 
