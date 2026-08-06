@@ -162,16 +162,18 @@ const defaultFeatureGrid = isLocalService ? [
   { icon: 'award',        title: 'Experienced Local Team',       desc: `Skilled professionals who know ${siteConfig.city} and the unique needs of this community.` },
   { icon: 'file-text',    title: 'Free Estimates',               desc: 'Honest, obligation-free quotes so you can make informed decisions without pressure.' },
 ] : [
-  { icon: 'book-open',    title: 'Well-Researched Content',      desc: 'Every piece we publish is grounded in research, care, and real attention to detail.' },
-  { icon: 'pen-line',     title: 'Clear, Direct Writing',        desc: 'No jargon or filler — just ideas that connect and communicate clearly.' },
-  { icon: 'calendar',     title: 'Consistent Publishing',        desc: 'New posts, guides, and updates land on a regular cadence so there\'s always something fresh.' },
-  { icon: 'compass',      title: 'Thoughtful Perspectives',      desc: 'We aim to add something useful to the conversation, not just echo what\'s already out there.' },
-  { icon: 'message-square', title: 'Open to Conversation',       desc: 'Questions, feedback, and discussion are always welcome — we read and respond.' },
-  { icon: 'sparkles',     title: 'Always Improving',             desc: 'We refine our work based on feedback and what we learn along the way.' },
+  { icon: 'compass',        title: 'What We Do',                  desc: `${siteConfig.name} provides professional ${nicheLabel} services in ${siteConfig.city}, ${siteConfig.state}. We focus on delivering reliable results tailored to your needs.` },
+  { icon: 'check-circle',   title: 'How We Work',                  desc: 'We start with a conversation, follow a clear plan, and deliver quality work on schedule — no guesswork, no surprises.' },
+  { icon: 'message-square', title: 'Personalized Approach',        desc: 'Every project is different. We listen to your goals and tailor our work to fit your specific situation and budget.' },
+  { icon: 'star',           title: 'Quality You Can Trust',        desc: "We stand behind everything we do. If something isn't right, we make it right — that's our commitment to you." },
+  { icon: 'thumbs-up',      title: 'Local & Accessible',           desc: `Based in ${siteConfig.city}, we're easy to reach and quick to respond. Local service with a personal touch.` },
+  { icon: 'sparkles',       title: 'Always Improving',             desc: 'We refine our approach based on feedback and experience, so the service you get today is better than yesterday.' },
 ];
-const featureGridItems = ((siteConfig as any).featureGrid?.length > 0)
-  ? (siteConfig as any).featureGrid
-  : defaultFeatureGrid;
+const featureGridItems = (
+  (hp?.featureGrid && hp.featureGrid.length > 0) ? hp.featureGrid :
+  ((siteConfig as any).featureGrid?.length > 0) ? (siteConfig as any).featureGrid :
+  defaultFeatureGrid
+);
 
 const defaultProcessSteps = isLocalService ? [
   { title: 'Book & Schedule',    desc: 'Reach us by phone or the contact form. We confirm your appointment quickly and work around your schedule.' },
@@ -595,8 +597,8 @@ const heroServiceOptions = serviceEntries.length > 0
 
 <!-- ─── WHAT YOU GET — feature card grid ─────────────────────────────── -->
 <FeatureGrid
-  eyebrow={isLocalService ? "What You Get" : "What to Expect"}
-  heading={isLocalService ? `Every Job, Every Time` : `What You'll Find Here`}
+  eyebrow={isLocalService ? "What You Get" : "Our Work"}
+  heading={isLocalService ? `Every Job, Every Time` : `What We Do`}
   items={featureGridItems}
   variant={isLocalService ? 'cards' : 'rows'}
 />
