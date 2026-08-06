@@ -21,7 +21,6 @@ const categoryEntries = await getCollection('categories').catch(() => []);
 const publishedCategoryEntries = categoryEntries
   .filter((c) => c.data.published !== false)
   .sort((a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title));
-const allBlogPosts = await getCollection('blog').catch(() => []);
 const allProjectEntries = await getCollection('projects').catch(() => []);
 const featuredProjects = allProjectEntries
   .filter(p => p.data.published !== false && p.data.featured === true)
@@ -32,8 +31,6 @@ const featuredProjects = allProjectEntries
     return 0;
   })
   .slice(0, 3);
-const recentBlogPosts = allBlogPosts
-  .sort((a, b) => new Date(b.data.datePublished).getTime() - new Date(a.data.datePublished).getTime());
 const extraCities = [...new Set(
   locationEntries
     .map(e => e.data.city?.trim())
@@ -229,7 +226,6 @@ function splitH(h: string): { main: string; last: string } {
 
 const servicesHeadingText = interpolate(preset.servicesHeading, vars);
 const { main: svcMain, last: svcLast } = splitH(servicesHeadingText);
-const { main: blogMain, last: blogLast } = splitH('Latest Posts');
 // Derive skin here (same logic as BaseLayout) so the hero template can set
 // skin-aware attributes directly on elements — avoids relying on the
 // [data-skin="dark"] CSS ancestor selector which can fail in Astro scoped CSS.
@@ -506,36 +502,6 @@ const heroServiceOptions = serviceEntries.length > 0
 </section>
 )}
 
-{/* wave: neutral → white */}
-<div class="wave-divider" style="background:var(--color-neutral-50);" aria-hidden="true">
-  <svg viewBox="0 0 1440 48" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,24 C360,48 1080,0 1440,24 L1440,48 L0,48 Z" fill="white"/></svg>
-</div>
-
-{/* ─── BLOG GRID (general sites) ─────────────────────────────────────── */}
-<section class="section-pad" style="background:var(--rs-surface);" aria-labelledby="blog-grid-heading">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center mb-16">
-      <h2 id="blog-grid-heading" class="reveal text-[var(--color-text)] mb-4">{blogMain}<span class="u-gradient-text">{blogLast}</span></h2>
-      <p class="text-[var(--color-text-muted)] text-lg max-w-2xl mx-auto">{siteConfig.tagline || 'Insights and ideas worth reading'}</p>
-    </div>
-    {recentBlogPosts.length > 0 ? (
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {recentBlogPosts.slice(0, 6).map((post) => (
-          <ServiceCard
-            title={post.data.title}
-            description={post.data.description}
-            image={post.data.featuredImage || post.data.heroImage || undefined}
-            variants={post.data.featuredImageVariants ?? post.data.heroImageVariants}
-            href={`/blog/${post.slug}`}
-            class="reveal"
-          />
-        ))}
-      </div>
-    ) : (
-      <p class="text-center py-8" style="color:var(--rs-text-muted);">Blog posts will appear here once published.</p>
-    )}
-  </div>
-</section>
 </>
 )}
 
