@@ -32,6 +32,8 @@ const introMessage: string =
   'Hi! Ask me about our services.';
 const enableAi = (siteConfig as any).chatbotEnableAi === true;
 const aiActive = enableAi;
+const siteId: string = (siteConfig as any).chatbotSiteId?.trim() || '';
+const proxyUrl: string = (siteConfig as any).chatbotProxyUrl?.trim() || '';
 ---
 
 {enabled && (
@@ -117,7 +119,7 @@ const aiActive = enableAi;
     </div>
 
     {/* ── Client logic ──────────────────────────────────────────────── */}
-    <script type="module" define:vars={{ aiActive, introMessage }}>
+    <script type="module" define:vars={{ aiActive, introMessage, siteId, proxyUrl }}>
       (() => {
         'use strict';
 
@@ -265,20 +267,22 @@ const aiActive = enableAi;
 
         // ── AI synthesis (Model B) ─────────────────────────────────────
         // AI calls route through the RankSite proxy endpoint so the
-        // customer's API key never reaches the browser. The proxy holds
-        // the key server-side; the browser only sends the question +
-        // retrieved context chunks.
-        const AI_PROXY_URL = 'https://api.ranksite.com/v1/chatbot/synthesize';
-
+        // customer's API key never reaches the browser. The proxy URL
+        // and site ID come from site-config.json (written by the publish
+        // payload), so neither is hardcoded in the template.
         async function synthesizeAnswer(query, matches) {
+          if (!proxyUrl || !siteId) {
+            throw new Error('AI proxy not configured');
+          }
           const context = matches.map((m, i) =>
             `[${i+1}] ${m.title || m.section || ''}\n${m.text}`
           ).join('\n\n');
 
-          const res = await fetch(AI_PROXY_URL, {
+          const res = await fetch(proxyUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
+              siteId,
               question: query,
               context
             })

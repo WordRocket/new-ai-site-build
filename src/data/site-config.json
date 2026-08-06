@@ -52,6 +52,8 @@
   "chatbotIntroMessage": "Hi! Ask me about our services.",
   "chatbotEnableAi": false,
   "chatbotOpenrouterKey": "",
+  "chatbotSiteId": "",
+  "chatbotProxyUrl": "",
   "headerScripts": "",
   "footerScripts": "",
   "navVisibility": {
