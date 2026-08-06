@@ -501,8 +501,8 @@ const heroServiceOptions = serviceEntries.length > 0
 <section class="gen-stats" aria-label="At a glance">
   <div class="gen-stats__inner">
     <div class="gen-stats__item">
-      <span class="gen-stats__value">{siteConfig.yearsInBusiness ? `${siteConfig.yearsInBusiness}+` : 'Pro'}</span>
-      <span class="gen-stats__label">{siteConfig.yearsInBusiness ? 'Years Experience' : 'Professional'}</span>
+      <span class="gen-stats__value">{siteConfig.yearsInBusiness ? `${siteConfig.yearsInBusiness}+` : '★'}</span>
+      <span class="gen-stats__label">{siteConfig.yearsInBusiness ? preset.statsLabel : 'Reputation'}</span>
     </div>
     <div class="gen-stats__item">
       <span class="gen-stats__value">{serviceEntries.length > 0 ? String(serviceEntries.length) : 'Full'}</span>
