@@ -250,8 +250,25 @@ const heroServiceOptions = serviceEntries.length > 0
 <!-- ─── HERO ─────────────────────────────────────────────────────────── -->
 {!isLocalService ? (
 
-<!-- ── HERO: general template (centered, AstroWind-inspired) ─────────── -->
-<section class="hero-general" aria-label="Hero">
+<!-- ── HERO: general template (centered, text-over-image) ─────────── -->
+<section class={`hero-general${hasHeroImage ? ' hero-general--img' : ''}`} aria-label="Hero" data-hero-skin={skin}>
+  {hasHeroImage && (
+    <img
+      class="hero-general__bg"
+      src={heroSrc}
+      srcset={heroSrcset}
+      sizes="100vw"
+      alt=""
+      role="presentation"
+      aria-hidden="true"
+      loading="eager"
+      fetchpriority="high"
+      decoding="async"
+      width="1440"
+      height="900"
+    />
+  )}
+  {hasHeroImage && <div class="hero-general__scrim" data-scrim-skin={skin} aria-hidden="true"></div>}
   <div class="hero-general__inner">
     <div class="hero-general__content">
       <p class="hero-general__tagline reveal">{nicheLabel}</p>
@@ -265,19 +282,6 @@ const heroServiceOptions = serviceEntries.length > 0
       </div>
     </div>
   </div>
-  {hasHeroImage && (
-    <div class="hero-general__image-wrap reveal">
-      <SmartImage
-        src={heroSrc}
-        alt={`${siteConfig.name} — ${nicheLabel}`}
-        aspect="16/9"
-        imgWidth={1024}
-        loading="eager"
-        fetchpriority="high"
-        sizes="(max-width: 767px) 100vw, (max-width: 1023px) 768px, 1024px"
-      />
-    </div>
-  )}
 </section>
 
 ) : formConnected ? (
