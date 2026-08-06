@@ -680,11 +680,14 @@ const heroServiceOptions = serviceEntries.length > 0
 )}
 
 <!-- wave: neutral → dark (hidden on light skin — FAQ becomes light too) -->
+{isLocalService && (
 <div class="wave-divider faq-wave-top" aria-hidden="true">
   <svg viewBox="0 0 1440 48" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,24 C360,48 1080,0 1440,24 L1440,48 L0,48 Z" fill="var(--color-dark-navy)"/></svg>
 </div>
+)}
 
 <!-- ─── FAQ ─────────────────────────────────────────────────────────────── -->
+{isLocalService ? (
 <section class="section-pad section-dark faq-section" aria-labelledby="faq-heading" data-bg={hasFaqBgImage ? 'image' : undefined}>
   {hasFaqBgImage && <SectionBgImage src={faqBgImage} variants={faqBgVariants} scrim="heavy" lightScrim />}
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 faq-section__inner">
@@ -706,6 +709,33 @@ const heroServiceOptions = serviceEntries.length > 0
     </div>
   </div>
 </section>
+) : (
+<section class="faq-gen section-pad" aria-labelledby="faq-heading" style="background:var(--rs-bg);">
+  <div class="faq-gen__inner">
+    <div class="faq-gen__header reveal">
+      <span class="u-eyebrow">FAQ</span>
+      <h2 id="faq-heading" class="faq-gen__title" style="color:var(--rs-text);">
+        Frequently Asked <span class="u-gradient-text">Questions</span>
+      </h2>
+      <p class="faq-gen__sub" style="color:var(--rs-text-muted);">Everything you need to know before getting started.</p>
+    </div>
+    <div class="faq-gen__list" id="faq-list">
+      {faqs.map(({ question, answer }) => (
+        <details class="faq-gen__item reveal">
+          <summary class="faq-gen__q">
+            <span class="faq-gen__chip" aria-hidden="true">
+              <Icon name="help-circle" width={20} height={20} />
+            </span>
+            <span class="faq-gen__q-text" style="color:var(--rs-text);">{stripMd(question)}</span>
+            <svg class="faq-gen__chevron" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </summary>
+          <div class="faq-gen__a"><p style="color:var(--rs-text-muted);">{stripMd(answer)}</p></div>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+)}
 
 <!-- ─── FEATURED PROJECTS (conditional — only renders when featured:true exists) -->
 {featuredProjects.length > 0 && (
@@ -1350,6 +1380,102 @@ const heroServiceOptions = serviceEntries.length > 0
   [data-skin="light"] .faq-section .rs-faq-item:first-child { border-top: none; }
   [data-skin="light"] .faq-section .rs-faq-q { color: var(--rs-text); }
   [data-skin="light"] .faq-section .rs-faq-a > div > p { color: var(--rs-text); }
+
+  /* ── General-template FAQ (clean centered accordion) ─────────────────── */
+  .faq-gen__inner {
+    max-width: 48rem;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+  }
+  .faq-gen__header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .75rem;
+  }
+  .faq-gen__title {
+    font-family: var(--rs-font-display);
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    margin: 0;
+  }
+  .faq-gen__sub {
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    max-width: 32rem;
+    margin: 0;
+  }
+  .faq-gen__list {
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+  }
+  .faq-gen__item {
+    background: var(--rs-surface);
+    border: 1px solid var(--rs-border);
+    border-radius: var(--rs-radius-md);
+    overflow: hidden;
+    transition: border-color .2s ease, box-shadow .2s ease;
+  }
+  .faq-gen__item[open] {
+    border-color: var(--rs-brand-tint-border);
+    box-shadow: var(--rs-shadow-card);
+  }
+  .faq-gen__q {
+    display: flex;
+    align-items: center;
+    gap: .875rem;
+    padding: 1.125rem 1.25rem;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1.0625rem;
+    list-style: none;
+    transition: background .2s ease;
+  }
+  .faq-gen__q::-webkit-details-marker { display: none; }
+  .faq-gen__q:hover { background: color-mix(in srgb, var(--rs-brand) 4%, transparent); }
+  .faq-gen__chip {
+    flex-shrink: 0;
+    width: 36px; height: 36px;
+    border-radius: var(--rs-radius-pill);
+    background: color-mix(in srgb, var(--rs-brand) 12%, transparent);
+    color: var(--rs-brand);
+    display: inline-flex;
+    align-items: center; justify-content: center;
+    transition: background .2s ease, color .2s ease;
+  }
+  .faq-gen__item[open] .faq-gen__chip {
+    background: var(--rs-brand);
+    color: var(--rs-accent-contrast);
+  }
+  .faq-gen__q-text { flex: 1; line-height: 1.4; }
+  .faq-gen__chevron {
+    flex-shrink: 0;
+    color: var(--rs-text-muted);
+    transition: transform .25s ease, color .2s ease;
+  }
+  .faq-gen__item[open] .faq-gen__chevron {
+    transform: rotate(180deg);
+    color: var(--rs-brand);
+  }
+  .faq-gen__a {
+    padding: 0 1.25rem 1.25rem calc(1.25rem + 36px + .875rem);
+  }
+  .faq-gen__a p {
+    margin: 0;
+    font-size: .9375rem;
+    line-height: 1.7;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .faq-gen__item,
+    .faq-gen__q,
+    .faq-gen__chip,
+    .faq-gen__chevron { transition: none; }
+  }
 
 </style>
 

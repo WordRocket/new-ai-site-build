@@ -28,6 +28,7 @@ const PATHS: Record<string, string> = {
   'trending-up':   '<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',
   'check':         '<polyline points="20 6 9 17 4 12"/>',
   'arrow-right':   '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+  'help-circle':   '<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>',
   // Service-type icons
   'bug':           '<rect width="8" height="14" x="8" y="6" rx="4"/><path d="m19 7-3 2"/><path d="m5 7 3 2"/><path d="m19 19-3-2"/><path d="m5 19 3-2"/><path d="M20 13h-4"/><path d="M4 13h4"/><path d="m10 4 1 2"/><path d="m14 4-1 2"/>',
   'search':        '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
