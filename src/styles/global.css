@@ -215,6 +215,7 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
   --rs-bg: #ffffff; --rs-surface: #f8f9fb; --rs-surface-2: #f1f5f9;
   --rs-border: #e6e8ec; --rs-text: #0f172a; --rs-text-muted: #51607a;
   --rs-accent: var(--rs-brand-accent); --rs-accent-contrast: var(--rs-on-brand);
+  --rs-star: #f59e0b;
   /* Derived brand tokens — adapt to any --rs-brand hue automatically */
   --rs-on-brand: oklch(from var(--rs-brand) clamp(0,(0.62 - l)*1000,1) 0 0);
   --rs-brand-subtle: color-mix(in srgb, var(--rs-brand) 12%, var(--rs-surface));
@@ -231,6 +232,7 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
   --rs-bg: #0a0e17; --rs-surface: #111726; --rs-surface-2: #161d2e;
   --rs-border: rgba(255,255,255,.08); --rs-text: #f6f8fc; --rs-text-muted: #97a3b6;
   --rs-brand-text: color-mix(in srgb, var(--rs-brand) 78%, #fff);
+  --rs-star: #fbbf24;
   --rs-grad-to: color-mix(in oklab, var(--rs-brand) 50%, #c7d2fe);
   --rs-glass-bg: rgba(255,255,255,.04);
   --rs-glow: color-mix(in srgb, var(--rs-brand) 28%, transparent);

@@ -31,14 +31,14 @@ const hasUrl        = reviewPlatformUrl.length > 0;
     class="rb-hero"
     aria-label={`${ratingDisplay} stars · ${reviewLabel} — opens in new tab`}
   >
-    <svg class="rb-star" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="#f59e0b" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    <svg class="rb-star" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="var(--rs-star)" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
     <strong class="rb-rating">{ratingDisplay}</strong>
     <span class="rb-sep" aria-hidden="true">·</span>
     <span class="rb-text">{reviewLabel}</span>
   </a>
 ) : (
   <div class="rb-hero" role="img" aria-label={`${ratingDisplay} stars · ${reviewLabel}`}>
-    <svg class="rb-star" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="#f59e0b" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    <svg class="rb-star" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="var(--rs-star)" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
     <strong class="rb-rating">{ratingDisplay}</strong>
     <span class="rb-sep" aria-hidden="true">·</span>
     <span class="rb-text">{reviewLabel}</span>

@@ -8,6 +8,7 @@ import { iconSvg, getServiceIcon } from '../lib/icons';
 import FeatureRow from '../components/sections/FeatureRow.astro';
 import FeatureGrid from '../components/sections/FeatureGrid.astro';
 import ProcessTimeline from '../components/sections/ProcessTimeline.astro';
+import Testimonials from '../components/sections/Testimonials.astro';
 import { getFAQSchema } from '../lib/schema';
 import LeadForm from '../components/LeadForm.astro';
 import ServiceCard from '../components/ServiceCard.astro';
@@ -471,7 +472,7 @@ const heroServiceOptions = serviceEntries.length > 0
       <Icon name="home" width={200} height={200} style="opacity:0.18; color:white;" />
     </div>
     <div class="hero-float-card" style="top:10%; right:8%;">
-      <Icon name="star" width={14} height={14} style="fill:#f59e0b; color:#f59e0b;" aria-hidden="true" />
+      <Icon name="star" width={14} height={14} style="fill:var(--rs-star); color:var(--rs-star);" aria-hidden="true" />
       5-Star Rated
     </div>
     {isLocalService && (
@@ -544,6 +545,7 @@ const heroServiceOptions = serviceEntries.length > 0
 </div>
 
 {hasTestimonial && (
+  isLocalService ? (
   <section class="section-pad" style="background:var(--rs-bg);" aria-labelledby="testimonial-heading">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
       <div class="reveal rounded-[var(--radius-lg)] p-10 sm:p-14" style="background:color-mix(in srgb, var(--rs-accent) 10%, var(--rs-surface)); box-shadow:var(--rs-shadow-card);">
@@ -553,13 +555,19 @@ const heroServiceOptions = serviceEntries.length > 0
         </blockquote>
         <div class="flex items-center justify-center gap-1 mb-3" role="img" aria-label="5-star rating">
           {Array.from({ length: 5 }).map(() => (
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#f59e0b" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="var(--rs-star)" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
           ))}
         </div>
         <p class="text-sm font-semibold text-[var(--color-text)]">— {testimonialAuthor}, <span style="color:var(--color-text-muted);">{testimonialNeighborhood}</span></p>
       </div>
     </div>
   </section>
+  ) : (
+  <Testimonials
+    heading="What Our Clients Say"
+    testimonials={[{ quote: testimonialText, name: testimonialAuthor, role: testimonialNeighborhood, rating: 5 }]}
+  />
+  )
 )}
 
 <!-- ─── FEATURE ROWS ───────────────────────────────────────────────────── -->
