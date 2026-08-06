@@ -1,0 +1,72 @@
+[
+  {
+    "id": "about",
+    "title": "About Us",
+    "section": "About",
+    "url": "/about",
+    "text": "We are a dedicated team committed to delivering exceptional service to our customers. With years of experience in the industry, we pride ourselves on quality workmanship, reliability, and customer satisfaction."
+  },
+  {
+    "id": "contact-phone",
+    "title": "Contact Phone",
+    "section": "Contact",
+    "url": "/contact",
+    "text": "You can reach us by phone during business hours. Call us to schedule an appointment or ask any questions about our services."
+  },
+  {
+    "id": "contact-email",
+    "title": "Contact Email",
+    "section": "Contact",
+    "url": "/contact",
+    "text": "Send us an email and we will get back to you within 24 hours. We are happy to answer any questions you may have."
+  },
+  {
+    "id": "contact-address",
+    "title": "Our Address",
+    "section": "Contact",
+    "url": "/contact",
+    "text": "Visit us at our office location. We serve customers throughout the surrounding area."
+  },
+  {
+    "id": "hours",
+    "title": "Business Hours",
+    "section": "Hours",
+    "url": "/contact",
+    "text": "Our business hours are Monday through Friday, 9 AM to 5 PM. We are closed on weekends and major holidays."
+  },
+  {
+    "id": "faq-pricing",
+    "title": "How much do your services cost?",
+    "section": "FAQ",
+    "url": "/faq",
+    "text": "Our pricing depends on the scope of the project. Contact us for a free quote and we will provide a detailed estimate based on your specific needs."
+  },
+  {
+    "id": "faq-service-area",
+    "title": "What areas do you serve?",
+    "section": "FAQ",
+    "url": "/faq",
+    "text": "We serve the surrounding metro area and nearby communities. Contact us to confirm if we cover your location."
+  },
+  {
+    "id": "faq-appointment",
+    "title": "How do I schedule an appointment?",
+    "section": "FAQ",
+    "url": "/faq",
+    "text": "You can schedule an appointment by calling us, sending an email, or filling out the contact form on our website. We will respond promptly to set up a convenient time."
+  },
+  {
+    "id": "faq-insured",
+    "title": "Are you licensed and insured?",
+    "section": "FAQ",
+    "url": "/faq",
+    "text": "Yes, we are fully licensed and insured. Our team follows all industry standards and regulations to ensure quality and safety."
+  },
+  {
+    "id": "faq-warranty",
+    "title": "Do you offer a warranty?",
+    "section": "FAQ",
+    "url": "/faq",
+    "text": "Yes, we stand behind our work with a satisfaction guarantee. Specific warranty terms vary by service — contact us for details."
+  }
+]

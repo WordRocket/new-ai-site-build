@@ -48,6 +48,10 @@
   "reviewCount": "",
   "reviewPlatform": "Google",
   "reviewPlatformUrl": "",
+  "chatbotEnabled": false,
+  "chatbotIntroMessage": "Hi! Ask me about our services.",
+  "chatbotEnableAi": false,
+  "chatbotOpenRouterKey": "",
   "headerScripts": "",
   "footerScripts": "",
   "navVisibility": {
