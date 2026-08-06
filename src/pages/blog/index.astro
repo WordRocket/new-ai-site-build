@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import siteConfig, { cleanTitle } from '../../lib/site-config';
+import SmartImage from '../../components/SmartImage.astro';
 
 const isLocalService = (siteConfig as any).businessType === 'local-service';
 
@@ -140,8 +141,9 @@ const showCategories = showCollectionCategories || showLegacyCategories;
           </div>
         ) : (
           <>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" id="post-grid">
+            <div class={`grid grid-cols-1 sm:grid-cols-2 ${isLocalService ? 'lg:grid-cols-3' : 'lg:grid-cols-4'} gap-6`} id="post-grid">
               {posts.map((post) => (
+                isLocalService ? (
                 <article
                   class="blog-post-card rounded-[var(--radius-md)] overflow-hidden flex flex-col transition-shadow duration-200 hover:shadow-[var(--shadow-md)]"
                   style="background:var(--rs-surface); box-shadow:var(--shadow-sm);"
@@ -194,6 +196,30 @@ const showCategories = showCollectionCategories || showLegacyCategories;
                     </div>
                   </div>
                 </article>
+                ) : (
+                <article
+                  class="blog-post-card bg-card"
+                  data-category={(post.data.category || '').toLowerCase()}
+                >
+                  <a href={`/blog/${post.slug}`} class="blog-gen-card__img" tabindex="-1" aria-hidden="true">
+                    <SmartImage
+                      src={post.data.featuredImage}
+                      alt={post.data.featuredImageAlt ?? post.data.title}
+                      aspect="16/9"
+                      imgWidth={400}
+                      variants={post.data.featuredImageVariants}
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    />
+                  </a>
+                  <div class="blog-gen-card__body">
+                    <span class="blog-gen-card__cat">{post.data.category}</span>
+                    <h2 class="blog-gen-card__title">
+                      <a href={`/blog/${post.slug}`} class="blog-gen-card__link">{post.data.title}</a>
+                    </h2>
+                    <p class="blog-gen-card__excerpt">{excerpt(post.data.description)}</p>
+                  </div>
+                </article>
+                )
               ))}
             </div>
             <!-- No posts in selected category -->
