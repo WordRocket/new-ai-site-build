@@ -5,25 +5,24 @@
  * A lightweight, self-contained site chatbot that ships in two modes:
  *
  *  Model A — Retrieval-only (default, zero cost)
- *    Loads /chatbot-embeddings.json (pre-generated at publish time),
- *    performs semantic + keyword search, and returns matching content
- *    chunks as-is. Works for ~80% of typical visitor questions
- *    (hours, services, locations, pricing from FAQs, contact info).
+ *    Reads chatbotAnswerPack from site-config.json (built and shipped
+ *    from Railway). Uses fuse.js to fuzzy-match visitor questions
+ *    against curated answer-pack entries (keywords: 0.55, question:
+ *    0.35, answer: 0.10, threshold 0.45). Returns the top match's
+ *    answer. If no match, tries fallbacks (page excerpts). If still
+ *    nothing, returns noAnswer (contact details).
  *
- *  Model B — AI synthesis (opt-in, user supplies their own API key)
- *    Same retrieval layer runs first, then the top matches + the user's
- *    question are sent to the RankSite AI proxy endpoint for a grounded,
- *    conversational answer. The customer's API key is held server-side
- *    by the proxy — it never ships to the browser. No key configured →
- *    silently falls back to Model A.
+ *  Model B — AI synthesis (opt-in, chatbotEnableAi: true)
+ *    Same retrieval layer runs first, then the top matches + the
+ *    user's question are sent to the RankSite AI proxy endpoint for
+ *    a grounded, conversational answer. The customer's API key is
+ *    held server-side by the proxy — it never ships to the browser.
  *
- * The widget is entirely client-side: embeddings are fetched once on
- * open, search is in-browser, and chat history lives in memory only.
- * It renders only when siteConfig.chatbotEnabled === true.
- *
- * "Powered by RankSite" footer link is always visible in the panel.
+ * Starter chips: clickable prompt buttons shown below the input,
+ * sourced from answerPack.starters.
  */
 
+import Fuse from 'fuse.js';
 import siteConfig from '../data/site-config.json';
 
 const enabled = (siteConfig as any).chatbotEnabled === true;
@@ -31,9 +30,59 @@ const introMessage: string =
   (siteConfig as any).chatbotIntroMessage?.trim() ||
   'Hi! Ask me about our services.';
 const enableAi = (siteConfig as any).chatbotEnableAi === true;
-const aiActive = enableAi;
 const siteId: string = (siteConfig as any).chatbotSiteId?.trim() || '';
 const proxyUrl: string = (siteConfig as any).chatbotProxyUrl?.trim() || '';
+
+// Answer pack — built and shipped from Railway publish payload
+type AnswerEntry = {
+  id?: string;
+  keywords?: string[];
+  question?: string;
+  answer: string;
+  url?: string;
+};
+type FallbackEntry = { title?: string; text: string; url?: string };
+type AnswerPack = {
+  entries?: AnswerEntry[];
+  fallbacks?: FallbackEntry[];
+  starters?: string[];
+  noAnswer?: string;
+};
+
+const answerPack: AnswerPack = (siteConfig as any).chatbotAnswerPack || {};
+const entries: AnswerEntry[] = Array.isArray(answerPack.entries) ? answerPack.entries : [];
+const fallbacks: FallbackEntry[] = Array.isArray(answerPack.fallbacks) ? answerPack.fallbacks : [];
+const starters: string[] = Array.isArray(answerPack.starters) ? answerPack.starters : [];
+const noAnswerText: string = (answerPack.noAnswer || '').trim();
+
+// Build fuse index at build time — entries are static content
+const fuseIndex = entries.map((e, i) => ({
+  id: e.id || `entry-${i}`,
+  keywords: Array.isArray(e.keywords) ? e.keywords.join(' ') : (e.keywords || ''),
+  question: e.question || '',
+  answer: e.answer || '',
+  url: e.url || '',
+  _answer: e.answer,
+}));
+
+const fuseOptions = {
+  keys: [
+    { name: 'keywords', weight: 0.55 },
+    { name: 'question', weight: 0.35 },
+    { name: 'answer', weight: 0.10 },
+  ],
+  threshold: 0.45,
+  includeScore: true,
+  ignoreLocation: true,
+  minMatchCharLength: 2,
+};
+
+// Serialize fuse index + options for client-side initialization
+const fuseData = JSON.stringify(fuseIndex);
+const fuseOptsJson = JSON.stringify(fuseOptions);
+const fallbacksJson = JSON.stringify(fallbacks);
+const startersJson = JSON.stringify(starters);
+const noAnswerJson = JSON.stringify(noAnswerText);
 ---
 
 {enabled && (
@@ -78,7 +127,7 @@ const proxyUrl: string = (siteConfig as any).chatbotProxyUrl?.trim() || '';
             <p class="cb-header__title">Ask {siteConfig.name || 'Us'}</p>
             <p class="cb-header__status" id="cb-status">
               <span class="cb-header__dot" aria-hidden="true"></span>
-              <span>{aiActive ? 'AI-powered' : 'Search-based'}</span>
+              <span>{enableAi ? 'AI-powered' : 'Search-based'}</span>
             </p>
           </div>
         </div>
@@ -93,6 +142,15 @@ const proxyUrl: string = (siteConfig as any).chatbotProxyUrl?.trim() || '';
           <div class="cb-msg__bubble">{introMessage}</div>
         </div>
       </div>
+
+      {/* Starter chips */}
+      {starters.length > 0 && (
+        <div id="cb-starters" class="cb-starters" aria-label="Suggested questions">
+          {starters.map((s) => (
+            <button type="button" class="cb-chip" data-query={s}>{s}</button>
+          ))}
+        </div>
+      )}
 
       {/* Input */}
       <form id="cb-form" class="cb-input-row" autocomplete="off">
@@ -119,27 +177,75 @@ const proxyUrl: string = (siteConfig as any).chatbotProxyUrl?.trim() || '';
     </div>
 
     {/* ── Client logic ──────────────────────────────────────────────── */}
-    <script type="module" define:vars={{ aiActive, introMessage, siteId, proxyUrl }}>
+    <script type="module" define:vars={{
+      enableAi,
+      introMessage,
+      siteId,
+      proxyUrl,
+      fuseData,
+      fuseOptsJson,
+      fallbacksJson,
+      startersJson,
+      noAnswerJson,
+    }}>
       (() => {
         'use strict';
 
-        // ── State ──────────────────────────────────────────────────────
-        let embeddings = null;       // Array<{id,text,title,section,url,embedding?:number[]}>
-        let embeddingsLoaded = false;
-        let isTyping = false;
-        const chatHistory = [];       // {role:'user'|'assistant', content:string}
+        // ── Config from build-time site-config.json ───────────────────
+        const aiActive = enableAi;
         const EMBED_URL = '/chatbot-embeddings.json';
         const TOP_K = 3;
-        const SIM_THRESHOLD = 0.15;
+
+        // ── Answer pack data (serialized from build) ──────────────────
+        const fuseIndexData = JSON.parse(fuseData);
+        const fuseOptions = JSON.parse(fuseOptsJson);
+        const fallbacks = JSON.parse(fallbacksJson);
+        const starters = JSON.parse(startersJson);
+        const noAnswerText = JSON.parse(noAnswerJson);
+
+        // ── Fuse.js initialization ────────────────────────────────────
+        // fuse.js is imported as an ES module via the Astro script bundler.
+        // We use the dynamic import to get the bundled Fuse class.
+        let fuse = null;
+
+        async function initFuse() {
+          if (fuse) return fuse;
+          const FuseModule = await import('fuse.js');
+          const FuseClass = FuseModule.default || FuseModule;
+          fuse = new FuseClass(fuseIndexData, fuseOptions);
+          return fuse;
+        }
+
+        // ── Embeddings (page excerpts for fallback search) ────────────
+        let embeddings = null;
+        let embeddingsLoaded = false;
+
+        async function loadEmbeddings() {
+          try {
+            const res = await fetch(EMBED_URL, { cache: 'force-cache' });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            embeddings = Array.isArray(data) ? data : (data.chunks || data.embeddings || []);
+            embeddingsLoaded = true;
+          } catch (err) {
+            embeddings = [];
+            embeddingsLoaded = true;
+          }
+        }
+
+        // ── State ──────────────────────────────────────────────────────
+        let isTyping = false;
+        const chatHistory = [];
 
         // ── DOM refs ───────────────────────────────────────────────────
         const launcher = document.getElementById('cb-launcher');
         const panel = document.getElementById('cb-panel');
         const closeBtn = document.getElementById('cb-close');
         const form = document.getElementById('cb-form');
-        const input = document.getElementById('cb-input') ;
+        const input = document.getElementById('cb-input');
         const messages = document.getElementById('cb-messages');
         const sendBtn = document.getElementById('cb-send');
+        const startersContainer = document.getElementById('cb-starters');
 
         if (!launcher || !panel || !form || !input || !messages) return;
 
@@ -149,9 +255,7 @@ const proxyUrl: string = (siteConfig as any).chatbotProxyUrl?.trim() || '';
           panel.classList.add('cb-panel--open');
           launcher.setAttribute('aria-expanded', 'true');
           launcher.classList.add('cb-launcher--active');
-          // Lazy-load embeddings on first open
           if (!embeddingsLoaded) loadEmbeddings();
-          // Focus input after CSS transition
           setTimeout(() => { try { input.focus(); } catch(e){} }, 320);
         }
 
@@ -168,124 +272,130 @@ const proxyUrl: string = (siteConfig as any).chatbotProxyUrl?.trim() || '';
         });
         closeBtn.addEventListener('click', closePanel);
 
-        // Close on Escape
         document.addEventListener('keydown', (e) => {
           if (e.key === 'Escape' && panel.classList.contains('cb-panel--open')) {
             closePanel();
           }
         });
 
-        // ── Load embeddings ────────────────────────────────────────────
-        async function loadEmbeddings() {
-          try {
-            const res = await fetch(EMBED_URL, { cache: 'force-cache' });
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const data = await res.json();
-            embeddings = Array.isArray(data) ? data : (data.chunks || data.embeddings || []);
-            embeddingsLoaded = true;
-          } catch (err) {
-            embeddings = [];
-            embeddingsLoaded = true;
-          }
+        // ── Starter chips ──────────────────────────────────────────────
+        if (startersContainer) {
+          startersContainer.addEventListener('click', (e) => {
+            const chip = e.target.closest('.cb-chip');
+            if (!chip) return;
+            const query = chip.getAttribute('data-query');
+            if (!query) return;
+            input.value = query;
+            form.requestSubmit();
+          });
         }
 
         // ── Text utilities ─────────────────────────────────────────────
-        function normalize(text) {
-          return (text || '').toLowerCase().replace(/[^\w\s]/g, ' ').replace(/\s+/g, ' ').trim();
+        function escapeHtml(s) {
+          const div = document.createElement('div');
+          div.textContent = s;
+          return div.innerHTML;
         }
 
         function tokenize(text) {
-          return normalize(text).split(' ').filter(t => t.length > 1);
+          return (text || '').toLowerCase().replace(/[^\w\s]/g, ' ').replace(/\s+/g, ' ').trim().split(' ').filter(t => t.length > 1);
         }
 
-        // Simple word-overlap score (works without pre-computed vectors)
+        // Simple word-overlap score for fallback embeddings search
         function keywordScore(queryTokens, chunkText) {
           const chunkTokens = new Set(tokenize(chunkText));
           if (chunkTokens.size === 0) return 0;
           let hits = 0;
           for (const t of queryTokens) { if (chunkTokens.has(t)) hits++; }
-          // Coverage-weighted: how many query tokens matched
           return hits / queryTokens.length;
         }
 
-        // Cosine similarity for pre-computed embeddings (if present)
-        function cosine(a, b) {
-          if (!a || !b || a.length !== b.length) return 0;
-          let dot = 0, magA = 0, magB = 0;
-          for (let i = 0; i < a.length; i++) {
-            dot += a[i] * b[i];
-            magA += a[i] * a[i];
-            magB += b[i] * b[i];
-          }
-          const denom = Math.sqrt(magA) * Math.sqrt(magB);
-          return denom === 0 ? 0 : dot / denom;
+        // ── Answer pack search (fuse.js) ───────────────────────────────
+        async function searchAnswerPack(query) {
+          const f = await initFuse();
+          const results = f.search(query, { limit: TOP_K });
+          if (results.length === 0) return null;
+
+          const best = results[0];
+          // fuse.js score: 0 = perfect match, 1 = no match.
+          // threshold 0.45 already filters, but double-check.
+          if (best.score > 0.45) return null;
+
+          const item = best.item;
+          const answer = item._answer || item.answer || '';
+          if (!answer) return null;
+
+          const sourceLink = item.url ? ` <a href="${item.url}" class="cb-source-link">Read more</a>` : '';
+          return { text: answer + sourceLink, matches: [{ title: item.question || '', text: answer, url: item.url }] };
         }
 
-        // ── Retrieval ─────────────────────────────────────────────────
-        function search(query) {
-          if (!embeddings || embeddings.length === 0) return [];
-          const qTokens = tokenize(query);
-          if (qTokens.length === 0) return [];
-
-          const hasVectors = embeddings.some(c => c.embedding && c.embedding.length > 0);
-          const scored = embeddings.map(chunk => {
-            const combinedText = (chunk.title ? chunk.title + ' ' : '') + (chunk.text || '');
-            let score;
-            if (hasVectors && chunk.embedding) {
-              // Semantic search via cosine similarity (vector mode)
-              score = cosine(qTokens, chunk.embedding);
-            } else {
-              // Keyword fallback (Model A without vectors)
-              score = keywordScore(qTokens, combinedText);
+        // ── Fallback search (page excerpts) ────────────────────────────
+        function searchFallbacks(query) {
+          // First try the answer pack fallbacks array
+          if (fallbacks.length > 0) {
+            const qTokens = tokenize(query);
+            let best = null;
+            let bestScore = 0;
+            for (const fb of fallbacks) {
+              const combinedText = (fb.title || '') + ' ' + (fb.text || '');
+              const score = keywordScore(qTokens, combinedText);
+              if (score > bestScore) { bestScore = score; best = fb; }
             }
-            return { chunk, score };
-          });
+            if (best && bestScore > 0.15) {
+              const sourceLink = best.url ? ` <a href="${best.url}" class="cb-source-link">Read more</a>` : '';
+              return { text: (best.title ? `<strong>${escapeHtml(best.title)}</strong><br>` : '') + escapeHtml(best.text) + sourceLink, matches: [{ title: best.title || '', text: best.text, url: best.url }] };
+            }
+          }
 
-          return scored
-            .filter(s => s.score > SIM_THRESHOLD)
-            .sort((a, b) => b.score - a.score)
-            .slice(0, TOP_K)
-            .map(s => s.chunk);
+          // Then try the embeddings file (page excerpts generated at build)
+          if (embeddings && embeddings.length > 0) {
+            const qTokens = tokenize(query);
+            if (qTokens.length === 0) return null;
+
+            const scored = embeddings.map(chunk => {
+              const combinedText = (chunk.title ? chunk.title + ' ' : '') + (chunk.text || '');
+              return { chunk, score: keywordScore(qTokens, combinedText) };
+            });
+
+            const top = scored
+              .filter(s => s.score > 0.15)
+              .sort((a, b) => b.score - a.score)
+              .slice(0, TOP_K);
+
+            if (top.length > 0) {
+              const parts = top.map(s => {
+                const m = s.chunk;
+                const sourceLink = m.url ? ` <a href="${m.url}" class="cb-source-link">Read more</a>` : '';
+                return `<p><strong>${escapeHtml(m.title || m.section || '')}</strong>${sourceLink}<br>${escapeHtml(m.text)}</p>`;
+              });
+              return { text: parts.join(''), matches: top.map(s => s.chunk) };
+            }
+          }
+
+          return null;
         }
 
-        // ── Response building (Model A) ────────────────────────────────
-        function buildRetrievalAnswer(matches) {
-          if (matches.length === 0) {
-            return "I don't have that information right now. Try rephrasing your question, or contact us directly for help.";
+        // ── No-answer fallback (contact details) ───────────────────────
+        function buildNoAnswer() {
+          if (noAnswerText) {
+            return noAnswerText;
           }
-          if (matches.length === 1) {
-            const m = matches[0];
-            const sourceLink = m.url ? ` <a href="${m.url}" class="cb-source-link">Read more</a>` : '';
-            return `${m.text}${sourceLink}`;
-          }
-          const parts = matches.map((m, i) => {
-            const sourceLink = m.url ? ` <a href="${m.url}" class="cb-source-link">Read more</a>` : '';
-            return `<p><strong>${m.title || m.section || ('Result ' + (i+1))}</strong>${sourceLink}<br>${m.text}</p>`;
-          });
-          return parts.join('');
+          return "I don't have that information right now. Try rephrasing your question, or contact us directly for help.";
         }
 
         // ── AI synthesis (Model B) ─────────────────────────────────────
-        // AI calls route through the RankSite proxy endpoint so the
-        // customer's API key never reaches the browser. The proxy URL
-        // and site ID come from site-config.json (written by the publish
-        // payload), so neither is hardcoded in the template.
         async function synthesizeAnswer(query, matches) {
           if (!proxyUrl || !siteId) {
             throw new Error('AI proxy not configured');
           }
           const context = matches.map((m, i) =>
-            `[${i+1}] ${m.title || m.section || ''}\n${m.text}`
+            `[${i+1}] ${m.title || ''}\n${m.text}`
           ).join('\n\n');
 
           const res = await fetch(proxyUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              siteId,
-              question: query,
-              context
-            })
+            body: JSON.stringify({ siteId, question: query, context })
           });
 
           if (!res.ok) throw new Error(`AI proxy request failed: ${res.status}`);
@@ -325,16 +435,8 @@ const proxyUrl: string = (siteConfig as any).chatbotProxyUrl?.trim() || '';
           if (el) el.remove();
         }
 
-        function escapeHtml(s) {
-          const div = document.createElement('div');
-          div.textContent = s;
-          return div.innerHTML;
-        }
-
         // ── Form submit ────────────────────────────────────────────────
-        form.addEventListener('submit', async (e) => {
-          e.preventDefault();
-          const query = input.value.trim();
+        async function handleSubmit(query) {
           if (!query || isTyping) return;
 
           addMessage('user', escapeHtml(query));
@@ -345,31 +447,47 @@ const proxyUrl: string = (siteConfig as any).chatbotProxyUrl?.trim() || '';
           addTypingIndicator();
 
           try {
-            // Ensure embeddings are loaded
             if (!embeddingsLoaded) await loadEmbeddings();
 
-            const matches = search(query);
+            let answerHtml = null;
+            let matches = [];
 
-            let answerHtml;
-            if (aiActive) {
+            // Step 1: Search answer pack entries with fuse.js
+            const packResult = await searchAnswerPack(query);
+            if (packResult) {
+              answerHtml = packResult.text;
+              matches = packResult.matches;
+            }
+
+            // Step 2: If no match, try fallbacks (page excerpts)
+            if (!answerHtml) {
+              const fbResult = searchFallbacks(query);
+              if (fbResult) {
+                answerHtml = fbResult.text;
+                matches = fbResult.matches;
+              }
+            }
+
+            // Step 3: If still nothing, return noAnswer (contact details)
+            if (!answerHtml) {
+              answerHtml = buildNoAnswer();
+            }
+
+            // Model B: AI synthesis on top of retrieval
+            if (aiActive && proxyUrl && siteId && matches.length > 0) {
               try {
                 const aiAnswer = await synthesizeAnswer(query, matches);
-                answerHtml = escapeHtml(aiAnswer);
-                // Append source links
-                if (matches.length > 0) {
-                  const links = matches
-                    .filter(m => m.url)
-                    .slice(0, 3)
-                    .map(m => `<a href="${m.url}" class="cb-source-link">Read more</a>`)
-                    .join(' ');
-                  if (links) answerHtml += ` <span class="cb-sources">${links}</span>`;
-                }
+                let aiHtml = escapeHtml(aiAnswer);
+                const links = matches
+                  .filter(m => m.url)
+                  .slice(0, 3)
+                  .map(m => `<a href="${m.url}" class="cb-source-link">Read more</a>`)
+                  .join(' ');
+                if (links) aiHtml += ` <span class="cb-sources">${links}</span>`;
+                answerHtml = aiHtml;
               } catch (aiErr) {
-                // Fall back to retrieval-only on AI error
-                answerHtml = buildRetrievalAnswer(matches);
+                // Fall back to retrieval-only answer on AI error
               }
-            } else {
-              answerHtml = buildRetrievalAnswer(matches);
             }
 
             removeTypingIndicator();
@@ -383,6 +501,11 @@ const proxyUrl: string = (siteConfig as any).chatbotProxyUrl?.trim() || '';
             sendBtn.disabled = false;
             try { input.focus(); } catch(e){}
           }
+        }
+
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          handleSubmit(input.value.trim());
         });
 
         // Expose for debugging if needed
@@ -553,6 +676,40 @@ const proxyUrl: string = (siteConfig as any).chatbotProxyUrl?.trim() || '';
       .cb-typing-dot:nth-child(3) { animation-delay: 0.4s; }
       @keyframes cb-typing { 0%, 60%, 100% { opacity: 0.3; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-4px); } }
 
+      /* ── Starter chips ──────────────────────────────────────────────── */
+      .cb-starters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.375rem;
+        padding: 0 0.75rem 0.5rem;
+        flex-shrink: 0;
+      }
+      .cb-chip {
+        display: inline-block;
+        padding: 0.3125rem 0.6875rem;
+        border: 1px solid color-mix(in srgb, var(--rs-brand, #2563eb) 30%, transparent);
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--rs-brand, #2563eb) 6%, transparent);
+        color: var(--rs-brand, #2563eb);
+        font-size: 0.75rem;
+        font-family: inherit;
+        font-weight: 500;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .cb-chip:hover {
+        background: color-mix(in srgb, var(--rs-brand, #2563eb) 12%, transparent);
+        border-color: var(--rs-brand, #2563eb);
+      }
+      .cb-chip:active { opacity: 0.7; }
+      [data-skin="dark"] .cb-chip {
+        background: color-mix(in srgb, var(--rs-brand, #2563eb) 12%, transparent);
+        border-color: color-mix(in srgb, var(--rs-brand, #2563eb) 40%, transparent);
+        color: var(--rs-brand, #93c5fd);
+      }
+
       /* ── Input row ──────────────────────────────────────────────────── */
       .cb-input-row {
         display: flex;
@@ -627,7 +784,7 @@ const proxyUrl: string = (siteConfig as any).chatbotProxyUrl?.trim() || '';
       /* ── Reduced motion ─────────────────────────────────────────────── */
       @media (prefers-reduced-motion: reduce) {
         .cb-launcher, .cb-launcher__icon, .cb-panel, .cb-msg,
-        .cb-send, .cb-typing-dot { transition: none !important; animation: none !important; }
+        .cb-send, .cb-typing-dot, .cb-chip { transition: none !important; animation: none !important; }
         .cb-panel--open { transform: none; }
       }
     </style>
