@@ -5,6 +5,7 @@ import { getOrganizationSchema, getBreadcrumbSchema } from '../lib/schema';
 import siteConfig from '../lib/site-config';
 import { getPreset, interpolate } from '../lib/business-presets';
 import SmartImage from '../components/SmartImage.astro';
+import RelatedLinks from '../components/RelatedLinks.astro';
 
 const siteUrl = import.meta.env.SITE ?? siteConfig.url;
 const pageUrl = `${siteUrl}/about`;
@@ -284,6 +285,10 @@ const whyUs = isLocalService ? [
         </div>
       </section>
 
+    </div>
+
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+      <RelatedLinks links={ap?.relatedLinks ?? []} />
     </div>
 
     <!-- Closing CTA -->

@@ -6,6 +6,7 @@ import siteConfig from '../lib/site-config';
 import { formatPhone } from '../lib/site-config';
 import { getPreset } from '../lib/business-presets';
 import LeadForm from '../components/LeadForm.astro';
+import RelatedLinks from '../components/RelatedLinks.astro';
 
 const siteUrl = import.meta.env.SITE ?? siteConfig.url;
 const pageUrl = `${siteUrl}/contact`;
@@ -256,6 +257,10 @@ const mapSrc = mapQuery ? `https://maps.google.com/maps?q=${mapQuery}&output=emb
         </aside>
 
       </div>
+    </div>
+
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+      <RelatedLinks links={(cp as any)?.relatedLinks ?? []} />
     </div>
 
     <!-- Full-width map strip — local-service only -->

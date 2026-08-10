@@ -5,6 +5,12 @@ const imageVariantsSchema = z.record(
   z.object({ url: z.string(), width: z.number(), height: z.number() })
 ).nullable().optional();
 
+const relatedLinkSchema = z.object({
+  title: z.string(),
+  url: z.string(),
+  description: z.string().optional(),
+});
+
 const blog = defineCollection({
   schema: z.object({
     title: z.string(),
@@ -27,6 +33,7 @@ const blog = defineCollection({
     ogImage: z.string().optional(),
     faq: z.array(z.object({ question: z.string(), answer: z.string() })).default([]),
     schemaJsonld: z.string().optional(),
+    relatedLinks: z.array(relatedLinkSchema).default([]),
   }),
 });
 
@@ -59,6 +66,7 @@ const pages = defineCollection({
     schemaJsonld: z.string().optional(),
     showInNav: z.boolean().default(true),
     navOrder: z.number().nullish(),
+    relatedLinks: z.array(relatedLinkSchema).default([]),
   }),
 });
 
@@ -92,6 +100,7 @@ const services = defineCollection({
     features: z.array(featureSchema).optional(),
     testimonials: z.array(testimonialSchema).optional(),
     schemaJsonld: z.string().optional(),
+    relatedLinks: z.array(relatedLinkSchema).default([]),
   }),
 });
 
@@ -114,6 +123,7 @@ const locations = defineCollection({
     features: z.array(featureSchema).optional(),
     testimonials: z.array(testimonialSchema).optional(),
     schemaJsonld: z.string().optional(),
+    relatedLinks: z.array(relatedLinkSchema).default([]),
   }),
 });
 
@@ -153,6 +163,7 @@ const categories = defineCollection({
     features: z.array(featureSchema).optional(),
     testimonials: z.array(testimonialSchema).optional(),
     schemaJsonld: z.string().optional(),
+    relatedLinks: z.array(relatedLinkSchema).default([]),
   }),
 });
 
@@ -172,6 +183,7 @@ const industries = defineCollection({
     features: z.array(featureSchema).optional(),
     testimonials: z.array(testimonialSchema).optional(),
     schemaJsonld: z.string().optional(),
+    relatedLinks: z.array(relatedLinkSchema).default([]),
   }),
 });
 

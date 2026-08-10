@@ -15,6 +15,7 @@ import {
 import siteConfig from '../lib/site-config';
 import { toTitleCase, cleanTitle } from '../lib/site-config';
 import ReviewBanner from '../components/ReviewBanner.astro';
+import RelatedLinks from '../components/RelatedLinks.astro';
 
 // Reserved top-level routes handled by dedicated .astro files — pages
 // collection entries with these slugs are skipped here to avoid conflicts.
@@ -313,6 +314,7 @@ if (kind === 'industry') {
               </div>
             </section>
           )}
+          <RelatedLinks links={pageData.relatedLinks ?? []} />
         </article>
       </div>
 
@@ -415,6 +417,8 @@ if (kind === 'industry') {
             </p>
           )}
         </section>
+
+        <RelatedLinks links={d.relatedLinks ?? []} />
 
       </article>
 

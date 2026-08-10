@@ -12,6 +12,7 @@ import CtaBand from '../../components/sections/CtaBand.astro';
 import siteConfig from '../../lib/site-config';
 import { toTitleCase, cleanTitle } from '../../lib/site-config';
 import ReviewBanner from '../../components/ReviewBanner.astro';
+import RelatedLinks from '../../components/RelatedLinks.astro';
 import {
   getServiceSchema,
   getFAQSchema,
@@ -286,6 +287,8 @@ const relatedProjects = [...pinned, ...unpinned].slice(0, 3);
             </div>
           </section>
         )}
+
+        <RelatedLinks links={d.relatedLinks ?? []} />
 
       </article>
 

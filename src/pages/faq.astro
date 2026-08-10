@@ -4,6 +4,7 @@ import { getFAQSchema, getBreadcrumbSchema } from '../lib/schema';
 import siteConfig, { resolveSiteImage } from '../lib/site-config';
 import { getEntry } from 'astro:content';
 import SectionBgImage from '../components/SectionBgImage.astro';
+import RelatedLinks from '../components/RelatedLinks.astro';
 
 const siteUrl = import.meta.env.SITE ?? siteConfig.url;
 const pageUrl = `${siteUrl}/faq`;
@@ -19,7 +20,7 @@ const hasFaqImage = faqBgImage.length > 0;
 const entry = await getEntry('pages', 'faq').catch(() => undefined);
 if (!entry) return Astro.redirect('/404', 404);
 
-const { faq = [], faqCategories, faqPageTitle, faqPageDescription } = entry.data;
+const { faq = [], faqCategories, faqPageTitle, faqPageDescription, relatedLinks = [] } = entry.data;
 
 // Build a normalised categories array regardless of which shape Railway wrote
 type FaqItem = { question: string; answer: string };
@@ -123,6 +124,10 @@ const schemas = [breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])];
         </div>
       </div>
     </section>
+
+    <div class="max-w-[800px] mx-auto px-4 sm:px-6 lg:px-8">
+      <RelatedLinks links={relatedLinks} />
+    </div>
   </main>
 </BaseLayout>
 

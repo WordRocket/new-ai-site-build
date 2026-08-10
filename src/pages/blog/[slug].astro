@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import PostLayout from '../../layouts/PostLayout.astro';
 import TrustBar from '../../components/sections/TrustBar.astro';
 import BlogSidebar from '../../components/BlogSidebar.astro';
+import RelatedLinks from '../../components/RelatedLinks.astro';
 import siteConfig from '../../lib/site-config';
 import {
   getBlogPostSchema,
@@ -216,6 +217,8 @@ const relatedPosts = allPosts
             }
           </div>
         </div>
+
+        <RelatedLinks links={d.relatedLinks ?? []} />
 
       </article>
 

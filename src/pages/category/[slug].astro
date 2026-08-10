@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SmartImage from '../../components/SmartImage.astro';
 import CategorySidebar from '../../components/CategorySidebar.astro';
+import RelatedLinks from '../../components/RelatedLinks.astro';
 import siteConfig from '../../lib/site-config';
 import { cleanTitle } from '../../lib/site-config';
 import {
@@ -215,6 +216,8 @@ function excerpt(text: string, max = 140): string {
             All Categories
           </a>
         </div>
+
+        <RelatedLinks links={d.relatedLinks ?? []} />
 
       </article>
 
