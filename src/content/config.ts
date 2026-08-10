@@ -8,7 +8,7 @@ const imageVariantsSchema = z.record(
 const relatedLinkSchema = z.object({
   title: z.string(),
   url: z.string(),
-  description: z.string().optional(),
+  type: z.string().optional(),
 });
 
 const blog = defineCollection({
