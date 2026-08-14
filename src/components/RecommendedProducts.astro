@@ -1,0 +1,67 @@
+---
+import AffiliateProductCard from './AffiliateProductCard.astro';
+
+interface Product {
+  slug: string;
+  data: {
+    name: string;
+    pitch: string;
+    affiliateUrl: string;
+    image?: string;
+    priceNote?: string;
+    ctaLabel?: string;
+    priority?: number;
+  };
+}
+
+interface Props {
+  products: Product[];
+  max?: number;
+}
+
+const { products, max = 3 } = Astro.props;
+const top = [...products]
+  .sort((a, b) => (a.data.priority ?? 100) - (b.data.priority ?? 100))
+  .slice(0, max);
+---
+
+{top.length > 0 && (
+  <section class="rec-products" aria-label="Recommended products">
+    <h2 class="rec-products__heading">Recommended</h2>
+    <div class="rec-products__list">
+      {top.map((p) => (
+        <AffiliateProductCard
+          name={p.data.name}
+          pitch={p.data.pitch}
+          affiliateUrl={p.data.affiliateUrl}
+          image={p.data.image}
+          priceNote={p.data.priceNote}
+          ctaLabel={p.data.ctaLabel ?? 'View Details'}
+          compact={true}
+        />
+      ))}
+    </div>
+  </section>
+)}
+
+<style>
+  .rec-products {
+    border-radius: var(--radius-lg, 12px);
+    padding: 1.25rem;
+    background: var(--rs-surface-2, #f8fafc);
+    border: 1px solid var(--rs-border, #e4e4e7);
+  }
+  .rec-products__heading {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--rs-text-muted, #64748b);
+    margin: 0 0 0.875rem;
+  }
+  .rec-products__list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+</style>

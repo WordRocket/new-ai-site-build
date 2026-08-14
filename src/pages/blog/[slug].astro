@@ -4,6 +4,8 @@ import PostLayout from '../../layouts/PostLayout.astro';
 import TrustBar from '../../components/sections/TrustBar.astro';
 import BlogSidebar from '../../components/BlogSidebar.astro';
 import RelatedLinks from '../../components/RelatedLinks.astro';
+import AffiliateDisclosure from '../../components/AffiliateDisclosure.astro';
+import AffiliateProductCard from '../../components/AffiliateProductCard.astro';
 import siteConfig from '../../lib/site-config';
 import {
   getBlogPostSchema,
@@ -21,6 +23,19 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 const { Content, headings: astroHeadings } = await post.render();
 const d = post.data;
+
+// Affiliate products featured on this post
+const affiliateEnabled = (siteConfig as any).affiliateLinksEnabled === true;
+const featuredIds: string[] = Array.isArray((d as any).featuredProductIds) ? (d as any).featuredProductIds : [];
+const allAffiliateProducts = affiliateEnabled && featuredIds.length > 0
+  ? await getCollection('affiliateProducts').catch(() => [])
+  : [];
+const featuredProducts = affiliateEnabled && featuredIds.length > 0
+  ? featuredIds
+      .map((id) => allAffiliateProducts.find((p) => p.slug === id))
+      .filter((p): p is NonNullable<typeof p> => Boolean(p))
+  : [];
+const hasAffiliate = featuredProducts.length > 0;
 
 // Reading time: ~200 wpm average
 const wordCount = (post.body ?? '').split(/\s+/).filter(Boolean).length;
@@ -167,6 +182,26 @@ const relatedPosts = allPosts
             </div>
           </div>
         </div>
+
+        {/* Affiliate disclosure + product cards after intro */}
+        {hasAffiliate && (
+          <div class="mb-8 flex flex-col gap-4">
+            <AffiliateDisclosure />
+            <div class="grid grid-cols-1 gap-4">
+              {featuredProducts.map((p) => (
+                <AffiliateProductCard
+                  name={p.data.name}
+                  pitch={p.data.pitch}
+                  affiliateUrl={p.data.affiliateUrl}
+                  image={p.data.image}
+                  priceNote={p.data.priceNote}
+                  ctaLabel={p.data.ctaLabel}
+                  compact={true}
+                />
+              ))}
+            </div>
+          </div>
+        )}
 
         <!-- Article body -->
         <div class="prose prose-neutral prose-lg max-w-none">

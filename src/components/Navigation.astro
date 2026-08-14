@@ -15,6 +15,7 @@ const serviceLinks = rawServices
 const hasServiceDropdown = serviceLinks.length > 0;
 
 const isLocalService = (siteConfig as any).businessType === 'local-service';
+const affiliateEnabled = (siteConfig as any).affiliateLinksEnabled === true;
 
 // Categories dropdown — general-type sites only.
 // Reads from the categories collection (published rows), linking to /category/[slug].
@@ -42,6 +43,7 @@ const showOurWork = isLocalService && navVisibility.ourWork !== false;
 const navLinks = [
   { label: 'About Us',    href: '/about' },
   ...(showOurWork ? [{ label: 'Our Work', href: '/our-work' }] : []),
+  ...(affiliateEnabled ? [{ label: 'Resources', href: '/resources' }] : []),
   { label: 'Blog',        href: '/blog' },
   ...(faqEntry ? [{ label: 'FAQ', href: '/faq' }] : []),
   { label: 'Contact Us',  href: '/contact' },

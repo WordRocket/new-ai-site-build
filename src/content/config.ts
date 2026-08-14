@@ -34,6 +34,7 @@ const blog = defineCollection({
     faq: z.array(z.object({ question: z.string(), answer: z.string() })).default([]),
     schemaJsonld: z.string().optional(),
     relatedLinks: z.array(relatedLinkSchema).default([]),
+    featuredProductIds: z.array(z.string()).default([]),
   }),
 });
 
@@ -67,6 +68,7 @@ const pages = defineCollection({
     showInNav: z.boolean().default(true),
     navOrder: z.number().nullish(),
     relatedLinks: z.array(relatedLinkSchema).default([]),
+    featuredProductIds: z.array(z.string()).default([]),
   }),
 });
 
@@ -187,4 +189,17 @@ const industries = defineCollection({
   }),
 });
 
-export const collections = { blog, pages, services, locations, projects, categories, industries };
+const affiliateProducts = defineCollection({
+  schema: z.object({
+    name: z.string(),
+    pitch: z.string(),
+    affiliateUrl: z.string(),
+    image: z.string().optional(),
+    priceNote: z.string().optional(),
+    category: z.string().optional(),
+    ctaLabel: z.string().default('View Details'),
+    priority: z.number().default(100),
+  }),
+});
+
+export const collections = { blog, pages, services, locations, projects, categories, industries, affiliateProducts };

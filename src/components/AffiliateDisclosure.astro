@@ -1,0 +1,42 @@
+---
+import siteConfig from '../lib/site-config';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+
+const customText = (siteConfig as any).affiliateDisclosureText as string | undefined;
+const text = customText?.trim()
+  ? customText.trim()
+  : `This page contains affiliate links. If you buy through them, ${siteConfig.name} may earn a commission at no extra cost to you.`;
+---
+
+<aside class={`aff-disclosure ${className}`} role="note" aria-label="Affiliate disclosure">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="aff-disclosure__icon" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+  <p class="aff-disclosure__text">{text}</p>
+</aside>
+
+<style>
+  .aff-disclosure {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md, 8px);
+    background: color-mix(in srgb, var(--rs-accent, #f59e0b) 8%, var(--rs-surface, #f8fafc));
+    border: 1px solid color-mix(in srgb, var(--rs-accent, #f59e0b) 25%, transparent);
+  }
+  .aff-disclosure__icon {
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+    color: var(--rs-accent, #f59e0b);
+  }
+  .aff-disclosure__text {
+    margin: 0;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--rs-text-muted, #64748b);
+  }
+</style>

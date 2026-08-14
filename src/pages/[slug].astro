@@ -16,6 +16,8 @@ import siteConfig from '../lib/site-config';
 import { toTitleCase, cleanTitle } from '../lib/site-config';
 import ReviewBanner from '../components/ReviewBanner.astro';
 import RelatedLinks from '../components/RelatedLinks.astro';
+import AffiliateDisclosure from '../components/AffiliateDisclosure.astro';
+import AffiliateProductCard from '../components/AffiliateProductCard.astro';
 
 // Reserved top-level routes handled by dedicated .astro files — pages
 // collection entries with these slugs are skipped here to avoid conflicts.
@@ -25,7 +27,7 @@ export async function getStaticPaths() {
   const RESERVED_SLUGS = new Set([
     '', 'index', 'home', 'about', 'contact', 'faq',
     'privacy-policy', 'terms-and-conditions',
-    'blog', 'services', 'locations', 'our-work', 'category',
+    'blog', 'services', 'locations', 'our-work', 'category', 'resources',
   ]);
   const isLocalService = (siteConfig as any).businessType === 'local-service';
   const paths: any[] = [];
@@ -97,6 +99,20 @@ if (kind === 'page') {
   const pFaq = hasPageFaq ? getFAQSchema(pageData.faq) : null;
   pageSchemas = [pBreadcrumb, pOrg, ...(pFaq ? [pFaq] : [])];
 }
+
+// ── Affiliate products for generic pages ───────────────────────────────────
+const affiliateEnabled = (siteConfig as any).affiliateLinksEnabled === true;
+let pageFeaturedProducts: any[] = [];
+if (kind === 'page' && affiliateEnabled) {
+  const fpIds: string[] = Array.isArray((pageData as any)?.featuredProductIds) ? (pageData as any).featuredProductIds : [];
+  if (fpIds.length > 0) {
+    const allAff = await getCollection('affiliateProducts').catch(() => []);
+    pageFeaturedProducts = fpIds
+      .map((id) => allAff.find((p) => p.slug === id))
+      .filter((p): p is NonNullable<typeof p> => Boolean(p));
+  }
+}
+const hasPageAffiliate = pageFeaturedProducts.length > 0;
 
 // ── Location branch (local-service only) ──────────────────────────────────
 let Content: any = null;
@@ -294,6 +310,24 @@ if (kind === 'industry') {
               variants={heroImageVariants}
               sizes="(min-width: 1024px) 65vw, 100vw"
             />
+          )}
+          {hasPageAffiliate && (
+            <div class="mb-8 flex flex-col gap-4">
+              <AffiliateDisclosure />
+              <div class="grid grid-cols-1 gap-4">
+                {pageFeaturedProducts.map((p) => (
+                  <AffiliateProductCard
+                    name={p.data.name}
+                    pitch={p.data.pitch}
+                    affiliateUrl={p.data.affiliateUrl}
+                    image={p.data.image}
+                    priceNote={p.data.priceNote}
+                    ctaLabel={p.data.ctaLabel}
+                    compact={true}
+                  />
+                ))}
+              </div>
+            </div>
           )}
           <div class="prose prose-neutral prose-lg max-w-none mt-8">
             <PageContent />

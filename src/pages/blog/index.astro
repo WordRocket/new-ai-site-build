@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import siteConfig, { cleanTitle } from '../../lib/site-config';
 import SmartImage from '../../components/SmartImage.astro';
+import RecommendedProducts from '../../components/RecommendedProducts.astro';
 
 const isLocalService = (siteConfig as any).businessType === 'local-service';
 
@@ -62,6 +63,13 @@ const blogDescription = blogIntro ||
 const showCollectionCategories = !isLocalService && useCollectionCategories && collectionCategoryLinks.length > 0;
 const showLegacyCategories = !isLocalService && !useCollectionCategories && legacyCategoriesWithPosts.length > 0;
 const showCategories = showCollectionCategories || showLegacyCategories;
+
+// Affiliate products for Recommended sidebar (list-style pages only)
+const affiliateEnabled = (siteConfig as any).affiliateLinksEnabled === true;
+const affiliateProducts = affiliateEnabled
+  ? (await getCollection('affiliateProducts').catch(() => []))
+      .sort((a, b) => (a.data.priority ?? 100) - (b.data.priority ?? 100))
+  : [];
 ---
 
 <BaseLayout
@@ -132,7 +140,8 @@ const showCategories = showCollectionCategories || showLegacyCategories;
     <!-- Post grid -->
     <section class="py-16 sm:py-20">
       <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Empty state when no posts at all -->
+        <div class={affiliateProducts.length > 0 ? 'grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8' : ''}>
+        <div>
         {posts.length === 0 ? (
           <div class="flex flex-col items-center justify-center gap-4 py-24 text-center">
             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d4d4d8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
@@ -232,6 +241,15 @@ const showCategories = showCollectionCategories || showLegacyCategories;
             )}
           </>
         )}
+        </div>
+        {affiliateProducts.length > 0 && (
+          <aside class="hidden lg:block">
+            <div class="sticky top-24">
+              <RecommendedProducts products={affiliateProducts} max={3} />
+            </div>
+          </aside>
+        )}
+        </div>
       </div>
     </section>
   </main>
