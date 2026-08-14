@@ -11,6 +11,9 @@ const customLabels: string[] = Array.isArray((siteConfig as any).trustSignals) &
 const signals = customLabels.length > 0
   ? customLabels.map((label, i) => ({ icon: preset.trustSignals[i]?.icon ?? FALLBACK_ICONS[i] ?? 'check-circle', label }))
   : preset.trustSignals;
+
+// Duplicate the list once so the marquee can loop seamlessly.
+const loop = [...signals, ...signals];
 ---
 
 {signals.length > 0 && (
@@ -19,28 +22,55 @@ const signals = customLabels.length > 0
     role="list"
     aria-label="Trust signals"
   >
-    {signals.map(({ icon, label }) => (
-      <div class="trust-bar__item" role="listitem">
-        <span class="trust-bar__icon trust-icon" aria-hidden="true">
-          <Fragment set:html={iconSvg(icon, 18)} />
-        </span>
-        <span class="trust-bar__label">{label}</span>
-      </div>
-    ))}
+    <div class="trust-bar__track" aria-hidden={signals.length > 0 ? 'true' : undefined}>
+      {loop.map(({ icon, label }) => (
+        <div class="trust-bar__item" role="listitem">
+          <span class="trust-bar__icon" aria-hidden="true">
+            <Fragment set:html={iconSvg(icon, 18)} />
+          </span>
+          <span class="trust-bar__label">{label}</span>
+        </div>
+      ))}
+    </div>
+
+    {/* Screen-reader-only list: read once, not twice */}
+    <ul class="trust-bar__sr">
+      {signals.map(({ label }) => <li>{label}</li>)}
+    </ul>
   </div>
 )}
 
 <style>
   .trust-bar {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem 1.5rem;
-    padding: 0.5rem 1rem;
+    position: relative;
+    overflow: hidden;
     background: var(--rs-surface);
     border-top: 1px solid var(--rs-border);
     border-bottom: 1px solid var(--rs-border);
+    /* Reserve height for one row; mask the repeating edges */
+    padding: 0.625rem 0;
+  }
+
+  /* Fade edges so items don't pop in/out abruptly */
+  .trust-bar {
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  }
+
+  .trust-bar__track {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    width: max-content;
+    gap: 0 2.5rem;
+    /* One full copy of the list scrolls out; reset to start for a seamless loop */
+    animation: trust-marquee var(--trust-duration, 28s) linear infinite;
+    will-change: transform;
+  }
+
+  .trust-bar:hover .trust-bar__track,
+  .trust-bar:focus-within .trust-bar__track {
+    animation-play-state: paused;
   }
 
   .trust-bar__item {
@@ -60,16 +90,46 @@ const signals = customLabels.length > 0
     align-items: center;
   }
 
-  /* 2-col grid on narrow screens */
-  @media (max-width: 480px) {
-    .trust-bar {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.625rem;
-      padding: 0.625rem;
+  .trust-bar__sr {
+    position: absolute;
+    width: 1px; height: 1px;
+    margin: -1px; padding: 0; border: 0;
+    clip: rect(0 0 0 0);
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  @keyframes trust-marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .trust-bar__track {
+      animation: none;
+      transform: none;
+      width: auto;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem 1.5rem;
+      padding: 0 1rem;
     }
-    .trust-bar__item {
-      white-space: normal;
+    /* Only show one copy under reduced motion */
+    .trust-bar__item:nth-child(n + var(--trust-count, 4) + 1) {
+      display: none;
     }
   }
+
+  /* Narrow screens: slightly faster + tighter spacing */
+  @media (max-width: 480px) {
+    .trust-bar__track { gap: 0 1.5rem; }
+    .trust-bar__item { font-size: 0.75rem; }
+  }
 </style>
+
+<script is:inline define:vars={{ count: signals.length }}>
+  // Pass the signal count to CSS so reduced-motion can hide the duplicate copy.
+  if (count) {
+    document.documentElement.style.setProperty('--trust-count', String(count));
+  }
+</script>
