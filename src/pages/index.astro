@@ -15,6 +15,7 @@ import ServiceCard from '../components/ServiceCard.astro';
 import SmartImage from '../components/SmartImage.astro';
 import SectionBgImage from '../components/SectionBgImage.astro';
 import ReviewBadge from '../components/ReviewBadge.astro';
+import TrustBar from '../components/sections/TrustBar.astro';
 import { imgUrl, variantsSrcset, type ImageVariants } from '../lib/image';
 
 const serviceEntries = await getCollection('services').catch(() => []);
@@ -495,6 +496,9 @@ const heroServiceOptions = serviceEntries.length > 0
 </section>
 
 )}
+
+{/* ─── ANIMATED TRUST TICKER ─────────────────────────────────────────── */}
+<TrustBar />
 
 {/* ─── CREDIBILITY STATS STRIP (general sites only) ──────────────────────── */}
 {!isLocalService && (
