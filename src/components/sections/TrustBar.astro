@@ -8,12 +8,17 @@ const FALLBACK_ICONS = ['shield-check', 'check-circle', 'clock'];
 const customLabels: string[] = Array.isArray((siteConfig as any).trustSignals) && (siteConfig as any).trustSignals.length > 0
   ? ((siteConfig as any).trustSignals as string[]).slice(0, 3)
   : [];
+const generalSignals = [
+  { icon: 'sparkles', label: 'Thoughtful, Well-Crafted Work' },
+  { icon: 'check-circle', label: 'Reliable & Consistent' },
+  { icon: 'message-square', label: 'Direct, Honest Communication' },
+  { icon: 'thumbs-up', label: 'Built Around Your Needs' },
+];
 const signals = customLabels.length > 0
   ? customLabels.map((label, i) => ({ icon: preset.trustSignals[i]?.icon ?? FALLBACK_ICONS[i] ?? 'check-circle', label }))
-  : preset.trustSignals;
+  : preset.trustSignals.length > 0 ? preset.trustSignals : generalSignals;
 
-// Duplicate the list once so the marquee can loop seamlessly.
-const loop = [...signals, ...signals];
+const loop = [signals, signals];
 ---
 
 {signals.length > 0 && (
@@ -23,12 +28,16 @@ const loop = [...signals, ...signals];
     aria-label="Trust signals"
   >
     <div class="trust-bar__track" aria-hidden={signals.length > 0 ? 'true' : undefined}>
-      {loop.map(({ icon, label }) => (
-        <div class="trust-bar__item" role="listitem">
-          <span class="trust-bar__icon" aria-hidden="true">
-            <Fragment set:html={iconSvg(icon, 18)} />
-          </span>
-          <span class="trust-bar__label">{label}</span>
+      {loop.map((group) => (
+        <div class="trust-bar__group">
+          {group.map(({ icon, label }) => (
+            <div class="trust-bar__item" role="listitem">
+              <span class="trust-bar__icon" aria-hidden="true">
+                <Fragment set:html={iconSvg(icon, 18)} />
+              </span>
+              <span class="trust-bar__label">{label}</span>
+            </div>
+          ))}
         </div>
       ))}
     </div>
@@ -62,7 +71,7 @@ const loop = [...signals, ...signals];
     flex-wrap: nowrap;
     align-items: center;
     width: max-content;
-    gap: 0 2.5rem;
+    gap: 0;
     /* One full copy of the list scrolls out; reset to start for a seamless loop */
     animation: trust-marquee var(--trust-duration, 28s) linear infinite;
     will-change: transform;
@@ -71,6 +80,14 @@ const loop = [...signals, ...signals];
   .trust-bar:hover .trust-bar__track,
   .trust-bar:focus-within .trust-bar__track {
     animation-play-state: paused;
+  }
+
+  .trust-bar__group {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0 2.5rem;
+    padding-right: 2.5rem;
   }
 
   .trust-bar__item {
@@ -114,15 +131,14 @@ const loop = [...signals, ...signals];
       gap: 0.5rem 1.5rem;
       padding: 0 1rem;
     }
-    /* Only show one copy under reduced motion */
-    .trust-bar__item:nth-child(n + var(--trust-count, 4) + 1) {
+    .trust-bar__group + .trust-bar__group {
       display: none;
     }
   }
 
   /* Narrow screens: slightly faster + tighter spacing */
   @media (max-width: 480px) {
-    .trust-bar__track { gap: 0 1.5rem; }
+    .trust-bar__group { gap: 0 1.5rem; padding-right: 1.5rem; }
     .trust-bar__item { font-size: 0.75rem; }
   }
 </style>
