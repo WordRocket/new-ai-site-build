@@ -8,6 +8,7 @@ import siteConfig from './src/data/site-config.json';
 export default defineConfig({
   output: 'static',
   site: siteConfig.url,
+  trailingSlash: 'always',
   integrations: [sitemap()],
   vite: {
     plugins: [tailwindcss()],

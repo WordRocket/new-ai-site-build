@@ -44,6 +44,23 @@ const {
   dateModified,
 } = Astro.props;
 
+// Normalize canonical: ensure it ends with a trailing slash so it
+// matches the final (post-redirect) URL rather than pointing at a
+// redirect. Skips query strings/fragments and the root path.
+function normalizeCanonical(url: string): string {
+  try {
+    const u = new URL(url, Astro.site);
+    if (u.pathname !== '/' && !u.pathname.endsWith('/')) {
+      u.pathname += '/';
+    }
+    return u.href;
+  } catch {
+    return url;
+  }
+}
+
+const normalizedCanonical = normalizeCanonical(canonical);
+
 const robotsContent = noindex
   ? 'noindex,nofollow'
   : 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1';
@@ -51,14 +68,14 @@ const robotsContent = noindex
 
 <title>{title}</title>
 <meta name="description" content={description} />
-<link rel="canonical" href={canonical} />
+<link rel="canonical" href={normalizedCanonical} />
 <meta name="robots" content={robotsContent} />
 
 <meta property="og:title" content={ogTitle} />
 <meta property="og:description" content={ogDescription} />
 <meta property="og:image" content={ogImage} />
 <meta property="og:type" content={type} />
-<meta property="og:url" content={canonical} />
+<meta property="og:url" content={normalizedCanonical} />
 {siteName && <meta property="og:site_name" content={siteName} />}
 
 <meta name="twitter:card" content="summary_large_image" />
