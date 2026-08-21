@@ -92,7 +92,7 @@ const schemas = [breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])];
                   {cat.label}
                 </h2>
               )}
-              <div class="flex flex-col">
+              <div class="rs-faq-list flex flex-col">
                 {cat.items.map((item, i) => {
                   return (
                     <details class="rs-faq-item">
@@ -145,6 +145,12 @@ const schemas = [breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])];
     z-index: 2;
   }
   /* Ensure FAQ text stays readable over the background image */
+  :global([data-skin="dark"]) .faq-body--bg .rs-faq-list {
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+  :global([data-skin="light"]) .faq-body--bg .rs-faq-list {
+    border-color: rgba(0, 0, 0, 0.08);
+  }
   :global([data-skin="dark"]) .faq-body--bg .rs-faq-item {
     background: rgba(8, 12, 26, 0.55);
     border-color: rgba(255, 255, 255, 0.12);
@@ -152,6 +158,13 @@ const schemas = [breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])];
   :global([data-skin="light"]) .faq-body--bg .rs-faq-item {
     background: rgba(255, 255, 255, 0.78);
     border-color: rgba(0, 0, 0, 0.08);
+  }
+  /* Open state: blend brand tint with the image-scrim surface */
+  :global([data-skin="dark"]) .faq-body--bg details[open].rs-faq-item {
+    background: color-mix(in srgb, var(--rs-brand) 8%, rgba(8, 12, 26, 0.65));
+  }
+  :global([data-skin="light"]) .faq-body--bg details[open].rs-faq-item {
+    background: color-mix(in srgb, var(--rs-brand) 6%, rgba(255, 255, 255, 0.85));
   }
   :global([data-skin="dark"]) .faq-body--bg .rs-faq-q { color: #fff; }
   :global([data-skin="dark"]) .faq-body--bg .rs-faq-a > div > p { color: rgba(255, 255, 255, 0.82); }
