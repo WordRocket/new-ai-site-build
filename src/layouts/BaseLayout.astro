@@ -60,7 +60,7 @@ const uniformFontMode = (siteConfig as any).uniformFontMode === true;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href={siteConfig.favicon || '/favicon.svg'} />
     <meta name="generator" content={Astro.generator} />
     {/* Self-hosted font preloads — only for the default Inter preset.
         Other presets load from Google Fonts via the stylesheet link below
