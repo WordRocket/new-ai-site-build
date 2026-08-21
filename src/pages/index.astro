@@ -742,7 +742,7 @@ const heroServiceOptions = serviceEntries.length > 0
       <h2 id="faq-heading-light" class="reveal faq-heading-light mb-4" aria-hidden="true">Frequently Asked <span class="u-gradient-text">Questions</span></h2>
       <p class="faq-subhead text-lg max-w-2xl">Everything you need to know before getting started.</p>
     </div>
-    <div class="max-w-3xl faq-list-wrap mx-auto flex flex-col" id="faq-list">
+    <div class="rs-faq-list max-w-3xl faq-list-wrap mx-auto flex flex-col" id="faq-list">
       {faqs.map(({ question, answer }, i) => (
         <details class="rs-faq-item reveal">
           <summary class="rs-faq-q">
@@ -756,8 +756,9 @@ const heroServiceOptions = serviceEntries.length > 0
   </div>
 </section>
 ) : (
-<section class="faq-gen section-pad" aria-labelledby="faq-heading" style="background:var(--rs-bg);">
-  <div class="faq-gen__inner">
+<section class="faq-gen section-pad" aria-labelledby="faq-heading" data-bg={hasFaqBgImage ? 'image' : undefined} style={hasFaqBgImage ? 'background:transparent;' : 'background:var(--rs-bg);'}>
+  {hasFaqBgImage && <SectionBgImage src={faqBgImage} variants={faqBgVariants} scrim="heavy" lightScrim />}
+  <div class:list={["faq-gen__inner", { "faq-gen__inner--bg": hasFaqBgImage }]}>
     <div class="faq-gen__header reveal">
       <span class="u-eyebrow">FAQ</span>
       <h2 id="faq-heading" class="faq-gen__title" style="color:var(--rs-text);">
@@ -1428,10 +1429,12 @@ const heroServiceOptions = serviceEntries.length > 0
   }
 
   /* Dark skin image mode: card treatment */
+  .faq-section[data-bg="image"] .rs-faq-list {
+    border: none;
+  }
   .faq-section[data-bg="image"] .rs-faq-item {
     background: var(--rs-surface);
     border-radius: 8px;
-    padding: 0 1rem;
     margin-bottom: 6px;
     border-bottom: none;
   }
@@ -1440,10 +1443,12 @@ const heroServiceOptions = serviceEntries.length > 0
   .faq-section[data-bg="image"] .rs-faq-a > div > p { color: var(--rs-text); }
 
   /* Light skin FAQ cards: white rounded cards with shadow, dark text */
+  [data-skin="light"] .faq-section .rs-faq-list {
+    border: none;
+  }
   [data-skin="light"] .faq-section .rs-faq-item {
     background: #ffffff;
     border-radius: 12px;
-    padding: 0 1.25rem;
     margin-bottom: 8px;
     border-top: none;
     border-bottom: none;
@@ -1454,10 +1459,29 @@ const heroServiceOptions = serviceEntries.length > 0
   [data-skin="light"] .faq-section .rs-faq-a > div > p { color: var(--rs-text); }
 
   /* ── General-template FAQ (clean centered accordion) ─────────────────── */
+  .faq-gen {
+    position: relative;
+    overflow: hidden;
+  }
   .faq-gen__inner {
     max-width: 48rem;
     margin: 0 auto;
     padding: 0 1.25rem;
+    position: relative;
+    z-index: 2;
+  }
+  /* Background-image mode: content sits above the SectionBgImage layer */
+  .faq-gen__inner--bg {
+    position: relative;
+    z-index: 2;
+  }
+  .faq-gen[data-bg="image"] .faq-gen__title,
+  .faq-gen[data-bg="image"] .faq-gen__sub {
+    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.72), 0 1px 4px rgba(0, 0, 0, 0.55);
+  }
+  [data-skin="light"] .faq-gen[data-bg="image"] .faq-gen__title,
+  [data-skin="light"] .faq-gen[data-bg="image"] .faq-gen__sub {
+    text-shadow: none;
   }
   .faq-gen__header {
     text-align: center;
