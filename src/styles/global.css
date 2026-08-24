@@ -1335,13 +1335,6 @@ details[open] .rs-faq-a {
   line-height: 1.25;
 }
 
-/* H1 — in-content markdown heading (sized down from the 5rem hero default) */
-.prose h1 {
-  font-size: clamp(1.5rem, 2.75vw, 2rem);
-  margin-top: 1.5em;
-  margin-bottom: 0.75em;
-}
-
 /* H2 accent rule */
 .prose h2 {
   font-size: clamp(1.35rem, 2.5vw, 1.7rem);
