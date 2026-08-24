@@ -86,11 +86,21 @@ const heroImage = (hp?.heroImage || (siteConfig as any).heroImage || '') as stri
 const heroImageVariants = (hp?.heroImageVariants ?? (siteConfig as any).heroImageVariants) as ImageVariants | undefined;
 // Hero src for the LCP <img>; srcset is built from pre-generated variants when
 // available, otherwise from CDN-generated responsive widths (640/960/1440/1920).
-const heroSrc    = heroImage ? imgUrl(heroImage, { w: 1440, q: 72, fm: 'avif' }) : '';
-const heroSrcset =
+// AVIF is preferred (≈50% smaller than WebP); a WebP fallback is provided via
+// <picture> for browsers without AVIF support.
+const heroSrcAvif    = heroImage ? imgUrl(heroImage, { w: 1440, q: 72, fm: 'avif' }) : '';
+const heroSrcWebp    = heroImage ? imgUrl(heroImage, { w: 1440, q: 72, fm: 'webp' }) : '';
+const heroSrcsetAvif =
   heroImageVariants ? variantsSrcset(heroImageVariants)
   : heroImage ? imgSrcset(heroImage, [640, 960, 1440, 1920], { q: 72, fm: 'avif' })
   : '';
+const heroSrcsetWebp =
+  heroImageVariants ? ''
+  : heroImage ? imgSrcset(heroImage, [640, 960, 1440, 1920], { q: 72, fm: 'webp' })
+  : '';
+// Keep heroSrc for backward compatibility (used as fallback <img src> inside <picture>)
+const heroSrc = heroSrcWebp || heroSrcAvif;
+const heroSrcset = heroSrcsetWebp || heroSrcsetAvif;
 
 const placeholderServices = [
   {
@@ -265,20 +275,24 @@ const heroServiceOptions = serviceEntries.length > 0
 <!-- ── HERO: general template (centered, text-over-image) ─────────── -->
 <section class={`hero-general${hasHeroImage ? ' hero-general--img' : ''}`} aria-label="Hero" data-hero-skin={skin}>
   {hasHeroImage && (
-    <img
-      class="hero-general__bg"
-      src={heroSrc}
-      srcset={heroSrcset}
-      sizes="100vw"
-      alt=""
-      role="presentation"
-      aria-hidden="true"
-      loading="eager"
-      fetchpriority="high"
-      decoding="async"
-      width="1440"
-      height="900"
-    />
+    <picture>
+      {heroSrcsetAvif && <source srcset={heroSrcsetAvif} sizes="100vw" type="image/avif" />}
+      {heroSrcsetWebp && <source srcset={heroSrcsetWebp} sizes="100vw" type="image/webp" />}
+      <img
+        class="hero-general__bg"
+        src={heroSrc}
+        srcset={heroSrcset}
+        sizes="100vw"
+        alt=""
+        role="presentation"
+        aria-hidden="true"
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+        width="1440"
+        height="900"
+      />
+    </picture>
   )}
   {hasHeroImage && <div class="hero-general__scrim" data-scrim-skin={skin} aria-hidden="true"></div>}
   <div class="hero-general__inner">
@@ -308,20 +322,24 @@ const heroServiceOptions = serviceEntries.length > 0
 
   {/* Full-bleed background image — LCP-optimised, decorative */}
   {hasHeroImage && (
-    <img
-      class="hero-cin-img"
-      src={heroSrc}
-      srcset={heroSrcset}
-      sizes="100vw"
-      alt=""
-      role="presentation"
-      aria-hidden="true"
-      loading="eager"
-      fetchpriority="high"
-      decoding="async"
-      width="1440"
-      height="900"
-    />
+    <picture>
+      {heroSrcsetAvif && <source srcset={heroSrcsetAvif} sizes="100vw" type="image/avif" />}
+      {heroSrcsetWebp && <source srcset={heroSrcsetWebp} sizes="100vw" type="image/webp" />}
+      <img
+        class="hero-cin-img"
+        src={heroSrc}
+        srcset={heroSrcset}
+        sizes="100vw"
+        alt=""
+        role="presentation"
+        aria-hidden="true"
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+        width="1440"
+        height="900"
+      />
+    </picture>
   )}
   {/* Skin-aware scrim: left→right gradient keeps text legible over any photo */}
   <div class="hero-cin-scrim" data-scrim-skin={skin} aria-hidden="true"></div>
@@ -409,20 +427,24 @@ const heroServiceOptions = serviceEntries.length > 0
 >
 
   {hasHeroImage && (
-    <img
-      class="hero-general__bg"
-      src={heroSrc}
-      srcset={heroSrcset}
-      sizes="100vw"
-      alt=""
-      role="presentation"
-      aria-hidden="true"
-      loading="eager"
-      fetchpriority="high"
-      decoding="async"
-      width="1440"
-      height="900"
-    />
+    <picture>
+      {heroSrcsetAvif && <source srcset={heroSrcsetAvif} sizes="100vw" type="image/avif" />}
+      {heroSrcsetWebp && <source srcset={heroSrcsetWebp} sizes="100vw" type="image/webp" />}
+      <img
+        class="hero-general__bg"
+        src={heroSrc}
+        srcset={heroSrcset}
+        sizes="100vw"
+        alt=""
+        role="presentation"
+        aria-hidden="true"
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+        width="1440"
+        height="900"
+      />
+    </picture>
   )}
   {hasHeroImage && <div class="hero-general__scrim" data-scrim-skin={skin} aria-hidden="true"></div>}
 
