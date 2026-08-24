@@ -1280,7 +1280,7 @@ details[open] .rs-faq-a {
 }
 .page-hero h1, .page-hero h2, .page-hero h3 { color: white; }
 .page-hero h1 {
-  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
   text-transform: capitalize; /* ensure titles from content files always render in title case */
 }
 /* Mobile: center hero content for consistent look across all inner-page templates */
