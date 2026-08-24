@@ -395,17 +395,16 @@ const heroServiceOptions = serviceEntries.length > 0
 
 ) : (
 
-<!-- ── HERO: original variant (no endpoint) ──────────────────────────── -->
+<!-- ── HERO: centered variant (no endpoint) ─────────────────────────── -->
 <section
-  class={`hero-split u-glow-bg cinematic-hero${hasHeroImage ? ' cinematic-hero--img' : ''}`}
-  style={!hasHeroImage ? 'background: linear-gradient(135deg, color-mix(in srgb, var(--rs-accent) 18%, var(--rs-bg)) 0%, var(--rs-bg) 100%);' : ''}
+  class={`hero-general hero-general--ls${hasHeroImage ? ' hero-general--img' : ''}`}
   data-hero-skin={skin}
   aria-label="Hero"
 >
 
   {hasHeroImage && (
     <img
-      class="hero-cin-img"
+      class="hero-general__bg"
       src={heroSrc}
       srcset={heroSrcset}
       sizes="100vw"
@@ -419,78 +418,60 @@ const heroServiceOptions = serviceEntries.length > 0
       height="900"
     />
   )}
-  <div class="hero-cin-scrim" data-scrim-skin={skin} aria-hidden="true"></div>
+  {hasHeroImage && <div class="hero-general__scrim" data-scrim-skin={skin} aria-hidden="true"></div>}
 
-  <!-- Left: text -->
-  <div class="hero-left-panel flex flex-col justify-start px-6 sm:px-10 lg:px-10 pt-14 pb-12 relative z-10">
+  <div class="hero-general__inner">
+    <div class="hero-general__content hero-ls-content">
 
-    <div class="mb-6">
-      <span class="u-badge">
+      <p class="hero-general__tagline reveal">
         <span class="u-badge__dot" aria-hidden="true"></span>
         {isLocalService ? `${siteConfig.city}'s Trusted ${nicheLabel}` : nicheLabel}
-      </span>
-    </div>
+      </p>
 
-    <h1 class="font-extrabold tracking-tight leading-[1.1] mb-6" style="color:var(--rs-text);">
-      {heroNameMain ? `${heroNameMain} ` : ''}<span class="u-gradient-text">{heroNameLast}</span>
-    </h1>
+      <h1 class="hero-general__title reveal">
+        {heroNameMain ? `${heroNameMain} ` : ''}<span class="u-gradient-text">{heroNameLast}</span>
+      </h1>
 
-    <p class="text-lg leading-relaxed mb-8" style="color:var(--rs-text-muted); max-width:620px;">
-      {siteConfig.tagline}
-    </p>
+      <p class="hero-general__subtitle reveal">{siteConfig.tagline}</p>
 
-    <ReviewBadge variant="hero" />
-
-    <div class="flex flex-col sm:flex-row items-center sm:items-start gap-3 mb-8">
-      <a href={primaryCta} class="u-btn u-btn-primary">
-        {preset.heroCta}
-      </a>
-      <a href={isLocalService ? '/services' : '/about'} class="u-btn u-btn-ghost">
-        {preset.heroCtaSecondary} →
-      </a>
-    </div>
-
-    {siteConfig.clientsServed && (
-      <div class="trust-cluster mb-7">
-        <div class="trust-cluster__avatars" aria-hidden="true">
-          <span class="trust-avatar ta-1"><Icon name="user" width={16} height={16} /></span>
-          <span class="trust-avatar ta-2"><Icon name="user" width={16} height={16} /></span>
-          <span class="trust-avatar ta-3"><Icon name="user" width={16} height={16} /></span>
-          <span class="trust-avatar ta-4"><Icon name="user" width={16} height={16} /></span>
-        </div>
-        <div class="trust-cluster__copy">
-          <span class="trust-cluster__count">{siteConfig.clientsServed}+</span>
-          <span class="trust-cluster__text">{siteConfig.city} customers served</span>
-        </div>
+      <div class="hero-ls-badge reveal">
+        <ReviewBadge variant="hero" />
       </div>
-    )}
 
-    <ul class="flex flex-col sm:flex-row flex-wrap gap-x-6 gap-y-2 text-sm" style="color:var(--rs-text-muted);">
-      {preset.trustSignals.map(({ icon: iconName, label }) => (
-        <li class="flex items-center gap-1.5">
-          <Icon name={iconName} width={16} height={16} style="color:var(--rs-brand-text); flex-shrink:0;" aria-hidden="true" />
-          {label}
-        </li>
-      ))}
-    </ul>
-  </div>
-
-  <!-- Right: graphic panel -->
-  <div class="hero-right">
-    <div class="hero-right-pattern" aria-hidden="true"></div>
-    <div class="hero-right-icon" aria-hidden="true">
-      <Icon name="home" width={200} height={200} style="opacity:0.18; color:white;" />
-    </div>
-    <div class="hero-float-card" style="top:10%; right:8%;">
-      <Icon name="star" width={14} height={14} style="fill:var(--rs-star); color:var(--rs-star);" aria-hidden="true" />
-      5-Star Rated
-    </div>
-    {isLocalService && (
-      <div class="hero-float-card" style="bottom:10%; left:8%;">
-        <Icon name="file-text" width={14} height={14} style="color:var(--rs-accent);" aria-hidden="true" />
-        Free Estimates
+      <div class="hero-general__actions reveal">
+        <a href={primaryCta} class="u-btn u-btn-primary">
+          {preset.heroCta}
+        </a>
+        <a href={isLocalService ? '/services' : '/about'} class="u-btn u-btn-ghost">
+          {preset.heroCtaSecondary} →
+        </a>
       </div>
-    )}
+
+      {siteConfig.clientsServed && (
+        <div class="trust-cluster hero-ls-trust reveal">
+          <div class="trust-cluster__avatars" aria-hidden="true">
+            <span class="trust-avatar ta-1"><Icon name="user" width={16} height={16} /></span>
+            <span class="trust-avatar ta-2"><Icon name="user" width={16} height={16} /></span>
+            <span class="trust-avatar ta-3"><Icon name="user" width={16} height={16} /></span>
+            <span class="trust-avatar ta-4"><Icon name="user" width={16} height={16} /></span>
+          </div>
+          <div class="trust-cluster__copy">
+            <span class="trust-cluster__count">{siteConfig.clientsServed}+</span>
+            <span class="trust-cluster__text">{siteConfig.city} customers served</span>
+          </div>
+        </div>
+      )}
+
+      <ul class="hero-ls-signals reveal">
+        {preset.trustSignals.map(({ icon: iconName, label }) => (
+          <li class="hero-ls-signal">
+            <Icon name={iconName} width={16} height={16} class="hero-ls-signal__icon" aria-hidden="true" />
+            {label}
+          </li>
+        ))}
+      </ul>
+
+    </div>
   </div>
 
 </section>
@@ -935,18 +916,97 @@ const heroServiceOptions = serviceEntries.length > 0
   .hero-split {
     margin-top: -100px;
   }
+  .hero-general--ls {
+    margin-top: -100px;
+  }
 
-  /* ── General (blog) template hero: shorter + vertically centered ───────
-     The local-service hero carries a denser right panel (float cards, trust
-     content) so a near-full-height hero reads full. The general template's
-     right panel is sparser, so the base min-height leaves dead space at the
-     bottom. Lower the min-height and center the grid so content sits a bit
-     lower and balances. Desktop only — mobile (≤900px) already collapses. */
-  @media (min-width: 901px) {
-    .hero-split--general {
-      min-height: calc(100vh - 240px);
-      align-items: center;
+  /* ── Local-service centered hero (no contact form) ───────────────────────
+     Reuses the .hero-general shell but is taller (near full viewport) so the
+     local-service hero keeps its commanding presence without the form column.
+     Content is centered and trust signals sit below the CTAs in a pill row. */
+  .hero-general--ls {
+    min-height: calc(100vh - 120px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hero-general--ls .hero-general__inner {
+    width: 100%;
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+  @media (min-width: 1024px) {
+    .hero-general--ls .hero-general__inner {
+      padding-top: 5rem;
+      padding-bottom: 6rem;
     }
+  }
+  /* No-image fallback: branded tinted gradient instead of flat bg */
+  .hero-general--ls:not(.hero-general--img) {
+    background: linear-gradient(135deg,
+      color-mix(in srgb, var(--rs-accent) 16%, var(--rs-bg)) 0%,
+      var(--rs-bg) 100%);
+  }
+
+  .hero-ls-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+  }
+  .hero-ls-content .hero-general__tagline {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .hero-ls-badge { margin: 0.25rem 0 0.25rem; }
+
+  .hero-ls-trust { justify-content: center; }
+
+  /* Trust signal pills — centered responsive row */
+  .hero-ls-signals {
+    list-style: none;
+    margin: 0.5rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  .hero-ls-signal {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    padding: 0.4rem 0.9rem;
+    border-radius: var(--rs-radius-pill, 999px);
+    background: color-mix(in srgb, var(--rs-bg) 72%, transparent);
+    border: 1px solid var(--rs-border);
+    color: var(--rs-text-muted);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  .hero-ls-signal__icon { color: var(--rs-brand-text); flex-shrink: 0; }
+
+  /* Dark skin image mode: brighter muted text + readable pills */
+  .hero-general--ls[data-hero-skin="dark"].hero-general--img .hero-ls-content {
+    --rs-text-muted: rgba(246,248,253,.82);
+    --rs-border: rgba(255,255,255,.18);
+  }
+  .hero-general--ls[data-hero-skin="dark"].hero-general--img .hero-ls-signal {
+    background: rgba(255,255,255,.08);
+    color: rgba(246,248,253,.88);
+  }
+  .hero-general--ls[data-hero-skin="dark"].hero-general--img .trust-cluster__text {
+    color: rgba(246,248,253,.78);
+  }
+  .hero-general--ls[data-hero-skin="dark"].hero-general--img .hero-ls-content h1,
+  .hero-general--ls[data-hero-skin="dark"].hero-general--img .hero-ls-content p,
+  .hero-general--ls[data-hero-skin="dark"].hero-general--img .hero-ls-content .hero-ls-signal,
+  .hero-general--ls[data-hero-skin="dark"].hero-general--img .trust-cluster__count,
+  .hero-general--ls[data-hero-skin="dark"].hero-general--img .trust-cluster__text {
+    text-shadow: 0 2px 16px rgba(0,0,0,.48);
   }
 
   /* ── Cinematic hero — full-bleed background image treatment ─────────────
@@ -1098,6 +1158,7 @@ const heroServiceOptions = serviceEntries.length > 0
         rgba(8,12,26,.91) 100%
       );
     }
+    .hero-general--ls { min-height: auto; }
   }
 
   /* ── Avatar trust cluster ────────────────────────────────────────────── */
