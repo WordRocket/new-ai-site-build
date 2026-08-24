@@ -59,19 +59,6 @@ const publishedCategories = allCategories
   .sort((a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title))
   .map((c) => ({ slug: c.slug, title: cleanTitle(c.data.title) }));
 
-const recentPosts = allPosts
-  .sort((a, b) => new Date(b.data.datePublished).getTime() - new Date(a.data.datePublished).getTime())
-  .slice(0, 5)
-  .map((p) => ({ slug: p.slug, title: p.data.title, datePublished: p.data.datePublished }));
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-}
-
 function excerpt(text: string, max = 140): string {
   if (text.length <= max) return text;
   return text.slice(0, max).trimEnd() + '…';
@@ -116,7 +103,7 @@ function excerpt(text: string, max = 140): string {
         <div class="cat-hero__head">
           <h1 class="text-white font-extrabold tracking-tight mb-1">{displayTitle}</h1>
           {relatedPosts.length > 0 && (
-            <span class="cat-hero__badge">{relatedPosts.length} {relatedPosts.length === 1 ? 'Article' : 'Articles'}</span>
+            <span class="cat-hero__count">{relatedPosts.length} {relatedPosts.length === 1 ? 'article' : 'articles'}</span>
           )}
         </div>
         {d.description && (
@@ -167,19 +154,19 @@ function excerpt(text: string, max = 140): string {
         <!-- Related Articles -->
         {relatedPosts.length > 0 && (
           <section class="mt-12 pt-10 border-t border-neutral-100">
-            <h2 class="text-2xl font-bold tracking-tight text-[var(--color-text)] mb-6">Articles in This Category</h2>
+            <h2 class="text-2xl font-bold tracking-tight text-[var(--color-text)] mb-6">Explore {displayTitle}</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {relatedPosts.map((post) => (
                 <article
-                  class="blog-post-card rounded-[var(--radius-md)] overflow-hidden flex flex-col transition-shadow duration-200 hover:shadow-[var(--shadow-md)]"
-                  style="background:var(--rs-surface); box-shadow:var(--shadow-sm);"
+                  class="cat-article-card"
+                  style="background:var(--rs-surface);"
                 >
                   {post.data.featuredImage ? (
-                    <a href={`/blog/${post.slug}`} class="block overflow-hidden aspect-video" tabindex="-1" aria-hidden="true">
+                    <a href={`/blog/${post.slug}`} class="cat-article-card__media" tabindex="-1" aria-hidden="true">
                       <img
                         src={post.data.featuredImage}
                         alt={post.data.featuredImageAlt ?? post.data.title}
-                        class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                        class="w-full h-full object-cover"
                         loading="lazy"
                         decoding="async"
                         width="800"
@@ -187,21 +174,20 @@ function excerpt(text: string, max = 140): string {
                       />
                     </a>
                   ) : (
-                    <div class="aspect-video flex items-center justify-center" style="background:var(--rs-surface-2);">
+                    <div class="cat-article-card__media cat-article-card__media--placeholder">
                       <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--rs-text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
                     </div>
                   )}
-                  <div class="flex flex-col flex-1 p-5 gap-3">
-                    <h3 class="text-base font-semibold text-[var(--color-text)] leading-snug">
-                      <a href={`/blog/${post.slug}`} class="hover:text-[var(--rs-brand-text)] transition-colors">{post.data.title}</a>
+                  <div class="cat-article-card__body">
+                    <h3 class="cat-article-card__title">
+                      <a href={`/blog/${post.slug}`}>{post.data.title}</a>
                     </h3>
-                    <p class="text-sm text-[var(--color-text-muted)] leading-relaxed flex-1">
-                      {excerpt(post.data.description)}
-                    </p>
-                    <div class="flex items-center gap-2 text-xs text-[var(--color-text-muted)] pt-2 border-t mt-auto" style="border-color:var(--rs-border);">
-                      <time datetime={post.data.datePublished}>{formatDate(post.data.datePublished)}</time>
-                      <a href={`/blog/${post.slug}`} class="font-semibold ml-auto transition-colors hover:text-[var(--rs-brand-text)]" style="color:var(--rs-brand-text);">Read →</a>
-                    </div>
+                    {post.data.description && (
+                      <p class="cat-article-card__desc">{excerpt(post.data.description)}</p>
+                    )}
+                    <a href={`/blog/${post.slug}`} class="cat-article-card__link">
+                      Learn More <span class="cat-article-card__arrow">→</span>
+                    </a>
                   </div>
                 </article>
               ))}
@@ -226,7 +212,6 @@ function excerpt(text: string, max = 140): string {
         <CategorySidebar
           currentSlug={cat.slug}
           categories={publishedCategories}
-          recentPosts={recentPosts}
           articleCount={relatedPosts.length}
           hasFaq={hasFaq}
         />
@@ -248,17 +233,93 @@ function excerpt(text: string, max = 140): string {
     font-size: clamp(1.625rem, 3vw, 2.25rem);
     margin: 0;
   }
-  .cat-hero__badge {
+  .cat-hero__count {
+    font-size: 0.9375rem;
+    font-weight: 400;
+    color: rgba(255,255,255,0.7);
+  }
+  .cat-article-card {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--rs-border);
+    border-radius: var(--rs-radius-md);
+    overflow: hidden;
+    box-shadow: var(--rs-shadow-card);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .cat-article-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--rs-shadow-card-hover);
+  }
+  .cat-article-card__media {
+    display: block;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--rs-surface-2);
+  }
+  .cat-article-card__media img {
+    transition: transform 0.4s ease;
+  }
+  .cat-article-card:hover .cat-article-card__media img {
+    transform: scale(1.04);
+  }
+  .cat-article-card__media--placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .cat-article-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.25rem 1.5rem 1.5rem;
+    flex: 1;
+  }
+  .cat-article-card__title {
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: var(--rs-text);
+    line-height: 1.3;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+  .cat-article-card__title a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+  .cat-article-card__title a:hover {
+    color: var(--rs-brand-text);
+  }
+  .cat-article-card__desc {
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--rs-text-muted);
+    margin: 0;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .cat-article-card__link {
     display: inline-flex;
     align-items: center;
-    padding: 0.25rem 0.625rem;
-    border-radius: var(--rs-radius-pill);
-    font-size: 0.75rem;
-    font-weight: 700;
-    background: rgba(255,255,255,0.15);
-    color: #fff;
-    backdrop-filter: blur(4px);
+    gap: 0.3rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--rs-brand);
+    text-decoration: none;
+    margin-top: auto;
+    padding-top: 0.75rem;
+    transition: gap 0.15s ease;
   }
+  .cat-article-card__link:hover { gap: 0.5rem; }
+  .cat-article-card__arrow {
+    display: inline-block;
+    transition: transform 0.15s ease;
+  }
+  .cat-article-card__link:hover .cat-article-card__arrow { transform: translateX(3px); }
   .cat-back-link {
     display: inline-flex;
     align-items: center;
