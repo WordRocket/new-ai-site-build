@@ -24,14 +24,12 @@ const loop = [signals, signals];
 {signals.length > 0 && (
   <div
     class="trust-bar"
-    role="list"
-    aria-label="Trust signals"
   >
     <div class="trust-bar__track" aria-hidden={signals.length > 0 ? 'true' : undefined}>
       {loop.map((group) => (
         <div class="trust-bar__group">
           {group.map(({ icon, label }) => (
-            <div class="trust-bar__item" role="listitem">
+            <div class="trust-bar__item">
               <span class="trust-bar__icon" aria-hidden="true">
                 <Fragment set:html={iconSvg(icon, 18)} />
               </span>
