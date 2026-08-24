@@ -132,6 +132,27 @@ html {
 body { margin: 0; min-height: 100vh; }
 p { max-width: 65ch; }
 
+/* ── Skip-to-content link ──────────────────────────────────────────────── */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+  z-index: 10000;
+  padding: 0.625rem 1.25rem;
+  background: var(--rs-brand, #2563eb);
+  color: var(--rs-on-brand, #fff);
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: var(--rs-radius-sm, 8px);
+  transition: top 0.15s ease;
+}
+.skip-link:focus {
+  top: 1rem;
+  outline: 3px solid var(--rs-brand-ring, rgba(37, 99, 235, 0.4));
+  outline-offset: 2px;
+}
+
 /* ── Fluid Typography ──────────────────────────────────────────────────── */
 h1, h2, h3 {
   font-family: var(--rs-font-display);

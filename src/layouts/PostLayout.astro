@@ -66,7 +66,9 @@ const {
   schemas={schemas}
   schemaJsonld={schemaJsonld}
 >
-  <slot />
+  <main>
+    <slot />
+  </main>
   <FeatureGrid    items={features ?? []}       heading={featuresHeading}    eyebrow={featuresEyebrow} />
   <ProcessTimeline steps={steps ?? []}          heading={stepsHeading} />
   <Testimonials   testimonials={testimonials}   heading={testimonialsHeading} />

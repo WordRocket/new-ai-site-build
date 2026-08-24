@@ -78,9 +78,23 @@ const uniformFontMode = (siteConfig as any).uniformFontMode === true;
     )}
     {/* Google Fonts stylesheet — only for non-Inter presets with no
         custom font. Inter is fully self-hosted; custom fonts load via
-        the @font-face block above. */}
+        the @font-face block above.
+        Loaded non-blockingly: the stylesheet is fetched with low priority
+        and swapped in once ready, so it never blocks first paint. */}
     {!isInterFont && !font.hasCustomFont && (
-      <link rel="stylesheet" href={font.googleFontsUrl} />
+      <>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+          rel="preload"
+          as="style"
+          href={font.googleFontsUrl}
+          onload="this.onload=null;this.rel='stylesheet'"
+        />
+        <noscript>
+          <link rel="stylesheet" href={font.googleFontsUrl} />
+        </noscript>
+      </>
     )}
     <meta name="theme-color" content={siteConfig.brandColor} />
     <meta name="geo.region" content={siteConfig.state} />
@@ -104,6 +118,7 @@ const uniformFontMode = (siteConfig as any).uniformFontMode === true;
     )}
   </head>
   <body>
+    <a href="#main" class="skip-link">Skip to content</a>
     <Navigation />
     <slot />
     <Footer />

@@ -16,7 +16,7 @@ import SmartImage from '../components/SmartImage.astro';
 import SectionBgImage from '../components/SectionBgImage.astro';
 import ReviewBadge from '../components/ReviewBadge.astro';
 import TrustBar from '../components/sections/TrustBar.astro';
-import { imgUrl, variantsSrcset, type ImageVariants } from '../lib/image';
+import { imgUrl, imgSrcset, variantsSrcset, type ImageVariants } from '../lib/image';
 
 const serviceEntries = await getCollection('services').catch(() => []);
 const locationEntries = await getCollection('locations').catch(() => []);
@@ -84,9 +84,13 @@ const isLocalService = (siteConfig as any).businessType === 'local-service';
 // Compute heroImage early so it can be used as the card image fallback below.
 const heroImage = (hp?.heroImage || (siteConfig as any).heroImage || '') as string;
 const heroImageVariants = (hp?.heroImageVariants ?? (siteConfig as any).heroImageVariants) as ImageVariants | undefined;
-// Hero src for the LCP <img>; srcset is built from pre-generated variants when available.
-const heroSrc    = heroImage ? imgUrl(heroImage, { w: 1440, q: 82 }) : '';
-const heroSrcset = variantsSrcset(heroImageVariants);
+// Hero src for the LCP <img>; srcset is built from pre-generated variants when
+// available, otherwise from CDN-generated responsive widths (640/960/1440/1920).
+const heroSrc    = heroImage ? imgUrl(heroImage, { w: 1440, q: 72, fm: 'avif' }) : '';
+const heroSrcset =
+  heroImageVariants ? variantsSrcset(heroImageVariants)
+  : heroImage ? imgSrcset(heroImage, [640, 960, 1440, 1920], { q: 72, fm: 'avif' })
+  : '';
 
 const placeholderServices = [
   {
@@ -252,6 +256,8 @@ const heroServiceOptions = serviceEntries.length > 0
   schemas={faqSchema ? [faqSchema] : []}
 >
 <body class="homepage">
+
+<main id="main">
 
 <!-- ─── HERO ─────────────────────────────────────────────────────────── -->
 {!isLocalService ? (
@@ -905,6 +911,7 @@ const heroServiceOptions = serviceEntries.length > 0
 </section>
 )}
 
+</main>
 </body>
 </BaseLayout>
 
