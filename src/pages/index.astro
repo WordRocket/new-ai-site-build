@@ -1107,6 +1107,17 @@ const heroServiceOptions = serviceEntries.length > 0
     z-index: 2;
   }
 
+  @media (min-width: 901px) {
+    .cinematic-hero .hero-left-panel {
+      grid-column: 1;
+      grid-row: 1;
+    }
+    .cinematic-hero .hero-form-panel {
+      grid-column: 2;
+      grid-row: 1;
+    }
+  }
+
   /* THE CRITICAL FIX: strip the global navy panel behind the form.
      The card (.hero-form-card) keeps its own solid bg; only the column
      WRAPPER that was blocking the right half of the photo is cleared.     */
