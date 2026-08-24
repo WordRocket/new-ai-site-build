@@ -4,6 +4,7 @@ import { getPreset } from '../../lib/business-presets';
 import { iconSvg } from '../../lib/icons';
 
 const preset = getPreset((siteConfig as any).businessType || 'other');
+const isLocalService = (siteConfig as any).businessType === 'local-service';
 const FALLBACK_ICONS = ['shield-check', 'check-circle', 'clock'];
 const customLabels: string[] = Array.isArray((siteConfig as any).trustSignals) && (siteConfig as any).trustSignals.length > 0
   ? ((siteConfig as any).trustSignals as string[]).slice(0, 3)
@@ -23,7 +24,7 @@ const loop = [signals, signals];
 
 {signals.length > 0 && (
   <div
-    class="trust-bar"
+    class:list={['trust-bar', isLocalService && 'trust-bar--local']}
   >
     <div class="trust-bar__track" aria-hidden={signals.length > 0 ? 'true' : undefined}>
       {loop.map((group) => (
@@ -86,6 +87,9 @@ const loop = [signals, signals];
     align-items: center;
     gap: 0 2.5rem;
     padding-right: 2.5rem;
+  }
+  .trust-bar--local .trust-bar__group {
+    padding-right: 0;
   }
 
   .trust-bar__item {
