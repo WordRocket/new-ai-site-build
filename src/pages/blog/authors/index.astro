@@ -1,0 +1,136 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { listAuthors } from '../../../lib/authors';
+import siteConfig from '../../../lib/site-config';
+import { imgUrl } from '../../../lib/image';
+
+const authors = await listAuthors();
+const allPosts = await getCollection('blog');
+
+const authorsWithCounts = authors.map((a) => ({
+  ...a,
+  count: allPosts.filter((p) => {
+    const id = (p.data as any).authorId;
+    const name = (p.data.author || '').toLowerCase();
+    return id === a.id || name === a.name.toLowerCase();
+  }).length,
+})).sort((a, b) => b.count - a.count);
+---
+
+<BaseLayout
+  title={`Authors | ${siteConfig.name}`}
+  description={`Meet the writers behind ${siteConfig.name}.`}
+>
+  <main>
+    <nav aria-label="Breadcrumb" class="border-b" style="background:var(--rs-surface); border-color:var(--rs-border);">
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-3">
+        <ol class="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
+          <li><a href="/" class="hover:text-[var(--rs-brand-text)] transition-colors">Home</a></li>
+          <li aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></li>
+          <li><a href="/blog" class="hover:text-[var(--rs-brand-text)] transition-colors">Blog</a></li>
+          <li aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></li>
+          <li><span class="text-[var(--color-text)] font-medium" aria-current="page">Authors</span></li>
+        </ol>
+      </div>
+    </nav>
+
+    <section class="py-14 sm:py-20 text-center" style="background:var(--rs-surface-2);">
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-[var(--color-text)] mb-4"><span class="u-gradient-text">Our Authors</span></h1>
+        <p class="text-[var(--color-text-muted)] text-lg max-w-xl mx-auto">Meet the people behind the articles.</p>
+      </div>
+    </section>
+
+    <section class="py-16 sm:py-20">
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+        {authorsWithCounts.length === 0 ? (
+          <p class="text-center text-[var(--color-text-muted)]">No author profiles yet.</p>
+        ) : (
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {authorsWithCounts.map((a) => (
+              <a href={`/blog/author/${a.id}`} class="author-tile">
+                <div class="author-tile__avatar">
+                  {a.avatar
+                    ? <img src={imgUrl(a.avatar, { w: 160, q: 82 })} alt={a.name} width="88" height="88" loading="lazy" />
+                    : <span>{a.name.charAt(0).toUpperCase()}</span>}
+                </div>
+                <h2 class="author-tile__name">{a.name}</h2>
+                {a.role && <span class="author-tile__role">{a.role}</span>}
+                {a.bio && <p class="author-tile__bio">{a.bio}</p>}
+                <span class="author-tile__count">{a.count} {a.count === 1 ? 'article' : 'articles'}</span>
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .author-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.5rem;
+    padding: 2rem 1.5rem;
+    border-radius: var(--rs-radius-lg);
+    background: var(--rs-surface);
+    border: 1px solid var(--rs-border);
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+  .author-tile:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--rs-shadow-card-hover);
+    border-color: var(--rs-brand-tint-border);
+  }
+  .author-tile__avatar {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--rs-brand);
+    color: var(--rs-on-brand);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.25rem;
+    font-weight: 800;
+    font-family: var(--rs-font-display);
+    margin-bottom: 0.5rem;
+  }
+  .author-tile__avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .author-tile__name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--rs-text);
+    margin: 0;
+  }
+  .author-tile__role {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--rs-brand);
+  }
+  .author-tile__bio {
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--rs-text-muted);
+    margin: 0.25rem 0 0.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .author-tile__count {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--rs-brand-text);
+    margin-top: auto;
+    padding-top: 0.5rem;
+  }
+</style>

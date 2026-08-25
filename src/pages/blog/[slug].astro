@@ -6,6 +6,7 @@ import BlogSidebar from '../../components/BlogSidebar.astro';
 import RelatedLinks from '../../components/RelatedLinks.astro';
 import AffiliateDisclosure from '../../components/AffiliateDisclosure.astro';
 import AffiliateProductCard from '../../components/AffiliateProductCard.astro';
+import ImageFigure from '../../components/ImageFigure.astro';
 import siteConfig from '../../lib/site-config';
 import {
   getBlogPostSchema,
@@ -14,6 +15,7 @@ import {
   getOrganizationSchema,
 } from '../../lib/schema';
 import { imgUrl, variantsSrcset } from '../../lib/image';
+import { resolveAuthor } from '../../lib/authors';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -23,6 +25,14 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 const { Content, headings: astroHeadings } = await post.render();
 const d = post.data;
+
+// Resolve author profile (falls back to inline author/authorBio fields)
+const author = await resolveAuthor({
+  authorId: (d as any).authorId,
+  author: d.author,
+  authorBio: d.authorBio,
+  authorImage: d.authorImage,
+});
 
 // Affiliate products featured on this post
 const affiliateEnabled = (siteConfig as any).affiliateLinksEnabled === true;
@@ -56,7 +66,7 @@ const postUrl = `${siteUrl}/blog/${post.slug}`;
 const blogPostSchema = getBlogPostSchema({
   title: d.title,
   description: d.description,
-  author: d.author,
+  author: author.name,
   datePublished: d.datePublished,
   dateModified: d.dateModified,
   image: d.featuredImage ?? `${siteUrl}/favicon.svg`,
@@ -130,7 +140,9 @@ const relatedPosts = allPosts
         <div class="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm" style="color:rgba(255,255,255,0.6);">
           <span class="flex items-center gap-1.5">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            {d.author}
+            {author.hasProfile
+              ? <a href={`/blog/author/${author.id}`} class="hover:text-white transition-colors">{author.name}</a>
+              : <span>{author.name}</span>}
           </span>
           <time datetime={d.datePublished}>{new Date(d.datePublished).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}</time>
           <span>{readingTime} min read</span>
@@ -164,12 +176,18 @@ const relatedPosts = allPosts
 
         <!-- Author block -->
         <div class="flex items-start gap-4 p-5 rounded-[var(--radius-md)] mb-10" style="background:var(--rs-surface-2); border:1px solid var(--rs-border);">
-          <div class="flex-shrink-0 w-11 h-11 rounded-full flex items-center justify-center text-sm font-bold" style="background-color:var(--rs-brand); color:var(--rs-on-brand);">
-            {d.author.charAt(0).toUpperCase()}
+          <div class="flex-shrink-0 w-11 h-11 rounded-full flex items-center justify-center text-sm font-bold overflow-hidden" style="background-color:var(--rs-brand); color:var(--rs-on-brand);">
+            {author.avatar
+              ? <img src={imgUrl(author.avatar, { w: 88, q: 82 })} alt={author.name} width="44" height="44" style="width:100%;height:100%;object-fit:cover;" />
+              : <span>{author.name.charAt(0).toUpperCase()}</span>}
           </div>
           <div class="flex flex-col gap-1 min-w-0">
-            <span class="text-sm font-semibold text-[var(--color-text)]">{d.author}</span>
-            {d.authorBio && <p class="text-sm text-[var(--color-text-muted)] leading-relaxed">{d.authorBio}</p>}
+            <span class="text-sm font-semibold text-[var(--color-text)]">
+              {author.hasProfile
+                ? <a href={`/blog/author/${author.id}`} class="hover:text-[var(--rs-brand-text)] transition-colors">{author.name}</a>
+                : <span>{author.name}</span>}
+            </span>
+            {author.bio && <p class="text-sm text-[var(--color-text-muted)] leading-relaxed">{author.bio}</p>}
             <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-xs text-[var(--color-text-muted)]">
               <span>
                 Published:
@@ -240,16 +258,25 @@ const relatedPosts = allPosts
 
         <!-- Author bio card -->
         <div class="mt-14 p-6 rounded-[var(--radius-lg)] flex items-start gap-5" style="background:var(--rs-surface-2); border:1px solid var(--rs-border);">
-          <div class="flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold" style="background-color:var(--rs-brand); color:var(--rs-on-brand);">
-            {d.author.charAt(0).toUpperCase()}
+          <div class="flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold overflow-hidden" style="background-color:var(--rs-brand); color:var(--rs-on-brand);">
+            {author.avatar
+              ? <img src={imgUrl(author.avatar, { w: 112, q: 82 })} alt={author.name} width="56" height="56" style="width:100%;height:100%;object-fit:cover;" />
+              : <span>{author.name.charAt(0).toUpperCase()}</span>}
           </div>
           <div class="flex flex-col gap-1">
             <span class="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Written by</span>
-            <span class="text-base font-semibold text-[var(--color-text)]">{d.author}</span>
-            {d.authorBio
-              ? <p class="text-sm text-[var(--color-text-muted)] leading-relaxed mt-1">{d.authorBio}</p>
+            <span class="text-base font-semibold text-[var(--color-text)]">
+              {author.hasProfile
+                ? <a href={`/blog/author/${author.id}`} class="hover:text-[var(--rs-brand-text)] transition-colors">{author.name}</a>
+                : <span>{author.name}</span>}
+            </span>
+            {author.bio
+              ? <p class="text-sm text-[var(--color-text-muted)] leading-relaxed mt-1">{author.bio}</p>
               : <p class="text-sm text-[var(--color-text-muted)] leading-relaxed mt-1">Contributing writer at {siteConfig.name}.</p>
             }
+            {author.hasProfile && (
+              <a href={`/blog/author/${author.id}`} class="text-sm font-semibold mt-1" style="color:var(--rs-brand-text);">View all articles →</a>
+            )}
           </div>
         </div>
 

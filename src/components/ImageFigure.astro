@@ -1,0 +1,106 @@
+---
+import SmartImage from './SmartImage.astro';
+
+type Layout = 'full' | 'contained' | 'wide' | 'none';
+
+interface Props {
+  src?: string;
+  alt: string;
+  variants?: any;
+  layout?: Layout;
+  /** "cover" fills the frame; "contain" shows the whole image. */
+  fit?: 'cover' | 'contain';
+  loading?: 'eager' | 'lazy';
+  fetchpriority?: 'high' | 'auto' | 'low';
+  imgWidth?: number;
+  caption?: string;
+}
+
+const {
+  src,
+  alt,
+  variants,
+  layout = 'full',
+  fit = 'cover',
+  loading = 'lazy',
+  fetchpriority,
+  imgWidth,
+  caption,
+} = Astro.props;
+
+const hasImage = typeof src === 'string' && src.trim().length > 0;
+const aspect = layout === 'contained' ? '4/3' : '16/9';
+const width = imgWidth ?? (layout === 'contained' ? 640 : 1200);
+const sizes = layout === 'contained'
+  ? '(min-width: 768px) 640px, 100vw'
+  : '(min-width: 1024px) 720px, 100vw';
+
+const wrapperClass = [
+  'img-fig',
+  `img-fig--${layout}`,
+  fit === 'contain' ? 'img-fig--contain' : '',
+  !hasImage ? 'img-fig--empty' : '',
+].filter(Boolean).join(' ');
+---
+
+<figure class={wrapperClass}>
+  {hasImage ? (
+    <SmartImage
+      src={src}
+      alt={alt}
+      aspect={aspect}
+      loading={loading}
+      fetchpriority={fetchpriority}
+      imgWidth={width}
+      variants={variants}
+      sizes={sizes}
+    />
+  ) : (
+    <div class="img-fig__empty" style={`aspect-ratio:${aspect};`}>{alt}</div>
+  )}
+  {caption && <figcaption class="img-fig__caption">{caption}</figcaption>}
+</figure>
+
+<style>
+  .img-fig { margin: 0; }
+  .img-fig--full {
+    width: 100%;
+    margin-block: 2rem;
+  }
+  .img-fig--wide {
+    width: 100%;
+    max-width: 1100px;
+    margin-block: 2rem;
+    margin-inline: auto;
+  }
+  .img-fig--contained {
+    width: 100%;
+    max-width: 640px;
+    margin-block: 2rem;
+    margin-inline: auto;
+  }
+  .img-fig--none {
+    display: none;
+  }
+  .img-fig--contain :global(.si-img) {
+    object-fit: contain;
+    background: var(--rs-surface-2);
+  }
+  .img-fig__caption {
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--rs-text-muted);
+    margin-top: 0.625rem;
+    font-style: italic;
+  }
+  .img-fig__empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    background: var(--rs-surface-2);
+    color: var(--rs-text-muted);
+    font-size: 0.875rem;
+    border-radius: var(--rs-radius-md);
+  }
+</style>

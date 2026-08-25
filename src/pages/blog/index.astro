@@ -4,6 +4,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import siteConfig, { cleanTitle } from '../../lib/site-config';
 import SmartImage from '../../components/SmartImage.astro';
 import RecommendedProducts from '../../components/RecommendedProducts.astro';
+import { listAuthors } from '../../lib/authors';
 
 const isLocalService = (siteConfig as any).businessType === 'local-service';
 
@@ -70,6 +71,10 @@ const affiliateProducts = affiliateEnabled
   ? (await getCollection('affiliateProducts').catch(() => []))
       .sort((a, b) => (a.data.priority ?? 100) - (b.data.priority ?? 100))
   : [];
+
+// Author profile lookup: map lowercased name → author id, for linking bylines
+const authorProfiles = await listAuthors();
+const authorByName = new Map(authorProfiles.map((a) => [a.name.toLowerCase(), a.id]));
 ---
 
 <BaseLayout
@@ -140,7 +145,7 @@ const affiliateProducts = affiliateEnabled
     <!-- Post grid -->
     <section class="py-16 sm:py-20">
       <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div class={affiliateProducts.length > 0 ? 'grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8' : ''}>
+        <div class={affiliateProducts.length > 0 ? 'grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8' : ''}>
         <div>
         {posts.length === 0 ? (
           <div class="flex flex-col items-center justify-center gap-4 py-24 text-center">
@@ -190,7 +195,15 @@ const affiliateProducts = affiliateEnabled
                     <div class="flex items-center justify-between pt-2 border-t mt-auto" style="border-color:var(--rs-border);">
                       <div class="flex items-center gap-2 text-xs text-[var(--color-text-muted)]">
                         <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                        <span>{post.data.author}</span>
+                        <span>
+                          {(() => {
+                            const aid = (post.data as any).authorId;
+                            const id = aid ?? authorByName.get((post.data.author || '').toLowerCase());
+                            return id
+                              ? <a href={`/blog/author/${id}`} class="hover:text-[var(--rs-brand-text)] transition-colors">{post.data.author}</a>
+                              : <span>{post.data.author}</span>;
+                          })()}
+                        </span>
                         <span aria-hidden="true">·</span>
                         <time datetime={post.data.datePublished}>{formatDate(post.data.datePublished)}</time>
                       </div>
@@ -250,6 +263,11 @@ const affiliateProducts = affiliateEnabled
           </aside>
         )}
         </div>
+        {affiliateProducts.length > 0 && (
+          <div class="lg:hidden mt-12">
+            <RecommendedProducts products={affiliateProducts} max={3} />
+          </div>
+        )}
       </div>
     </section>
   </main>

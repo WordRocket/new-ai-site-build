@@ -80,6 +80,7 @@ const { name, pitch, affiliateUrl, image, priceNote, ctaLabel = 'View Details', 
     gap: 0.625rem;
     padding: 1.25rem;
     flex: 1;
+    min-width: 0;
   }
   .aff-card__name {
     font-size: 1.0625rem;
@@ -135,16 +136,17 @@ const { name, pitch, affiliateUrl, image, priceNote, ctaLabel = 'View Details', 
   /* Compact variant — for in-content placement after intro paragraph */
   .aff-card--compact {
     display: grid;
-    grid-template-columns: 104px minmax(0, 1fr);
+    grid-template-columns: 96px minmax(0, 1fr);
     align-items: center;
     gap: 1rem;
     padding: 0.875rem;
   }
   .aff-card--compact .aff-card__media {
-    width: 104px;
+    width: 96px;
     aspect-ratio: 1;
     border-radius: var(--radius-md, 8px);
     border: 1px solid var(--rs-border, #e4e4e7);
+    border-bottom: 1px solid var(--rs-border, #e4e4e7);
   }
   .aff-card--compact .aff-card__media img {
     object-fit: contain;
@@ -162,6 +164,7 @@ const { name, pitch, affiliateUrl, image, priceNote, ctaLabel = 'View Details', 
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    word-break: break-word;
   }
   .aff-card--compact .aff-card__pitch {
     min-width: 0;
@@ -170,6 +173,7 @@ const { name, pitch, affiliateUrl, image, priceNote, ctaLabel = 'View Details', 
     -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    word-break: break-word;
   }
   .aff-card--compact .aff-card__cta {
     max-width: 100%;

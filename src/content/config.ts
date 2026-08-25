@@ -11,6 +11,19 @@ const relatedLinkSchema = z.object({
   type: z.string().optional(),
 });
 
+const authorSchema = z.object({
+  name: z.string(),
+  bio: z.string().optional(),
+  avatar: z.string().optional(),
+  role: z.string().optional(),
+  website: z.string().optional(),
+  twitter: z.string().optional(),
+  linkedin: z.string().optional(),
+  order: z.number().default(100),
+});
+
+const authors = defineCollection({ schema: authorSchema });
+
 const blog = defineCollection({
   schema: z.object({
     title: z.string(),
@@ -18,14 +31,17 @@ const blog = defineCollection({
     datePublished: z.string(),
     dateModified: z.string(),
     author: z.string(),
+    authorId: z.string().optional(),
     authorBio: z.string().optional(),
     authorImage: z.string().optional(),
     heroImage: z.string().optional(),
     heroImageVariants: imageVariantsSchema,
+    heroImageLayout: z.enum(['full', 'contained', 'wide', 'none']).optional(),
     sectionImage: z.string().optional(),
     featuredImage: z.string().optional(),
     featuredImageVariants: imageVariantsSchema,
     featuredImageAlt: z.string().optional(),
+    featuredImageLayout: z.enum(['full', 'contained', 'wide', 'none']).optional(),
     category: z.string(),
     tags: z.array(z.string()).default([]),
     noindex: z.boolean().default(false),
@@ -202,4 +218,4 @@ const affiliateProducts = defineCollection({
   }),
 });
 
-export const collections = { blog, pages, services, locations, projects, categories, industries, affiliateProducts };
+export const collections = { blog, pages, services, locations, projects, categories, industries, affiliateProducts, authors };
