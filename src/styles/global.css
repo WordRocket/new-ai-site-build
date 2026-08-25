@@ -503,7 +503,16 @@ body:not(:has(#top-bar)) .hero-split { padding-top: 72px; }
   box-shadow: 0 1px 20px rgba(0,0,0,0.05);
 }
 /* ── Top bar ───────────────────────────────────────────────────────────── */
-#top-bar { height: 36px; background: var(--color-dark-navy); }
+#top-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 36px;
+  z-index: 51;
+  background: var(--color-dark-navy);
+  transition: transform 0.3s ease;
+}
+#top-bar.hidden-up { transform: translateY(-100%); }
+#site-nav.top-bar-present { top: 36px; }
 
 /* ── Hero split ────────────────────────────────────────────────────────── */
 .hero-split {

@@ -585,16 +585,28 @@ const blogActive = pathname.startsWith('/blog');
 
     if (!nav || !toggle || !menu || !hamTop || !hamMid || !hamBot) return;
 
+    let _scrolled = false;
     function applyNavStyle() {
-      const scrolled = window.scrollY > 50;
-      if (scrolled) {
+      const y = window.scrollY;
+      // Hysteresis: add "scrolled" above 64px, remove below 24px.
+      // This prevents a 1px scroll jitter from oscillating the state.
+      if (_scrolled) {
+        if (y < 24) _scrolled = false;
+      } else {
+        if (y > 64) _scrolled = true;
+      }
+      if (_scrolled) {
         nav!.classList.add('scrolled');
-        nav!.style.top = '0';
-        if (topBar) topBar.style.display = 'none';
+        if (topBar) {
+          topBar.classList.add('hidden-up');
+          nav!.style.top = '0';
+        }
       } else {
         nav!.classList.remove('scrolled');
-        nav!.style.top = topBar ? '36px' : '0';
-        if (topBar) topBar.style.display = '';
+        if (topBar) {
+          topBar.classList.remove('hidden-up');
+          nav!.style.top = '36px';
+        }
       }
     }
 
