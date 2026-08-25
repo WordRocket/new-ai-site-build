@@ -14,7 +14,7 @@ import {
   getBreadcrumbSchema,
   getOrganizationSchema,
 } from '../../lib/schema';
-import { imgUrl, variantsSrcset } from '../../lib/image';
+import { imgUrl } from '../../lib/image';
 import { resolveAuthor } from '../../lib/authors';
 
 export async function getStaticPaths() {
@@ -158,20 +158,17 @@ const relatedPosts = allPosts
 
       <article class="page-body-article">
 
-        {d.featuredImage && (
-          <div class="rounded-[var(--radius-lg)] overflow-hidden aspect-video mb-8" style="box-shadow:var(--shadow-md);">
-            <img
-              src={imgUrl(d.featuredImage, { w: 1440, q: 82 })}
-              srcset={variantsSrcset(d.featuredImageVariants) || undefined}
-              sizes={d.featuredImageVariants ? '(min-width: 768px) 720px, 100vw' : undefined}
-              alt={d.featuredImageAlt ?? d.title}
-              class="w-full h-full object-cover"
-              loading="eager"
-              decoding="async"
-              width="1440"
-              height="810"
-            />
-          </div>
+        {d.featuredImage && (d as any).featuredImageLayout !== 'none' && (
+          <ImageFigure
+            src={d.featuredImage}
+            alt={d.featuredImageAlt ?? d.title}
+            variants={d.featuredImageVariants}
+            layout={(d as any).featuredImageLayout ?? 'full'}
+            fit="cover"
+            loading="eager"
+            fetchpriority="high"
+            imgWidth={1440}
+          />
         )}
 
         <!-- Author block -->
