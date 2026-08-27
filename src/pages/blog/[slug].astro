@@ -200,9 +200,9 @@ const relatedPosts = allPosts
 
         {/* Affiliate disclosure + product cards after intro */}
         {hasAffiliate && (
-          <div class="mb-8 flex flex-col gap-4">
+          <div class="mb-10 flex flex-col gap-4">
             <AffiliateDisclosure />
-            <div class="grid grid-cols-1 gap-4">
+            <div class={`grid gap-5 ${featuredProducts.length > 1 ? 'sm:grid-cols-2' : 'max-w-md'}`}>
               {featuredProducts.map((p) => (
                 <AffiliateProductCard
                   name={p.data.name}
@@ -211,7 +211,6 @@ const relatedPosts = allPosts
                   image={p.data.image}
                   priceNote={p.data.priceNote}
                   ctaLabel={p.data.ctaLabel}
-                  compact={true}
                 />
               ))}
             </div>
