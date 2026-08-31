@@ -27,5 +27,5 @@
   "workspaces": [
     "packages/blocks"
   ],
-  "// for-lovable": "Lovable's dashboard uses this git spec instead of workspace:*: \"@ranksite/blocks\": \"git+https://x-access-token:${BLOCKS_TOKEN}@github.com/ranksite/blocks.git#v0.1.0\""
+  "// for-lovable": "Lovable's dashboard uses this git spec instead of workspace:*: \"@ranksite/blocks\": \"git+https://x-access-token:${BLOCKS_TOKEN}@github.com/WordRocket/ranksite-blocks.git#v0.1.0\""
 }
