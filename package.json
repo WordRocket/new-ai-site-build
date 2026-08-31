@@ -10,10 +10,21 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/react": "^4.3.0",
     "@astrojs/sitemap": "^3.7.3",
+    "@ranksite/blocks": "workspace:*",
     "@tailwindcss/vite": "^4.3.0",
     "astro": "^5.2.5",
     "fuse.js": "^7.5.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "tailwindcss": "^4.3.0"
-  }
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0"
+  },
+  "workspaces": [
+    "packages/blocks"
+  ]
 }

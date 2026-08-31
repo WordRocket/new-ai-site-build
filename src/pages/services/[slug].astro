@@ -13,6 +13,9 @@ import siteConfig from '../../lib/site-config';
 import { toTitleCase, cleanTitle } from '../../lib/site-config';
 import ReviewBanner from '../../components/ReviewBanner.astro';
 import RelatedLinks from '../../components/RelatedLinks.astro';
+import PageBlockRenderer from '../../components/PageBlockRenderer.astro';
+import { getValidatedSchema } from '../../lib/block-renderer';
+import type { PageSchemas } from '../../lib/block-renderer';
 import {
   getServiceSchema,
   getFAQSchema,
@@ -117,6 +120,12 @@ const matchingProjects = allProjects.filter(
 const pinned    = matchingProjects.filter(p => p.data.featuredOnService).sort((a, b) => byDateDesc(a.data, b.data));
 const unpinned  = matchingProjects.filter(p => !p.data.featuredOnService).sort((a, b) => byDateDesc(a.data, b.data));
 const relatedProjects = [...pinned, ...unpinned].slice(0, 3);
+
+// Block-based rendering: if siteConfig includes a validated pageSchemas
+// entry for the "service" page type, render blocks from @ranksite/blocks.
+// Otherwise, fall through to the fixed template below — zero behavior change.
+const pageSchemas = (siteConfig as any).pageSchemas as PageSchemas | undefined;
+const blockSchema = getValidatedSchema(pageSchemas, 'service');
 ---
 
 <BaseLayout
@@ -126,6 +135,11 @@ const relatedProjects = [...pinned, ...unpinned].slice(0, 3);
   schemas={schemas}
 >
   <main>
+
+  {blockSchema ? (
+    <PageBlockRenderer pageSchemas={pageSchemas} pageType="service" />
+  ) : (
+    <>
 
     <!-- ─── Hero band ──────────────────────────────────────────────────── -->
     <div class="page-hero">
@@ -326,6 +340,9 @@ const relatedProjects = [...pinned, ...unpinned].slice(0, 3);
     <ProcessTimeline steps={d.steps ?? []} />
     <Testimonials testimonials={testimonials} />
     <CtaBand />
+
+  </>
+  )}
 
   </main>
 </BaseLayout>

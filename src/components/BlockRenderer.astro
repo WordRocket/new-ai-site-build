@@ -1,0 +1,17 @@
+---
+import { registry } from '@ranksite/blocks';
+import type { BlockInstance } from '../lib/block-renderer';
+
+interface Props {
+  block: BlockInstance;
+}
+
+const { block } = Astro.props;
+const Component = registry[block.blockKey];
+
+if (!Component) {
+  throw new Error(`[BlockRenderer] blockKey "${block.blockKey}" not found in registry`);
+}
+---
+
+<Component {...block.props} id={block.id} />

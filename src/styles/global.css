@@ -249,6 +249,26 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -0
   --rs-shadow-card: 0 1px 2px rgba(15,23,42,.06), 0 10px 30px rgba(15,23,42,.05);
   --rs-shadow-card-hover: 0 2px 4px rgba(15,23,42,.08), 0 18px 40px rgba(15,23,42,.10);
 }
+
+/* ── Contract Token Bridge (@ranksite/blocks) ──────────────────────────── */
+/* Maps the --color-* / --font-* / --radius token names from the visual
+   design system cross-system contract to this repo's --rs-* theme tokens.
+   Block components from @ranksite/blocks reference these names exclusively;
+   this bridge ensures they render correctly against any customer site's
+   theme without modifying the blocks themselves. Because var() resolves
+   at use time, dark-skin --rs-* overrides flow through automatically. */
+:root {
+  --color-primary:      var(--rs-brand);
+  --color-secondary:    var(--rs-brand-secondary);
+  --color-accent:       var(--rs-accent);
+  --color-bg:           var(--rs-bg);
+  --color-surface:      var(--rs-surface);
+  --color-on-primary:   var(--rs-on-brand, #fff);
+  --font-heading:       var(--rs-font-display);
+  --font-body:          var(--rs-font-body);
+  --radius:             var(--rs-radius-md);
+  --hero-mesh-strength: 0.72;
+}
 [data-skin="dark"] {
   --rs-bg: #0a0e17; --rs-surface: #111726; --rs-surface-2: #161d2e;
   --rs-border: rgba(255,255,255,.08); --rs-text: #f6f8fc; --rs-text-muted: #97a3b6;

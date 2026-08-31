@@ -1,0 +1,32 @@
+---
+import { getValidatedSchema, isInteractiveBlock } from '../lib/block-renderer';
+import type { PageSchemas } from '../lib/block-renderer';
+import BlockRenderer from './BlockRenderer.astro';
+import InteractiveBlockRenderer from './InteractiveBlockRenderer.astro';
+
+interface Props {
+  pageSchemas?: PageSchemas;
+  pageType: string;
+}
+
+const { pageSchemas, pageType } = Astro.props;
+
+const result = getValidatedSchema(pageSchemas, pageType);
+
+// If no valid schema, render nothing — the page template's conditional
+// will fall back to the fixed template.
+const schema = result?.schema ?? null;
+const themeCss = result?.themeCss ?? '';
+const sortedBlocks = schema ? [...schema.blocks].sort((a, b) => a.position - b.position) : [];
+---
+
+{schema && (
+  <>
+    {themeCss && <style set:html={themeCss} />}
+    {sortedBlocks.map((block) => (
+      isInteractiveBlock(block.blockKey)
+        ? <InteractiveBlockRenderer block={block} />
+        : <BlockRenderer block={block} />
+    ))}
+  </>
+)}
