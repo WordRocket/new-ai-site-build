@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import siteConfig from '../lib/site-config';
 import PageBlockRenderer from '../components/PageBlockRenderer.astro';
-import { getValidatedSchema, type PageSchemas } from '../lib/block-renderer';
+import { getValidatedSchema, getPageSchemas } from '../lib/block-renderer';
 
 const isLocalService = (siteConfig as any).businessType === 'local-service';
 
@@ -56,7 +56,7 @@ const projectsJSON = projects.map(p => ({
   customerQuote: p.data.customerQuote ?? null,
 }));
 
-const cfgPageSchemas = (siteConfig as any).pageSchemas as PageSchemas | undefined;
+const cfgPageSchemas = getPageSchemas(siteConfig as any);
 const blockSchema = getValidatedSchema(cfgPageSchemas, 'ourWork');
 ---
 

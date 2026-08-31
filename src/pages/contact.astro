@@ -8,7 +8,7 @@ import { getPreset } from '../lib/business-presets';
 import LeadForm from '../components/LeadForm.astro';
 import RelatedLinks from '../components/RelatedLinks.astro';
 import PageBlockRenderer from '../components/PageBlockRenderer.astro';
-import { getValidatedSchema, type PageSchemas } from '../lib/block-renderer';
+import { getValidatedSchema, getPageSchemas } from '../lib/block-renderer';
 
 const siteUrl = import.meta.env.SITE ?? siteConfig.url;
 const pageUrl = `${siteUrl}/contact`;
@@ -71,7 +71,7 @@ const mapQueryParts = [siteConfig.address, siteConfig.city, siteConfig.state, si
 const mapQuery = mapQueryParts.length > 0 ? encodeURIComponent(mapQueryParts.join(', ')) : '';
 const mapSrc = mapQuery ? `https://maps.google.com/maps?q=${mapQuery}&output=embed` : '';
 
-const cfgPageSchemas = (siteConfig as any).pageSchemas as PageSchemas | undefined;
+const cfgPageSchemas = getPageSchemas(siteConfig as any);
 const blockSchema = getValidatedSchema(cfgPageSchemas, 'contact');
 ---
 

@@ -5,7 +5,7 @@ import siteConfig, { cleanTitle } from '../../lib/site-config';
 import SmartImage from '../../components/SmartImage.astro';
 import { listAuthors } from '../../lib/authors';
 import PageBlockRenderer from '../../components/PageBlockRenderer.astro';
-import { getValidatedSchema, type PageSchemas } from '../../lib/block-renderer';
+import { getValidatedSchema, getPageSchemas } from '../../lib/block-renderer';
 
 const isLocalService = (siteConfig as any).businessType === 'local-service';
 
@@ -70,7 +70,7 @@ const showCategories = showCollectionCategories || showLegacyCategories;
 const authorProfiles = await listAuthors();
 const authorByName = new Map(authorProfiles.map((a) => [a.name.toLowerCase(), a.id]));
 
-const cfgPageSchemas = (siteConfig as any).pageSchemas as PageSchemas | undefined;
+const cfgPageSchemas = getPageSchemas(siteConfig as any);
 const blockSchema = getValidatedSchema(cfgPageSchemas, 'blogIndex');
 ---
 

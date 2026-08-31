@@ -14,8 +14,7 @@ import { toTitleCase, cleanTitle } from '../../lib/site-config';
 import ReviewBanner from '../../components/ReviewBanner.astro';
 import RelatedLinks from '../../components/RelatedLinks.astro';
 import PageBlockRenderer from '../../components/PageBlockRenderer.astro';
-import { getValidatedSchema } from '../../lib/block-renderer';
-import type { PageSchemas } from '../../lib/block-renderer';
+import { getValidatedSchema, getPageSchemas } from '../../lib/block-renderer';
 import {
   getServiceSchema,
   getFAQSchema,
@@ -124,7 +123,7 @@ const relatedProjects = [...pinned, ...unpinned].slice(0, 3);
 // Block-based rendering: if siteConfig includes a validated pageSchemas
 // entry for the "service" page type, render blocks from @ranksite/blocks.
 // Otherwise, fall through to the fixed template below — zero behavior change.
-const pageSchemas = (siteConfig as any).pageSchemas as PageSchemas | undefined;
+const pageSchemas = getPageSchemas(siteConfig as any);
 const blockSchema = getValidatedSchema(pageSchemas, 'service');
 ---
 

@@ -6,7 +6,7 @@ import AffiliateDisclosure from '../components/AffiliateDisclosure.astro';
 import siteConfig from '../lib/site-config';
 import { getBreadcrumbSchema, getOrganizationSchema } from '../lib/schema';
 import PageBlockRenderer from '../components/PageBlockRenderer.astro';
-import { getValidatedSchema, type PageSchemas } from '../lib/block-renderer';
+import { getValidatedSchema, getPageSchemas } from '../lib/block-renderer';
 
 const affiliateEnabled = (siteConfig as any).affiliateLinksEnabled === true;
 
@@ -33,7 +33,7 @@ const schemas: object[] = [breadcrumbSchema, orgSchema];
 
 const hasProducts = products.length > 0;
 
-const cfgPageSchemas = (siteConfig as any).pageSchemas as PageSchemas | undefined;
+const cfgPageSchemas = getPageSchemas(siteConfig as any);
 const blockSchema = getValidatedSchema(cfgPageSchemas, 'resources');
 ---
 

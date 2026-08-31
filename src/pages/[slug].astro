@@ -19,8 +19,7 @@ import RelatedLinks from '../components/RelatedLinks.astro';
 import AffiliateDisclosure from '../components/AffiliateDisclosure.astro';
 import AffiliateProductCard from '../components/AffiliateProductCard.astro';
 import PageBlockRenderer from '../components/PageBlockRenderer.astro';
-import { getValidatedSchema } from '../lib/block-renderer';
-import type { PageSchemas } from '../lib/block-renderer';
+import { getValidatedSchema, getPageSchemas } from '../lib/block-renderer';
 
 // Reserved top-level routes handled by dedicated .astro files — pages
 // collection entries with these slugs are skipped here to avoid conflicts.
@@ -261,7 +260,7 @@ if (kind === 'industry') {
 // Block-based rendering: if siteConfig includes a validated pageSchemas
 // entry for this page type, render blocks from @ranksite/blocks.
 // Otherwise, fall through to the fixed template — zero behavior change.
-const cfgPageSchemas = (siteConfig as any).pageSchemas as PageSchemas | undefined;
+const cfgPageSchemas = getPageSchemas(siteConfig as any);
 const blockPageType = kind === 'page' ? 'page' : isIndustryPage ? 'industry' : 'location';
 const blockSchema = getValidatedSchema(cfgPageSchemas, blockPageType);
 ---

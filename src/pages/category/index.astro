@@ -5,7 +5,7 @@ import siteConfig, { cleanTitle } from '../../lib/site-config';
 import ServiceCard from '../../components/ServiceCard.astro';
 import { iconSvg } from '../../lib/icons';
 import PageBlockRenderer from '../../components/PageBlockRenderer.astro';
-import { getValidatedSchema, type PageSchemas } from '../../lib/block-renderer';
+import { getValidatedSchema, getPageSchemas } from '../../lib/block-renderer';
 
 const isGeneral = (siteConfig as any).businessType === 'general';
 if (!isGeneral) {
@@ -29,7 +29,7 @@ const blogIntro: string = ((siteConfig as any).blogIntro as string | undefined)?
 const description = blogIntro || `Explore all categories from ${siteConfig.name}.`;
 const totalArticles = allPosts.length;
 
-const cfgPageSchemas = (siteConfig as any).pageSchemas as PageSchemas | undefined;
+const cfgPageSchemas = getPageSchemas(siteConfig as any);
 const blockSchema = getValidatedSchema(cfgPageSchemas, 'categoryIndex');
 ---
 
