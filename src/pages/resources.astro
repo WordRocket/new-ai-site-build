@@ -5,6 +5,8 @@ import AffiliateProductCard from '../components/AffiliateProductCard.astro';
 import AffiliateDisclosure from '../components/AffiliateDisclosure.astro';
 import siteConfig from '../lib/site-config';
 import { getBreadcrumbSchema, getOrganizationSchema } from '../lib/schema';
+import PageBlockRenderer from '../components/PageBlockRenderer.astro';
+import { getValidatedSchema, type PageSchemas } from '../lib/block-renderer';
 
 const affiliateEnabled = (siteConfig as any).affiliateLinksEnabled === true;
 
@@ -30,6 +32,9 @@ const orgSchema = getOrganizationSchema({
 const schemas: object[] = [breadcrumbSchema, orgSchema];
 
 const hasProducts = products.length > 0;
+
+const cfgPageSchemas = (siteConfig as any).pageSchemas as PageSchemas | undefined;
+const blockSchema = getValidatedSchema(cfgPageSchemas, 'resources');
 ---
 
 <BaseLayout
@@ -39,6 +44,10 @@ const hasProducts = products.length > 0;
   schemas={schemas}
 >
   <main>
+{blockSchema ? (
+  <PageBlockRenderer pageSchemas={cfgPageSchemas} pageType="resources" />
+) : (
+<>
     <!-- Breadcrumb -->
     <nav aria-label="Breadcrumb" class="border-b" style="background:var(--rs-surface); border-color:var(--rs-border);">
       <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-3">
@@ -92,5 +101,8 @@ const hasProducts = products.length > 0;
         )}
       </div>
     </section>
+
+</>
+)}
   </main>
 </BaseLayout>

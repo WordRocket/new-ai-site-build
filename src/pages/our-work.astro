@@ -2,6 +2,8 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import siteConfig from '../lib/site-config';
+import PageBlockRenderer from '../components/PageBlockRenderer.astro';
+import { getValidatedSchema, type PageSchemas } from '../lib/block-renderer';
 
 const isLocalService = (siteConfig as any).businessType === 'local-service';
 
@@ -53,10 +55,17 @@ const projectsJSON = projects.map(p => ({
   relatedService: p.data.relatedService ?? null,
   customerQuote: p.data.customerQuote ?? null,
 }));
+
+const cfgPageSchemas = (siteConfig as any).pageSchemas as PageSchemas | undefined;
+const blockSchema = getValidatedSchema(cfgPageSchemas, 'ourWork');
 ---
 
 <BaseLayout title={`Our Work | ${siteConfig.name}`} description={pageDescription}>
   <main>
+{blockSchema ? (
+  <PageBlockRenderer pageSchemas={cfgPageSchemas} pageType="ourWork" />
+) : (
+<>
 
     <!-- Breadcrumb -->
     <nav aria-label="Breadcrumb" class="border-b" style="background:var(--rs-surface); border-color:var(--rs-border);">
@@ -170,6 +179,9 @@ const projectsJSON = projects.map(p => ({
       </div>
     </section>
 
+
+</>
+)}
   </main>
 </BaseLayout>
 

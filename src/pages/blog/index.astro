@@ -4,6 +4,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import siteConfig, { cleanTitle } from '../../lib/site-config';
 import SmartImage from '../../components/SmartImage.astro';
 import { listAuthors } from '../../lib/authors';
+import PageBlockRenderer from '../../components/PageBlockRenderer.astro';
+import { getValidatedSchema, type PageSchemas } from '../../lib/block-renderer';
 
 const isLocalService = (siteConfig as any).businessType === 'local-service';
 
@@ -67,6 +69,9 @@ const showCategories = showCollectionCategories || showLegacyCategories;
 // Author profile lookup: map lowercased name → author id, for linking bylines
 const authorProfiles = await listAuthors();
 const authorByName = new Map(authorProfiles.map((a) => [a.name.toLowerCase(), a.id]));
+
+const cfgPageSchemas = (siteConfig as any).pageSchemas as PageSchemas | undefined;
+const blockSchema = getValidatedSchema(cfgPageSchemas, 'blogIndex');
 ---
 
 <BaseLayout
@@ -74,6 +79,10 @@ const authorByName = new Map(authorProfiles.map((a) => [a.name.toLowerCase(), a.
   description={blogDescription}
 >
   <main>
+{blockSchema ? (
+  <PageBlockRenderer pageSchemas={cfgPageSchemas} pageType="blogIndex" />
+) : (
+<>
     <!-- Breadcrumb -->
     <nav aria-label="Breadcrumb" class="border-b" style="background:var(--rs-surface); border-color:var(--rs-border);">
       <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-3">
@@ -248,6 +257,8 @@ const authorByName = new Map(authorProfiles.map((a) => [a.name.toLowerCase(), a.
         </div>
       </div>
     </section>
+</>
+)}
   </main>
 
   {showLegacyCategories && (

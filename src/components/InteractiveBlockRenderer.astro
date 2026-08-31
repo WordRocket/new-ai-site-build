@@ -1,5 +1,5 @@
 ---
-import RoiCalculator from '@ranksite/blocks/blocks/RoiCalculator';
+import { registry } from '@ranksite/blocks';
 import type { BlockInstance } from '../lib/block-renderer';
 
 interface Props {
@@ -7,10 +7,11 @@ interface Props {
 }
 
 const { block } = Astro.props;
+const Component = registry[block.blockKey];
 
-if (block.blockKey !== 'interactive.roiCalculator') {
-  throw new Error(`[InteractiveBlockRenderer] blockKey "${block.blockKey}" is not a known interactive component`);
+if (!Component) {
+  throw new Error(`[InteractiveBlockRenderer] blockKey "${block.blockKey}" not found in registry`);
 }
 ---
 
-<RoiCalculator {...block.props} id={block.id} client:visible />
+<Component {...block.props} id={block.id} client:visible />

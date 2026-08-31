@@ -17,6 +17,8 @@ import SectionBgImage from '../components/SectionBgImage.astro';
 import ReviewBadge from '../components/ReviewBadge.astro';
 import TrustBar from '../components/sections/TrustBar.astro';
 import { imgUrl, imgSrcset, variantsSrcset, type ImageVariants } from '../lib/image';
+import PageBlockRenderer from '../components/PageBlockRenderer.astro';
+import { getValidatedSchema, type PageSchemas } from '../lib/block-renderer';
 
 const serviceEntries = await getCollection('services').catch(() => []);
 const locationEntries = await getCollection('locations').catch(() => []);
@@ -258,6 +260,12 @@ const skin: 'light' | 'dark' =
 const heroServiceOptions = serviceEntries.length > 0
   ? serviceEntries.map((e) => ({ value: e.slug, label: e.data.title }))
   : [{ value: 'general-inquiry', label: 'General Inquiry' }];
+
+// Block-based rendering: if siteConfig includes a validated pageSchemas
+// entry for the "home" page type, render blocks from @ranksite/blocks.
+// Otherwise, fall through to the fixed template — zero behavior change.
+const cfgPageSchemas = (siteConfig as any).pageSchemas as PageSchemas | undefined;
+const blockSchema = getValidatedSchema(cfgPageSchemas, 'home');
 ---
 
 <BaseLayout
@@ -268,6 +276,11 @@ const heroServiceOptions = serviceEntries.length > 0
 <body class="homepage">
 
 <main id="main">
+
+{blockSchema ? (
+  <PageBlockRenderer pageSchemas={cfgPageSchemas} pageType="home" />
+) : (
+<>
 
 <!-- ─── HERO ─────────────────────────────────────────────────────────── -->
 {!isLocalService ? (
@@ -931,6 +944,10 @@ const heroServiceOptions = serviceEntries.length > 0
     </div>
   </div>
 </section>
+)}
+
+
+</>
 )}
 
 </main>

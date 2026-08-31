@@ -4,6 +4,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import siteConfig, { cleanTitle } from '../../lib/site-config';
 import ServiceCard from '../../components/ServiceCard.astro';
 import { iconSvg } from '../../lib/icons';
+import PageBlockRenderer from '../../components/PageBlockRenderer.astro';
+import { getValidatedSchema, type PageSchemas } from '../../lib/block-renderer';
 
 const isGeneral = (siteConfig as any).businessType === 'general';
 if (!isGeneral) {
@@ -26,6 +28,9 @@ for (const post of allPosts) {
 const blogIntro: string = ((siteConfig as any).blogIntro as string | undefined)?.trim() || '';
 const description = blogIntro || `Explore all categories from ${siteConfig.name}.`;
 const totalArticles = allPosts.length;
+
+const cfgPageSchemas = (siteConfig as any).pageSchemas as PageSchemas | undefined;
+const blockSchema = getValidatedSchema(cfgPageSchemas, 'categoryIndex');
 ---
 
 <BaseLayout
@@ -33,6 +38,10 @@ const totalArticles = allPosts.length;
   description={description}
 >
   <main>
+{blockSchema ? (
+  <PageBlockRenderer pageSchemas={cfgPageSchemas} pageType="categoryIndex" />
+) : (
+<>
     <!-- Breadcrumb -->
     <nav aria-label="Breadcrumb" class="border-b" style="background:var(--rs-surface); border-color:var(--rs-border);">
       <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-3">
@@ -107,6 +116,8 @@ const totalArticles = allPosts.length;
         )}
       </div>
     </section>
+</>
+)}
   </main>
 </BaseLayout>
 
