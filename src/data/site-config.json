@@ -62,5 +62,55 @@
   "navVisibility": {
     "ourWork": true
   },
-  "categories": []
+  "categories": [],
+  "pageSchemas": {
+    "home": {
+      "pageType": "home",
+      "theme": { "colorPrimary": "#0d9488" },
+      "blocks": [
+        {
+          "id": "hero-1",
+          "slotType": "hero",
+          "blockKey": "hero.splitMockup",
+          "locked": true,
+          "position": 1,
+          "props": {
+            "eyebrow": "Test Schema",
+            "headline": "Block Renderer",
+            "headlineAccent": "Verification",
+            "subheadline": "If you can see this, the block renderer is working.",
+            "primaryCta": { "label": "Get Started", "href": "/contact" },
+            "secondaryCta": { "label": "Learn More", "href": "/about" },
+            "trustItems": [
+              { "icon": "star", "value": "5.0", "label": "Rating" },
+              { "icon": "shield", "label": "Licensed & Insured" }
+            ],
+            "panel": {
+              "title": "Live Jobs",
+              "timestamp": "Updated just now",
+              "jobs": [
+                { "time": "09:00", "title": "Job 1", "meta": "In progress", "status": "active", "tone": "active", "value": "$500" },
+                { "time": "11:30", "title": "Job 2", "meta": "Scheduled", "status": "pending", "tone": "pending", "value": "$300" }
+              ],
+              "metric": { "label": "Revenue", "value": "$12.4k", "delta": "+18%", "series": [10, 15, 12, 20, 18, 25, 30] }
+            }
+          }
+        },
+        {
+          "id": "cta-1",
+          "slotType": "cta",
+          "blockKey": "cta.centeredGradient",
+          "locked": true,
+          "position": 7,
+          "props": {
+            "availability": "Available Now",
+            "headline": "Ready to Get Started?",
+            "subheadline": "Contact us today for a free quote.",
+            "primaryCta": { "label": "Get a Free Quote", "href": "/contact" },
+            "phone": { "label": "Call Us", "href": "tel:5551234567" }
+          }
+        }
+      ]
+    }
+  }
 }

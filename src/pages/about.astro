@@ -7,7 +7,7 @@ import { getPreset, interpolate } from '../lib/business-presets';
 import SmartImage from '../components/SmartImage.astro';
 import RelatedLinks from '../components/RelatedLinks.astro';
 import PageBlockRenderer from '../components/PageBlockRenderer.astro';
-import { getValidatedSchema, getPageSchemas } from '../lib/block-renderer';
+import { getValidatedSchema, type PageSchemas } from '../lib/block-renderer';
 
 const siteUrl = import.meta.env.SITE ?? siteConfig.url;
 const pageUrl = `${siteUrl}/about`;
@@ -129,7 +129,7 @@ const whyUs = isLocalService ? [
   },
 ];
 
-const cfgPageSchemas = getPageSchemas(siteConfig as any);
+const cfgPageSchemas = (siteConfig as any).pageSchemas as PageSchemas | undefined;
 const blockSchema = getValidatedSchema(cfgPageSchemas, 'about');
 ---
 

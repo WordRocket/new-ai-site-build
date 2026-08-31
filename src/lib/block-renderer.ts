@@ -39,29 +39,6 @@ const LOCKED_SLOT_TYPES = new Set([
   'footer',
 ]);
 
-/** Aliases the publish payload might use for page-type keys.
- *  Maps alternative spellings to the canonical key the templates use. */
-const PAGE_TYPE_ALIASES: Record<string, string> = {
-  homepage: 'home',
-  homePage: 'home',
-  services: 'service',
-  servicePage: 'service',
-  blog: 'blogIndex',
-  blogIndexPage: 'blogIndex',
-  categories: 'categoryIndex',
-  categoryIndexPage: 'categoryIndex',
-  ourWorkPage: 'ourWork',
-  portfolio: 'ourWork',
-  faqPage: 'faq',
-  aboutPage: 'about',
-  contactPage: 'contact',
-  resourcesPage: 'resources',
-  post: 'page',
-  pageDetail: 'page',
-  industryPage: 'industry',
-  locationPage: 'location',
-};
-
 export interface ValidationResult {
   valid: boolean;
   errors: string[];
@@ -119,67 +96,44 @@ export function isInteractiveBlock(blockKey: string): boolean {
   return interactiveBlockKeys.has(blockKey);
 }
 
-/** Reads a value from an object by trying camelCase first, then snake_case.
- *  This lets us accept either key naming convention from the publish payload. */
-function pick<T = any>(obj: Record<string, any>, camel: string, snake: string): T | undefined {
-  return (obj[camel] ?? obj[snake]) as T | undefined;
-}
-
 /** Builds the :root CSS custom property string from a theme object.
  *  This is the entire theming mechanism — emit these as a <style> block
- *  once per page, overriding the token-bridge defaults in global.css.
- *  Accepts both camelCase and snake_case theme field names. */
-export function themeToCss(theme: Record<string, any>): string {
+ *  once per page, overriding the token-bridge defaults in global.css. */
+export function themeToCss(theme: Theme): string {
   const entries: string[] = [];
-  const colorPrimary = pick(theme, 'colorPrimary', 'color_primary');
-  if (colorPrimary) entries.push(`--color-primary: ${colorPrimary}`);
-  const colorSecondary = pick(theme, 'colorSecondary', 'color_secondary');
-  if (colorSecondary) entries.push(`--color-secondary: ${colorSecondary}`);
-  const colorAccent = pick(theme, 'colorAccent', 'color_accent');
-  if (colorAccent) entries.push(`--color-accent: ${colorAccent}`);
-  const colorBg = pick(theme, 'colorBg', 'color_bg');
-  if (colorBg) entries.push(`--color-bg: ${colorBg}`);
-  const colorSurface = pick(theme, 'colorSurface', 'color_surface');
-  if (colorSurface) entries.push(`--color-surface: ${colorSurface}`);
-  const colorText = pick(theme, 'colorText', 'color_text');
-  if (colorText) entries.push(`--color-text: ${colorText}`);
-  const colorTextMuted = pick(theme, 'colorTextMuted', 'color_text_muted');
-  if (colorTextMuted) entries.push(`--color-text-muted: ${colorTextMuted}`);
-  const colorOnPrimary = pick(theme, 'colorOnPrimary', 'color_on_primary');
-  if (colorOnPrimary) entries.push(`--color-on-primary: ${colorOnPrimary}`);
-  const fontHeading = pick(theme, 'fontHeading', 'font_heading');
-  if (fontHeading) entries.push(`--font-heading: ${fontHeading}`);
-  const fontBody = pick(theme, 'fontBody', 'font_body');
-  if (fontBody) entries.push(`--font-body: ${fontBody}`);
+  if (theme.colorPrimary) entries.push(`--color-primary: ${theme.colorPrimary}`);
+  if (theme.colorSecondary) entries.push(`--color-secondary: ${theme.colorSecondary}`);
+  if (theme.colorAccent) entries.push(`--color-accent: ${theme.colorAccent}`);
+  if (theme.colorBg) entries.push(`--color-bg: ${theme.colorBg}`);
+  if (theme.colorSurface) entries.push(`--color-surface: ${theme.colorSurface}`);
+  if (theme.colorText) entries.push(`--color-text: ${theme.colorText}`);
+  if (theme.colorTextMuted) entries.push(`--color-text-muted: ${theme.colorTextMuted}`);
+  if (theme.colorOnPrimary) entries.push(`--color-on-primary: ${theme.colorOnPrimary}`);
+  if (theme.fontHeading) entries.push(`--font-heading: ${theme.fontHeading}`);
+  if (theme.fontBody) entries.push(`--font-body: ${theme.fontBody}`);
   if (theme.radius) entries.push(`--radius: ${theme.radius}`);
   return entries.length > 0 ? `:root { ${entries.join('; ')}; }` : '';
 }
 
-/** Extracts the pageSchemas object from a raw site-config, checking both
- *  camelCase and snake_case top-level keys. Also handles the case where
- *  the publish payload nests it inside a `site` wrapper. */
-export function getPageSchemas(config: Record<string, any> | undefined): PageSchemas | undefined {
-  if (!config || typeof config !== 'object') return undefined;
-  return (config.pageSchemas ?? config.page_schemas) as PageSchemas | undefined;
-}
-
-/** Normalizes a page-type key by checking the alias map. */
-function normalizePageType(pageType: string): string {
-  return PAGE_TYPE_ALIASES[pageType] ?? pageType;
-}
-
 /** Retrieves and validates a page schema for a given page type.
  *  Returns null if no schema exists (the fallback-to-fixed-template path).
- *  Checks both the canonical page-type key and known aliases. */
+ *  Logs an explicit line at build time when siteConfig has no pageSchemas
+ *  key or no entry for the requested pageType, so a missing payload
+ *  doesn't fail silently. */
 export function getValidatedSchema(
   pageSchemas: PageSchemas | undefined,
   pageType: string,
 ): { schema: PageSchema; themeCss: string } | null {
-  if (!pageSchemas) return null;
+  if (!pageSchemas) {
+    console.warn(`page-design: no pageSchemas found, rendering classic template for ${pageType}`);
+    return null;
+  }
 
-  const canonical = normalizePageType(pageType);
-  const schema = pageSchemas[pageType] ?? pageSchemas[canonical];
-  if (!schema) return null;
+  const schema = pageSchemas[pageType];
+  if (!schema) {
+    console.warn(`page-design: no pageSchemas found, rendering classic template for ${pageType}`);
+    return null;
+  }
 
   const result = validatePageSchema(schema);
   if (!result.valid) {
@@ -187,6 +141,6 @@ export function getValidatedSchema(
     return null;
   }
 
-  const themeCss = schema.theme ? themeToCss(schema.theme as Record<string, any>) : '';
+  const themeCss = schema.theme ? themeToCss(schema.theme) : '';
   return { schema, themeCss };
 }
