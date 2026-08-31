@@ -7,6 +7,10 @@
     ".": {
       "types": "./src/index.ts",
       "import": "./src/index.ts"
+    },
+    "./blocks/*": {
+      "types": "./src/blocks/*.tsx",
+      "import": "./src/blocks/*.tsx"
     }
   },
   "dependencies": {
