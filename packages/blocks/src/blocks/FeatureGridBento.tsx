@@ -66,7 +66,7 @@ export default function FeatureGridBento({
           </div>
         )}
 
-        <div style={{
+        <div className="rs-bento-grid" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(12, 1fr)',
           gridAutoRows: 'minmax(140px, auto)',
@@ -181,6 +181,7 @@ export default function FeatureGridBento({
           })}
         </div>
       </div>
+      <style>{`@media (max-width: 639px) { .rs-bento-grid { grid-template-columns: 1fr !important; } .rs-bento-grid > div { grid-column: span 1 !important; grid-row: auto !important; } }`}</style>
     </section>
   );
 }
