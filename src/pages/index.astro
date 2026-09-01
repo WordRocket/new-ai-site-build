@@ -19,6 +19,7 @@ import TrustBar from '../components/sections/TrustBar.astro';
 import { imgUrl, imgSrcset, variantsSrcset, type ImageVariants } from '../lib/image';
 import PageBlockRenderer from '../components/PageBlockRenderer.astro';
 import { getValidatedSchema, type PageSchemas } from '../lib/block-renderer';
+import { TestimonialsMarquee, RoiCalculator } from '@ranksite/blocks';
 
 const serviceEntries = await getCollection('services').catch(() => []);
 const locationEntries = await getCollection('locations').catch(() => []);
@@ -266,6 +267,53 @@ const heroServiceOptions = serviceEntries.length > 0
 // Otherwise, fall through to the fixed template — zero behavior change.
 const cfgPageSchemas = (siteConfig as any).pageSchemas as PageSchemas | undefined;
 const blockSchema = getValidatedSchema(cfgPageSchemas, 'home');
+
+// Build testimonials marquee rows from siteConfig.testimonials (array) or
+// fall back to the single testimonial_text/author fields. Each row is an
+// array of cards; the marquee component auto-duplicates rows shorter than 4.
+type TestimonialCard = { quote: string; name: string; meta: string; initials: string };
+function buildTestimonialRows(): TestimonialCard[][] {
+  const explicit = (siteConfig as any).testimonials as any[] | undefined;
+  const cards: TestimonialCard[] = [];
+  if (explicit && explicit.length > 0) {
+    for (const t of explicit) {
+      const name = t.name || t.author || 'Happy Customer';
+      cards.push({
+        quote: t.quote || t.text || '',
+        name,
+        meta: t.meta || t.role || t.neighborhood || siteConfig.city || '',
+        initials: t.initials || name.split(' ').map((w: string) => w[0]).slice(0, 2).join('').toUpperCase() || '★',
+      });
+    }
+  } else if (hasTestimonial) {
+    cards.push({
+      quote: testimonialText,
+      name: testimonialAuthor,
+      meta: testimonialNeighborhood,
+      initials: testimonialAuthor.split(' ').map((w: string) => w[0]).slice(0, 2).join('').toUpperCase() || '★',
+    });
+  }
+  if (cards.length === 0) return [];
+  // Split into 2 rows for a dual-track marquee
+  const mid = Math.ceil(cards.length / 2);
+  return [cards.slice(0, mid), cards.slice(mid)];
+}
+const testimonialRows = buildTestimonialRows();
+const hasMarquee = testimonialRows.length > 0;
+
+// Homepage section visibility — opt-in booleans from siteConfig.homepageSections.
+// Falls back to not showing either section if the object or fields are missing.
+const homepageSections = (siteConfig as any).homepageSections ?? {};
+const showTestimonialsMarquee = homepageSections.testimonials === true;
+const showRoiCalculator = homepageSections.roiCalculator === true;
+
+// ROI calculator defaults — derived from siteConfig where available
+const roiDefaults = {
+  monthlyLeads: ((siteConfig as any).roiMonthlyLeads as number) ?? 50,
+  closeRate: ((siteConfig as any).roiCloseRate as number) ?? 20,
+  avgDealSize: ((siteConfig as any).roiAvgDealSize as number) ?? 2500,
+  monthlyCost: ((siteConfig as any).roiMonthlyCost as number) ?? 2000,
+};
 ---
 
 <BaseLayout
@@ -662,6 +710,16 @@ const blockSchema = getValidatedSchema(cfgPageSchemas, 'home');
   heading={processHeadingText}
 />
 
+{/* ─── TESTIMONIALS MARQUEE ───────────────────────────────────────────── */}
+{showTestimonialsMarquee && hasMarquee && (
+  <TestimonialsMarquee
+    id="hp-testimonials"
+    headline="What Our Clients Say"
+    note="Real reviews from real customers"
+    rows={testimonialRows}
+  />
+)}
+
 <!-- wave: neutral → neutral (section separator) -->
 <div class="wave-divider" style="background:var(--color-neutral-50);" aria-hidden="true">
   <svg viewBox="0 0 1440 48" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,24 C360,0 1080,48 1440,24 L1440,48 L0,48 Z" fill="var(--color-neutral-50)"/></svg>
@@ -843,6 +901,21 @@ const blockSchema = getValidatedSchema(cfgPageSchemas, 'home');
     </div>
   </div>
 </section>
+)}
+
+{/* ─── ROI CALCULATOR ────────────────────────────────────────────────── */}
+{showRoiCalculator && (
+<RoiCalculator
+  id="hp-roi"
+  eyebrow="ROI Calculator"
+  headline="See Your Potential Return"
+  subheadline={`Estimate the revenue impact of working with ${siteConfig.name}. Adjust the numbers to match your business.`}
+  currencySymbol="$"
+  defaults={roiDefaults}
+  ctaLabel={isLocalService ? 'Get a Free Estimate' : 'Get Started'}
+  ctaHref={isLocalService && siteConfig.phone ? `tel:${phoneDigits}` : '/contact'}
+  client:visible
+/>
 )}
 
 {isLocalService ? (
