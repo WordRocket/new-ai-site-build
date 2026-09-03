@@ -301,12 +301,20 @@ function buildTestimonialRows(): TestimonialCard[][] {
 const testimonialRows = buildTestimonialRows();
 const hasMarquee = testimonialRows.length > 0;
 
-// Homepage section visibility — shown by default; homepageSections can opt out.
+// Homepage section visibility — shown when real data exists; homepageSections can opt out.
 const homepageSections = (siteConfig as any).homepageSections ?? {};
 const showTestimonialsMarquee = homepageSections.testimonials !== false;
-const showRoiCalculator = homepageSections.roiCalculator !== false;
 
-// ROI calculator defaults — derived from siteConfig where available
+// ROI calculator: only render when the site has real roi* fields populated,
+// so no fake placeholder numbers ever appear on a live site.
+const hasRoiData = !!(
+  (siteConfig as any).roiMonthlyLeads ??
+  (siteConfig as any).roiCloseRate ??
+  (siteConfig as any).roiAvgDealSize ??
+  (siteConfig as any).roiMonthlyCost
+);
+const showRoiCalculator = homepageSections.roiCalculator !== false && hasRoiData;
+
 const roiDefaults = {
   monthlyLeads: ((siteConfig as any).roiMonthlyLeads as number) ?? 50,
   closeRate: ((siteConfig as any).roiCloseRate as number) ?? 20,
