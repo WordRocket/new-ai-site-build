@@ -301,11 +301,10 @@ function buildTestimonialRows(): TestimonialCard[][] {
 const testimonialRows = buildTestimonialRows();
 const hasMarquee = testimonialRows.length > 0;
 
-// Homepage section visibility — opt-in booleans from siteConfig.homepageSections.
-// Falls back to not showing either section if the object or fields are missing.
+// Homepage section visibility — shown by default; homepageSections can opt out.
 const homepageSections = (siteConfig as any).homepageSections ?? {};
-const showTestimonialsMarquee = homepageSections.testimonials === true;
-const showRoiCalculator = homepageSections.roiCalculator === true;
+const showTestimonialsMarquee = homepageSections.testimonials !== false;
+const showRoiCalculator = homepageSections.roiCalculator !== false;
 
 // ROI calculator defaults — derived from siteConfig where available
 const roiDefaults = {
