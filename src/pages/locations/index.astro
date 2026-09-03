@@ -4,8 +4,9 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getBreadcrumbSchema } from '../../lib/schema';
 import siteConfig from '../../lib/site-config';
 import { toTitleCase } from '../../lib/site-config';
+import { isLocalSite } from '../../lib/siteMode';
 
-const isLocalService = (siteConfig as any).businessType === 'local-service';
+const isLocalService = isLocalSite();
 
 // General-type sites are blog-first and should not have a /locations route.
 if (!isLocalService) {

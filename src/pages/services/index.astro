@@ -5,8 +5,9 @@ import { iconSvg, getServiceIcon } from '../../lib/icons';
 import ServiceCard from '../../components/ServiceCard.astro';
 import siteConfig, { cleanTitle } from '../../lib/site-config';
 import { getPreset, interpolate } from '../../lib/business-presets';
+import { isLocalSite } from '../../lib/siteMode';
 
-const isLocalService = (siteConfig as any).businessType === 'local-service';
+const isLocalService = isLocalSite();
 
 // General-type sites are blog-first and should not have a /services route.
 // Redirect to 404 so the route effectively doesn't exist in the site tree.

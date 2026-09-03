@@ -15,6 +15,7 @@ import ReviewBanner from '../../components/ReviewBanner.astro';
 import RelatedLinks from '../../components/RelatedLinks.astro';
 import PageBlockRenderer from '../../components/PageBlockRenderer.astro';
 import { getValidatedSchema, type PageSchemas } from '../../lib/block-renderer';
+import { isLocalSite } from '../../lib/siteMode';
 import {
   getServiceSchema,
   getFAQSchema,
@@ -23,7 +24,7 @@ import {
 } from '../../lib/schema';
 
 export async function getStaticPaths() {
-  const isLocalService = (siteConfig as any).businessType === 'local-service';
+  const isLocalService = isLocalSite();
   if (!isLocalService) return [];
   const services = await getCollection('services');
   return services.map((service) => ({ params: { slug: service.slug }, props: { service } }));
@@ -33,7 +34,7 @@ const { service } = Astro.props;
 const { Content } = await service.render();
 const d = service.data;
 const displayTitle = cleanTitle(d.title);
-const isLocalService = (siteConfig as any).businessType === 'local-service';
+const isLocalService = isLocalSite();
 
 const siteUrl = import.meta.env.SITE ?? 'https://example.com';
 const pageUrl = `${siteUrl}/services/${service.slug}`;
@@ -171,7 +172,7 @@ const blockSchema = getValidatedSchema(pageSchemas, 'service');
         <p class="text-lg mb-4 max-w-xl" style="color:rgba(255,255,255,0.75);">{d.description}</p>
         {d.phone && (
           <a href={`tel:${(d.phone as string).replace(/\D/g,'')}`} class="btn-primary inline-flex items-center gap-2 px-7 py-3 rounded-[var(--radius-md)] text-base font-semibold text-white">
-            {(siteConfig as any).businessType === 'local-service' ? 'Call for a Free Quote' : 'Learn More'}
+            {isLocalService ? 'Call for a Free Quote' : 'Learn More'}
           </a>
         )}
       </div>
@@ -328,7 +329,7 @@ const blockSchema = getValidatedSchema(pageSchemas, 'service');
         imageVariants={d.sectionImageVariants}
         imageAlt={d.title}
         imageAspect="4/3"
-        ctaText={(siteConfig as any).businessType === 'local-service' ? 'Get a Free Quote' : 'Get in Touch'}
+        ctaText={isLocalService ? 'Get a Free Quote' : 'Get in Touch'}
         ctaHref="/contact"
         bg="var(--rs-surface)"
         reverse

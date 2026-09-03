@@ -4,8 +4,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import siteConfig from '../lib/site-config';
 import PageBlockRenderer from '../components/PageBlockRenderer.astro';
 import { getValidatedSchema, type PageSchemas } from '../lib/block-renderer';
+import { isLocalSite } from '../lib/siteMode';
 
-const isLocalService = (siteConfig as any).businessType === 'local-service';
+const isLocalService = isLocalSite();
 
 // General-type sites are blog-first and should not have an /our-work route.
 if (!isLocalService) {

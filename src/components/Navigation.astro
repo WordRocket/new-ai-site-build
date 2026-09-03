@@ -2,6 +2,7 @@
 import siteConfig from '../lib/site-config';
 import { formatPhone, cleanTitle } from '../lib/site-config';
 import { getPreset } from '../lib/business-presets';
+import { isLocalSite } from '../lib/siteMode';
 import { getEntry, getCollection } from 'astro:content';
 const pathname = Astro.url.pathname;
 
@@ -14,7 +15,7 @@ const serviceLinks = rawServices
   .map((s) => ({ label: cleanTitle(s.data.title), href: `/services/${s.slug}` }));
 const hasServiceDropdown = serviceLinks.length > 0;
 
-const isLocalService = (siteConfig as any).businessType === 'local-service';
+const isLocalService = isLocalSite();
 const affiliateEnabled = (siteConfig as any).affiliateLinksEnabled === true;
 
 // Categories dropdown — general-type sites only.
@@ -84,7 +85,7 @@ const blogActive = pathname.startsWith('/blog');
 ---
 
 <!-- Top emergency bar (hidden if no phone or preset disables it) -->
-{siteConfig.phone && preset.emergencyBarEnabled && (
+{siteConfig.phone && preset.emergencyBarEnabled && isLocalService && (
   <div id="top-bar" class="flex items-center justify-between px-4 sm:px-6 lg:px-8 text-white text-[13px]">
     <span style="color:rgba(255,255,255,0.75);">
       <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block mr-1 mb-0.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>

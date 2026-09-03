@@ -20,6 +20,7 @@ import { imgUrl, imgSrcset, variantsSrcset, type ImageVariants } from '../lib/im
 import PageBlockRenderer from '../components/PageBlockRenderer.astro';
 import { getValidatedSchema, type PageSchemas } from '../lib/block-renderer';
 import { TestimonialsMarquee, RoiCalculator } from '@ranksite/blocks';
+import { isLocalSite } from '../lib/siteMode';
 
 const serviceEntries = await getCollection('services').catch(() => []);
 const locationEntries = await getCollection('locations').catch(() => []);
@@ -82,7 +83,7 @@ const primaryCta = siteConfig.phone ? `tel:${phoneDigits}` : '/contact';
 
 const preset = getPreset((siteConfig as any).businessType || 'other');
 const vars = { city: siteConfig.city, niche: nicheLabel };
-const isLocalService = (siteConfig as any).businessType === 'local-service';
+const isLocalService = isLocalSite();
 
 // Compute heroImage early so it can be used as the card image fallback below.
 const heroImage = (hp?.heroImage || (siteConfig as any).heroImage || '') as string;
@@ -110,7 +111,9 @@ const placeholderServices = [
     slug: null, num: '01',
     icon: iconSvg(getServiceIcon(nicheLabel), 22),
     title: `${nicheLabel.charAt(0).toUpperCase() + nicheLabel.slice(1)} Services`,
-    description: `Professional ${nicheLabel} services tailored to your needs in ${siteConfig.city}, ${siteConfig.state}. Reliable results, every time.`,
+    description: isLocalService
+      ? `Professional ${nicheLabel} services tailored to your needs in ${siteConfig.city}, ${siteConfig.state}. Reliable results, every time.`
+      : `Professional ${nicheLabel} resources and insights tailored to your needs. Reliable results, every time.`,
     image: heroImage,
     imageVariants: heroImageVariants,
   },
@@ -180,12 +183,12 @@ const defaultFeatureGrid = isLocalService ? [
   { icon: 'award',        title: 'Experienced Local Team',       desc: `Skilled professionals who know ${siteConfig.city} and the unique needs of this community.` },
   { icon: 'file-text',    title: 'Free Estimates',               desc: 'Honest, obligation-free quotes so you can make informed decisions without pressure.' },
 ] : [
-  { icon: 'compass',        title: 'What We Do',                  desc: `${siteConfig.name} provides professional ${nicheLabel} services in ${siteConfig.city}, ${siteConfig.state}. We focus on delivering reliable results tailored to your needs.` },
+  { icon: 'compass',        title: 'What We Do',                  desc: `${siteConfig.name} provides professional ${nicheLabel} content and resources. We focus on delivering reliable, useful insights tailored to your needs.` },
   { icon: 'check-circle',   title: 'How We Work',                  desc: 'We start with a conversation, follow a clear plan, and deliver quality work on schedule — no guesswork, no surprises.' },
   { icon: 'message-square', title: 'Personalized Approach',        desc: 'Every project is different. We listen to your goals and tailor our work to fit your specific situation and budget.' },
   { icon: 'star',           title: 'Quality You Can Trust',        desc: "We stand behind everything we do. If something isn't right, we make it right — that's our commitment to you." },
-  { icon: 'thumbs-up',      title: 'Local & Accessible',           desc: `Based in ${siteConfig.city}, we're easy to reach and quick to respond. Local service with a personal touch.` },
   { icon: 'sparkles',       title: 'Always Improving',             desc: 'We refine our approach based on feedback and experience, so the service you get today is better than yesterday.' },
+  { icon: 'thumbs-up',      title: 'Thoughtful & Accessible',      desc: `We're easy to reach and quick to respond. Thoughtful content with a personal touch.` },
 ];
 const featureGridItems = (
   (hp?.featureGrid && hp.featureGrid.length > 0) ? hp.featureGrid :
@@ -221,7 +224,7 @@ const statsItems = [
   siteConfig.yearsInBusiness ? { value: `${siteConfig.yearsInBusiness}+`, label: 'Years Experience' } : { value: '100%', label: 'Satisfaction Guaranteed' },
   { value: 'Licensed', label: '& Insured' },
   { value: 'Free', label: 'Estimates' },
-  { value: siteConfig.city, label: 'Local & Trusted' },
+  ...(isLocalService ? [{ value: siteConfig.city, label: 'Local & Trusted' }] : [{ value: 'Quality', label: 'You Can Trust' }]),
 ];
 
 // Hero headline: gradient accent on the last word of the business name

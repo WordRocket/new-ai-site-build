@@ -7,6 +7,7 @@ import StickyActionBar from '../components/sections/StickyActionBar.astro';
 import ChatbotWidget from '../components/ChatbotWidget.astro';
 import siteConfig from '../data/site-config.json';
 import { resolveFont } from '../lib/fonts.ts';
+import { showGeoMeta } from '../lib/siteMode';
 import '../styles/global.css';
 
 interface Props {
@@ -97,8 +98,12 @@ const uniformFontMode = (siteConfig as any).uniformFontMode === true;
       </>
     )}
     <meta name="theme-color" content={siteConfig.brandColor} />
-    <meta name="geo.region" content={siteConfig.state} />
-    <meta name="geo.placename" content={siteConfig.city} />
+    {showGeoMeta() && (
+      <>
+        <meta name="geo.region" content={siteConfig.state} />
+        <meta name="geo.placename" content={siteConfig.city} />
+      </>
+    )}
     <ClientRouter />
     <SeoHead
       title={title}

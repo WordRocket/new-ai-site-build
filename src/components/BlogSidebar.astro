@@ -4,6 +4,7 @@ import { getPreset } from '../lib/business-presets';
 import { iconSvg } from '../lib/icons';
 import SmartImage from './SmartImage.astro';
 import { getCollection } from 'astro:content';
+import { isLocalSite } from '../lib/siteMode';
 
 interface Heading {
   text: string;
@@ -92,7 +93,7 @@ const showTrustSection = signals.length > 0 || hasReview;
         </a>
       )}
       <a href="/contact" class="sb-cta-btn">
-        {(siteConfig as any).businessType === 'local-service' ? 'Get a Free Quote' : 'Get in Touch'}
+        {isLocalSite() ? 'Get a Free Quote' : 'Get in Touch'}
       </a>
 
       {showTrustSection && (

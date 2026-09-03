@@ -6,8 +6,9 @@ import SmartImage from '../../components/SmartImage.astro';
 import { listAuthors } from '../../lib/authors';
 import PageBlockRenderer from '../../components/PageBlockRenderer.astro';
 import { getValidatedSchema, type PageSchemas } from '../../lib/block-renderer';
+import { isLocalSite } from '../../lib/siteMode';
 
-const isLocalService = (siteConfig as any).businessType === 'local-service';
+const isLocalService = isLocalSite();
 
 // Categories — read from the categories collection (published rows) when available.
 // Falls back to the legacy siteConfig.categories string array for backward compat.

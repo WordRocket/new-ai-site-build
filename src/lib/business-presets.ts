@@ -270,7 +270,7 @@ export const BUSINESS_PRESETS: Record<BusinessType, BusinessPreset> = {
     trustSignals: [],
     statsLabel: 'Years in Business',
     servicesHeading: 'What We Do',
-    servicesSubheading: 'Our work in {city}',
+    servicesSubheading: 'Our latest guides and perspectives',
     contactCta: 'Send a Message',
     contactSubtext: 'We respond to all messages within one business day.',
     stickyBar: {

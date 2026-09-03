@@ -8,6 +8,7 @@ import SmartImage from '../components/SmartImage.astro';
 import RelatedLinks from '../components/RelatedLinks.astro';
 import PageBlockRenderer from '../components/PageBlockRenderer.astro';
 import { getValidatedSchema, type PageSchemas } from '../lib/block-renderer';
+import { isLocalSite, showNap } from '../lib/siteMode';
 
 const siteUrl = import.meta.env.SITE ?? siteConfig.url;
 const pageUrl = `${siteUrl}/about`;
@@ -27,13 +28,15 @@ const orgSchema = getOrganizationSchema({
   description: siteConfig.description,
   telephone: siteConfig.phone,
   email: siteConfig.email,
-  address: {
-    streetAddress: siteConfig.address,
-    addressLocality: siteConfig.city,
-    addressRegion: siteConfig.state,
-    postalCode: siteConfig.zip,
-    addressCountry: siteConfig.country,
-  },
+  ...(showNap() && {
+    address: {
+      streetAddress: siteConfig.address,
+      addressLocality: siteConfig.city,
+      addressRegion: siteConfig.state,
+      postalCode: siteConfig.zip,
+      addressCountry: siteConfig.country,
+    },
+  }),
   sameAs: [
     siteConfig.linkedinUrl,
     siteConfig.facebookUrl,
@@ -49,7 +52,7 @@ const breadcrumbSchema = getBreadcrumbSchema([
 const nicheLabel = siteConfig.niche || 'service';
 const preset = getPreset((siteConfig as any).businessType || 'other');
 const vars = { city: siteConfig.city, niche: nicheLabel };
-const isLocalService = (siteConfig as any).businessType === 'local-service';
+const isLocalService = isLocalSite();
 
 const hasStats = Boolean(siteConfig.yearsInBusiness || siteConfig.clientsServed);
 
@@ -62,7 +65,7 @@ if (capabilities.length === 0) {
     { label: 'Quality Service' },
     { label: 'Trusted & Reliable' },
     { label: 'Customer Focused' },
-    { label: `${siteConfig.city || 'Local'} Based` },
+    { label: isLocalService ? `${siteConfig.city || 'Local'} Based` : 'Community Focused' },
   );
 }
 
@@ -120,8 +123,10 @@ const whyUs = isLocalService ? [
     body: `We take the time to understand what you need and tailor our ${nicheLabel || 'services'} accordingly — no one-size-fits-all solutions.`,
   },
   {
-    title: `Rooted in ${siteConfig.city || 'Our Community'}`,
-    body: `We're proud to serve ${siteConfig.city || 'our area'} and build lasting relationships with the people we work with.`,
+    title: isLocalService ? `Rooted in ${siteConfig.city || 'Our Community'}` : 'Community Focused',
+    body: isLocalService
+      ? `We're proud to serve ${siteConfig.city || 'our area'} and build lasting relationships with the people we work with.`
+      : `We're proud to build lasting relationships with the people we work with, wherever they are.`,
   },
   {
     title: 'Reliable & Responsive',
@@ -219,13 +224,13 @@ const blockSchema = getValidatedSchema(cfgPageSchemas, 'about');
                 ) : (
                   <>
                     <p>
-                      {siteConfig.name} is a {nicheLabel || 'business'} based in {siteConfig.city}{siteConfig.state ? `, ${siteConfig.state}` : ''}. {siteConfig.description || `We pride ourselves on delivering quality ${nicheLabel || 'service'} and building lasting relationships with the people we work with.`}
+                      {siteConfig.name} is a {nicheLabel || 'business'} focused on delivering quality results. {siteConfig.description || `We pride ourselves on delivering quality ${nicheLabel || 'content'} and building lasting relationships with the people we work with.`}
                     </p>
                     <p>
                       Our approach is simple: understand what you need, deliver it well, and stand behind our work. Whether it's a quick question or a larger project, we give every client the same level of attention and care.
                     </p>
                     <p>
-                      We're proud to be part of the {siteConfig.city || 'local'} community and grateful for every person who chooses {siteConfig.name}.
+                      We're grateful for every person who chooses {siteConfig.name}.
                     </p>
                   </>
                 )}

@@ -2,10 +2,12 @@
 import siteConfig from '../lib/site-config';
 import { formatPhone, cleanTitle } from '../lib/site-config';
 import { getPreset } from '../lib/business-presets';
+import { isLocalSite, showNap } from '../lib/siteMode';
 import { getCollection, getEntry } from 'astro:content';
 const currentYear = new Date().getFullYear();
 const preset = getPreset((siteConfig as any).businessType || 'other');
-const isLocalService = (siteConfig as any).businessType === 'local-service';
+const isLocalService = isLocalSite();
+const showNapBlock = showNap();
 
 // Build per-city area links from content collection; fall back to siteConfig.city.
 // Only relevant for local-service sites — general sites skip this entirely.
@@ -168,7 +170,7 @@ const overflowPageLinks = customPageLinksFooter.slice(visibleCustomPageCount);
       <div>
         <h3 class="text-xs font-semibold uppercase tracking-wider mb-5" style="color:#64748b;">Contact</h3>
         <address class="not-italic flex flex-col gap-3 text-sm" style="color:#94a3b8;">
-          {siteConfig.address && (
+          {showNapBlock && siteConfig.address && (
             <span class="flex items-start gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 shrink-0" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
               <span>{siteConfig.address}<br />{siteConfig.city}, {siteConfig.state} {siteConfig.zip}</span>

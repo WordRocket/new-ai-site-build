@@ -118,6 +118,47 @@ export function getFAQSchema(faqs: Array<{ question: string; answer: string }>):
   };
 }
 
+export function getGeneralOrganizationSchema(config: SiteConfig): object {
+  const hasAddress = !!(config.address && (config.address as any).addressLocality);
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: config.name,
+    url: config.url,
+    logo: config.logo,
+    description: config.description,
+    ...(config.telephone && { telephone: config.telephone }),
+    ...(config.email && { email: config.email }),
+    ...(hasAddress && {
+      address: { '@type': 'PostalAddress', ...config.address },
+    }),
+    ...(config.sameAs && { sameAs: config.sameAs }),
+  };
+}
+
+export function getGeneralWebSiteSchema(config: SiteConfig): object {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: config.name,
+    url: config.url,
+    description: config.description,
+    publisher: {
+      '@type': 'Organization',
+      name: config.name,
+      url: config.url,
+    },
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: `${config.url}/?s={search_term_string}`,
+      },
+      'query-input': 'required name=search_term_string',
+    },
+  };
+}
+
 export function getLocalBusinessSchema(config: SiteConfig): object {
   return {
     '@context': 'https://schema.org',

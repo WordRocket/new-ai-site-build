@@ -3,6 +3,7 @@ import siteConfig, { formatPhone, toTitleCase } from '../lib/site-config';
 import { getPreset } from '../lib/business-presets';
 import { iconSvg } from '../lib/icons';
 import SmartImage from './SmartImage.astro';
+import { isLocalSite, getContentScope } from '../lib/siteMode';
 
 interface ServiceItem {
   slug: string;
@@ -35,7 +36,7 @@ interface Props {
 const { pageType, currentSlug, serviceTitle, city, industry, services, locations, industries } = Astro.props;
 
 const preset = getPreset((siteConfig as any).businessType || 'other');
-const isLocalService = (siteConfig as any).businessType === 'local-service';
+const isLocalService = isLocalSite();
 const signals = preset.trustSignals;
 
 const phoneDigits = siteConfig.phone ? siteConfig.phone.replace(/\D/g, '') : '';
@@ -90,8 +91,9 @@ const showAreas =
 const showIndustries = pageType === 'industry' && industriesToShow.length > 0;
 const showCityServices = pageType === 'location' && services.length > 0;
 
+const scope = getContentScope();
 const areasHeading        = pageType === 'service' ? 'Service Areas' : 'Other Areas';
-const cityServicesHeading = city ? `Services in ${toTitleCase(city)}` : 'Our Services';
+const servicesBlockHeading = scope === 'local' ? 'Our Services' : 'Browse by Topic';
 ---
 
 <div class="sb-wrap">
@@ -118,7 +120,7 @@ const cityServicesHeading = city ? `Services in ${toTitleCase(city)}` : 'Our Ser
         </a>
       )}
       <a href="/contact" class="sb-cta-btn">
-        {(siteConfig as any).businessType === 'local-service' ? 'Get a Free Quote' : 'Get in Touch'}
+        {isLocalService ? 'Get a Free Quote' : 'Get in Touch'}
       </a>
       {showHours && (
         <ul class="sb-hours" aria-label="Business hours">
@@ -173,10 +175,10 @@ const cityServicesHeading = city ? `Services in ${toTitleCase(city)}` : 'Our Ser
     </div>
   )}
 
-  <!-- ④ Our Services -->
+  <!-- ④ Our Services / Browse by Topic -->
   {showServices && (
     <div class="sb-card sb-links-card">
-      <p class="sb-block-heading">Our Services</p>
+      <p class="sb-block-heading">{servicesBlockHeading}</p>
       <ul class="sb-link-list">
         {services.map(s => (
           <li>
@@ -246,10 +248,10 @@ const cityServicesHeading = city ? `Services in ${toTitleCase(city)}` : 'Our Ser
     </div>
   )}
 
-  <!-- ⑥ Services in [city] -->
-  {showCityServices && (
+  <!-- ⑥ Services in [city] — local-service only -->
+  {showCityServices && isLocalService && (
     <div class="sb-card sb-links-card">
-      <p class="sb-block-heading">{cityServicesHeading}</p>
+      <p class="sb-block-heading">{city ? `Services in ${toTitleCase(city)}` : 'Our Services'}</p>
       <ul class="sb-link-list">
         {services.map(s => (
           <li>
