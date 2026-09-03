@@ -1,9 +1,15 @@
 import siteConfig from '../../lib/site-config';
+import { isLocalSite } from '../../lib/siteMode';
 
 export function GET() {
   const siteUrl = (siteConfig.url || 'https://placeholder.com').replace(/\/+$/, '');
   const contactEmail = siteConfig.email || '';
   const today = new Date().toISOString().slice(0, 10);
+  const isLocal = isLocalSite();
+
+  const aiEndpointAllow = isLocal
+    ? 'Allow: /ai/service.json'
+    : 'Allow: /ai/topics.json';
 
   const body = `# AI.txt for ${siteUrl}
 # Declares machine-readable endpoints for AI systems
@@ -11,7 +17,7 @@ export function GET() {
 
 User-agent: *
 Allow: /ai/faq.json
-Allow: /ai/service.json
+${aiEndpointAllow}
 Allow: /ai/summary.json
 Allow: /llms.txt
 Allow: /llms-full.txt

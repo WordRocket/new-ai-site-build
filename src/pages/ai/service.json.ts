@@ -1,9 +1,25 @@
 import siteConfig from '../../lib/site-config';
+import { isLocalSite } from '../../lib/siteMode';
 
 export function GET() {
+  const today = new Date().toISOString().slice(0, 10);
+
+  if (!isLocalSite()) {
+    const payload = {
+      error: 'not_applicable',
+      seeInstead: '/ai/topics.json',
+    };
+    return new Response(JSON.stringify(payload, null, 2), {
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'public, max-age=86400, stale-while-revalidate=604800',
+      },
+    });
+  }
+
   const payload = {
     version: '1.0',
-    lastModified: '2026-06-11T00:00:00.000Z',
+    lastModified: today + 'T00:00:00.000Z',
     schema: 'https://geo-checklist.dev/schemas/service/v1',
     service: {
       name: siteConfig.name,

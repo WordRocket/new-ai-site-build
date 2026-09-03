@@ -1,7 +1,9 @@
 import { getCollection } from 'astro:content';
 import siteConfig from '../lib/site-config';
+import { isLocalSite } from '../lib/siteMode';
 
 const TODAY = new Date().toISOString().split('T')[0];
+const IS_LOCAL = isLocalSite();
 
 const RESERVED_PAGE_SLUGS = new Set([
   '', 'index', 'home', 'about', 'contact', 'faq',
@@ -20,7 +22,9 @@ const staticPaths = [
   { path: '/.well-known/ai.txt', changefreq: 'monthly', priority: '0.8' },
   { path: '/ai/summary.json', changefreq: 'monthly', priority: '0.8' },
   { path: '/ai/faq.json', changefreq: 'monthly', priority: '0.8' },
-  { path: '/ai/service.json', changefreq: 'monthly', priority: '0.8' },
+  ...(IS_LOCAL
+    ? [{ path: '/ai/service.json', changefreq: 'monthly', priority: '0.8' }]
+    : [{ path: '/ai/topics.json', changefreq: 'monthly', priority: '0.8' }]),
   { path: '/llms.txt', changefreq: 'monthly', priority: '0.8' },
   { path: '/llms-full.txt', changefreq: 'monthly', priority: '0.8' },
 ];

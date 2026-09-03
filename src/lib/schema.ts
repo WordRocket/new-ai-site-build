@@ -1,3 +1,5 @@
+import { getEntityType } from './siteMode';
+
 export interface SiteConfig {
   name: string;
   url: string;
@@ -39,7 +41,7 @@ export interface ServiceData {
 }
 
 export function getOrganizationSchema(config: SiteConfig): object {
-  const type = config.address ? 'LocalBusiness' : 'Organization';
+  const type = getEntityType(config as any);
   return {
     '@context': 'https://schema.org',
     '@type': type,
