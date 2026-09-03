@@ -9,7 +9,7 @@ import FeatureRow from '../components/sections/FeatureRow.astro';
 import FeatureGrid from '../components/sections/FeatureGrid.astro';
 import ProcessTimeline from '../components/sections/ProcessTimeline.astro';
 import Testimonials from '../components/sections/Testimonials.astro';
-import { getFAQSchema } from '../lib/schema';
+import { getFAQSchema, getOrganizationSchema } from '../lib/schema';
 import LeadForm from '../components/LeadForm.astro';
 import ServiceCard from '../components/ServiceCard.astro';
 import SmartImage from '../components/SmartImage.astro';
@@ -175,6 +175,30 @@ const defaultFaqs = isLocalService ? [
 const faqs = (hp?.faq && hp.faq.length > 0) ? hp.faq : defaultFaqs;
 const faqSchema = faqs.length > 0 ? getFAQSchema(faqs) : null;
 
+const siteUrl = import.meta.env.SITE ?? siteConfig.url;
+const orgSchema = getOrganizationSchema({
+  name: siteConfig.name,
+  url: siteUrl,
+  logo: siteConfig.logo || `${siteUrl}/favicon.svg`,
+  description: siteConfig.description,
+  telephone: siteConfig.phone,
+  email: siteConfig.email,
+  ...(isLocalService && {
+    address: {
+      streetAddress: siteConfig.address,
+      addressLocality: siteConfig.city,
+      addressRegion: siteConfig.state,
+      postalCode: siteConfig.zip,
+      addressCountry: siteConfig.country,
+    },
+  }),
+  sameAs: [
+    siteConfig.linkedinUrl,
+    siteConfig.facebookUrl,
+    siteConfig.twitterUrl,
+  ].filter(Boolean) as string[],
+});
+
 const defaultFeatureGrid = isLocalService ? [
   { icon: 'clock',        title: 'Same-Day Service Available',  desc: 'Urgent situations happen — we respond fast and show up when it matters most.' },
   { icon: 'shield-check', title: 'Licensed & Fully Insured',    desc: 'Full coverage for your complete peace of mind. We stand behind every job we do.' },
@@ -329,7 +353,7 @@ const roiDefaults = {
 <BaseLayout
   title={`${siteConfig.name} | ${siteConfig.tagline}`}
   description={siteConfig.description}
-  schemas={faqSchema ? [faqSchema] : []}
+  schemas={[orgSchema, ...(faqSchema ? [faqSchema] : [])]}
 >
 <body class="homepage">
 

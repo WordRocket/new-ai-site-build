@@ -1,2 +1,3 @@
 /locations/* /:splat 301
+/.well-known/* /.well-known/:splat 200
 /* /404.html 404
